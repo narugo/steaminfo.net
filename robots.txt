@@ -1,0 +1,5 @@
+Sitemap: http://steaminfo.net/sitemap.xml
+
+User-agent: *
+Disallow:
+Allow: /*

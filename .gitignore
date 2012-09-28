@@ -1,0 +1,17 @@
+*~
+.*.sw?
+*.pyc
+*.pyo
+.DS_Store
+Desktop.ini
+
+*.iml
+*.ipr
+*.iws
+.idea/
+
+core/config.php
+
+# SASS
+*.sass-cache
+css

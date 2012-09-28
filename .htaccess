@@ -1,0 +1,13 @@
+# Use PHP 5.3
+AddType application/x-httpd-php53 .php
+
+Options -Indexes
+
+# Redirect all requests
+RewriteEngine on
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-l
+
+RewriteRule ^(.*)$ index.php?path=$1 [QSA,L]

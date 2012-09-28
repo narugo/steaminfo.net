@@ -1,0 +1,3 @@
+[submodule "core/libs/steam-locomotive"]
+	path = core/libs/steam-locomotive
+	url = git@github.com:Tsukanov/Steam-Locomotive.git

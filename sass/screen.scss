@@ -1,0 +1,194 @@
+@import "base";
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: 'Lucida Grande', Arial, sans-serif;
+  background: $dark;
+  color: $text-main;
+}
+
+a {
+  color: $link-color;
+}
+
+a:hover {
+  color: $link-color;
+}
+
+a:hover {
+  border-color: none;
+}
+
+textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
+  box-shadow: rgba(255, 255, 255, 0.1) 0 1px 0, rgba(0, 0, 0, 0.8) 0 1px 7px 0px inset;
+  background: $darker;
+  border: 1px solid #121212;
+}
+
+button.btn, input[type="submit"].btn {
+  color: $text-main;
+  text-shadow: none;
+  box-shadow: inset 0px 1px 0px rgba(255, 255, 255, 0.07);
+  background-color: $darker;
+  background-image: none;
+  -webkit-transition: border linear 0.2s, box-shadow linear 0.2s;
+  -moz-transition: border linear 0.2s, box-shadow linear 0.2s;
+  -ms-transition: border linear 0.2s, box-shadow linear 0.2s;
+  -o-transition: border linear 0.2s, box-shadow linear 0.2s;
+  transition: border linear 0.2s, box-shadow linear 0.2s;
+}
+
+.btn:hover {
+  color: $text-main;
+  text-shadow: none;
+  box-shadow: rgba(255, 255, 255, 0.07) 0 1px 0;
+  background-color: $darker;
+  background-image: none;
+}
+
+.btn.active, .btn:active {
+  color: $text-main;
+  text-shadow: none;
+  box-shadow: inset 0px 1px 0px rgba(255, 255, 255, 0.07);
+  background-color: $darker;
+  background-image: none;
+  border-color: rgba(82, 168, 236, 0.8);
+  outline: 0;
+  outline: thin dotted \9;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(82, 168, 236, 0.6);
+}
+
+.table {
+  th, td {
+    border-bottom: 1px solid #121212;
+    box-shadow: rgba(255, 255, 255, 0.07) 0 2px 0;
+  }
+  tbody {
+    tr:hover td, tr:hover th {
+      background-color: transparent;
+    }
+  }
+}
+
+.nav-tabs {
+  border-bottom: 1px solid #121212;
+  box-shadow: rgba(255, 255, 255, 0.07) 0 1px 0;
+}
+
+.nav-tabs > li {
+  margin: 0;
+}
+
+.nav > li > a:hover {
+  color: $link-color;
+  background-color: #121212;
+  border: 1px solid #121212;
+  box-shadow: rgba(255, 255, 255, 0.07) 1px 0 0;
+}
+
+.nav-tabs > .active > a, .nav-tabs > .active > a:hover {
+  color: #DADBB1;
+  background-color: #121212;
+  border: 1px solid #121212;
+  box-shadow: rgba(255, 255, 255, 0.07) 1px 0 0;
+}
+
+hr {
+  border: 0;
+  border-bottom: 1px solid #121212;
+  box-shadow: rgba(255, 255, 255, 0.07) 0 1px 0;
+}
+
+#wrapper {
+  min-height: 100%;
+}
+
+header {
+  height: 44px;
+  width: 100%;
+  border-bottom: 1px solid #121212;
+  background-color: $darker;
+  box-shadow: rgba(255, 255, 255, 0.07) 0 1px 0;
+  #logo {
+    float: left;
+    height: 36px;
+    margin-top: 4px;
+    margin-right: 20px;
+  }
+  #menu {
+    width: $base-width;
+    margin: 0 auto;
+    .right {
+      float: right;
+    }
+  }
+  .menu-entry {
+    float: left;
+    text-align: center;
+    .icon {
+      height: 48px;
+      width: 48px;
+      margin-top: -2px;
+    }
+  }
+}
+
+#submenu {
+  height: 60px;
+  width: 100%;
+  margin-bottom: 8px;
+  #title {
+    float: left;
+  }
+}
+
+#page {
+  clear: both;
+  width: $base-width;
+  margin: 0 auto;
+  padding: 10px 0 70px 0;
+  overflow: auto;
+  #content {
+    clear: both;
+  }
+}
+
+$footer-height: 44px;
+footer {
+  display: block;
+  position: relative;
+  margin-top: -$footer-height - 1; // Minus border
+  height: $footer-height;
+  clear: both;
+  width: 100%;
+  font-size: 11px;
+  line-height: 12px;
+  background-color: $darker;
+  box-shadow: rgba(255, 255, 255, 0.07) 0 -1px 0;
+  border-top: 1px solid #121212;
+  .contents {
+    width: $base-width;
+    height: 32px;
+    padding-top: 9px;
+    margin: 0 auto;
+  }
+}
+
+.alert {
+  border: 1px solid #121212;
+  box-shadow: rgba(255, 255, 255, 0.1) 0 1px 0, rgba(0, 0, 0, 0.8) 0 1px 7px 0px inset;
+  color: $text-main;
+  text-shadow: none;
+  text-align: center;
+}
+
+.alert-danger, .alert-error {
+  background-color: rgba(131, 17, 17, 0.4);
+}
+
+.alert-info {
+  background: rgba(0, 160, 240, 0.4);
+}
