@@ -136,6 +136,17 @@ $loading_img = '<img class="loading" src="/img/loading.gif" />';
             if (! empty($badges_html)) {
                 echo '<div id="badges">'.$badges_html.'</div>';
             } ?>
+            <script type="text/javascript"><!--
+            google_ad_client = "ca-pub-7607595783444002";
+            /* 125x125, создано 16.09.10 */
+            google_ad_slot = "7977631930";
+            google_ad_width = 125;
+            google_ad_height = 125;
+            //-->
+            </script>
+            <script type="text/javascript"
+                    src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+            </script>
         </div>
 
         <hr style="clear:both;" />

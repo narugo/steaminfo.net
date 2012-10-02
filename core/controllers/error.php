@@ -9,6 +9,7 @@ class Error extends Controller {
     }
 
     public function index() {
+        // TODO: Show more interesting error messages
         switch ($this->http_status) {
             case 404:
                 header("HTTP/1.0 404 Not Found");

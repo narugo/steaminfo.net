@@ -7,15 +7,19 @@ class Users_Model extends Model {
 
     function __construct() {
         parent::__construct();
-        require "core/libs/steamapi.php";
-        $this->steam_api = new SteamAPI();
+        $this->steam = new Locomotive();
     }
 
-    public function getProfile($community_id, $no_update = FALSE) {
+    public function getProfile($query, $no_update = FALSE) {
+        $community_id = $this->steam->tools->users->getCommunityIdFromInput($query);
+        if (! isset($community_id)) {
+            // TODO: Handle error
+            return FALSE;
+        }
         $update_status = NULL;
         if ($no_update === FALSE) {
             try {
-                $results = $this->steam_api->GetPlayerSummaries(array($community_id));
+                $results = $this->steam->webapi->GetPlayerSummaries(array($community_id));
                 $profile = $results[0];
                 self::updateUserInfo($profile);
 
@@ -42,10 +46,13 @@ class Users_Model extends Model {
     }
 
     public function getApps($community_id, $no_update = FALSE) {
+        if (! $this->steam->tools->users->validateUserId($community_id, TYPE_COMMUNITY_ID)) {
+            throw new WrongIDException();
+        }
         $update_status = NULL;
         if ($no_update === FALSE) {
             try {
-                $apps = $this->steam_api->getAppsForUser($community_id);
+                $apps = $this->steam->communityapi->getAppsForUser($community_id);
                 self::addAppsForUser($community_id, $apps);
                 $update_status = "success";
             } catch (Exception $e) {
@@ -64,10 +71,13 @@ class Users_Model extends Model {
     }
 
     public function getFriends($community_id, $no_update = FALSE) {
+        if (! $this->steam->tools->users->validateUserId($community_id, TYPE_COMMUNITY_ID)) {
+            throw new WrongIDException();
+        }
         $update_status = NULL;
         if ($no_update === FALSE) {
             try {
-                $friends = $this->steam_api->GetFriendList($community_id);
+                $friends = $this->steam->webapi->GetFriendList($community_id);
                 self::updateFriends($community_id, $friends);
                 $update_status = "success";
             } catch (Exception $e) {
@@ -90,6 +100,9 @@ class Users_Model extends Model {
     }
 
     public function getGroups($community_id, $no_update = FALSE) {
+        if (! $this->steam->tools->users->validateUserId($community_id, TYPE_COMMUNITY_ID)) {
+            throw new WrongIDException();
+        }
         if ($no_update === FALSE) {
             // TODO: Get groups from Steam
         }
@@ -102,21 +115,10 @@ class Users_Model extends Model {
         return $groups;
     }
 
-    public function getBadges($community_id)
-    {
-        if (self::is_valid_id($community_id, "communityid") !== TRUE) throw new WrongIDException($community_id);
-        require_once $_SERVER['DOCUMENT_ROOT']."/core/simple_html_dom.php";
-        $url = 'http://steamcommunity.com/profiles/'.$community_id;
-        $html = file_get_html($url);
-        $badges_html = '';
-        foreach($html->find('img.profile_badge_icon') as $element)
-        {
-            $badges_html .= $element;
-        }
-        return $badges_html;
-    }
-
     public function setTag($community_id, $tag) {
+        if (! $this->steam->tools->users->validateUserId($community_id, TYPE_COMMUNITY_ID)) {
+            throw new WrongIDException();
+        }
         // TODO: Modify function so it can get multiple IDs
         $statement = $this->db->prepare('UPDATE users SET tag= :tag WHERE community_id= :id');
         return $statement->execute(array(':tag' => $tag, ':id' => $community_id));
@@ -193,9 +195,13 @@ class Users_Model extends Model {
     private function getAdditionalProfileInfo($community_id) {
         $url = 'http://steamcommunity.com/profiles/'.$community_id.'/?xml=1&l=english';
         $contents = file_get_contents($url);
-        if ($contents === FALSE) return false;
+        if ($contents === FALSE) return FALSE;
+        try {
         $additional_info = new SimpleXMLElement($contents);
-        if (isset($additional_info->error)) return false;
+        if (isset($additional_info->error)) return FALSE;
+        } catch (Exception $e) {
+            return FALSE;
+        }
         return $additional_info;
     }
 
@@ -292,7 +298,7 @@ class Users_Model extends Model {
     }
 
 
-    // TODO: Move this method to another model
+// TODO: Move this method to another model
     private function updateAppsInfo($apps)
     {
         $sql = 'INSERT INTO apps (id, name, logo_url)

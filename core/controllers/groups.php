@@ -10,4 +10,8 @@ class Groups extends Controller {
         $this->view->render("groups");
     }
 
+    public function search() {
+        // TODO: Implemet search
+    }
+
 }

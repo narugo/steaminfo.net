@@ -5,6 +5,11 @@ require 'core/database.php';
 require 'core/model.php';
 
 /**
+ * Libraries
+ */
+require 'core/libs/steam-locomotive/locomotive.php';
+
+/**
  * Main application class
  * Parses requested path, calls controllers and methods, passes parameters
  */
@@ -41,6 +46,7 @@ class Application {
                         if (isset($path[2])) {
                             // Removing controller and method names
                             $params = array_splice($path, 2);
+                            // And passing parameters to method
                             $controller->{$method}($params);
                         } else {
                             $controller->{$method}();
