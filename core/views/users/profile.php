@@ -41,13 +41,15 @@ $loading_img = '<img class="loading" src="/img/loading.gif" />';
             {
                 echo '<strong>';
                 switch ($profile->status) {
-                    case '0': echo 'Offline'; break;
                     case '1': echo 'Online'; break;
                     case '2': echo 'Busy'; break;
                     case '3': echo 'Away'; break;
                     case '4': echo 'Snooze'; break;
                     case '5': echo 'Looking to trade'; break;
                     case '5': echo 'Looking to play'; break;
+                    case '0':
+                    default:
+                        echo 'Offline'; break;
                 }
                 echo '</strong>';
             }
@@ -131,6 +133,7 @@ $loading_img = '<img class="loading" src="/img/loading.gif" />';
         </div>
         <div id="sidebar">
             <?php
+            // TODO: Fix badges
             // Badges
             //$badges_html = $users->getBadges($profile->community_id);
             if (! empty($badges_html)) {
@@ -150,7 +153,7 @@ $loading_img = '<img class="loading" src="/img/loading.gif" />';
         </div>
 
         <hr style="clear:both;" />
-        <a href="http://steamcommunity.com/profile/<?php echo $profile->community_id; ?>">View profile on Steam Community website</a>
+        <a href="http://steamcommunity.com/profiles/<?php echo $profile->community_id; ?>">View profile on Steam Community website</a>
     </div>
     <div class="tab-pane" id="apps-tab"><?php echo $loading_img; ?></div>
     <div class="tab-pane" id="friends-tab"><?php echo $loading_img; ?></div>

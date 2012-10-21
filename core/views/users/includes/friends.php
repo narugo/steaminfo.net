@@ -26,7 +26,7 @@
                 ?>" />
         </td>
         <td class="name">
-            <a href="/users/?q=<?php echo $friend->community_id; ?>">
+            <a href="/users/profile/<?php echo $friend->community_id; ?>">
                 <?php
                 if (is_null($friend->nickname)) echo $friend->community_id;
                 else echo $friend->nickname;

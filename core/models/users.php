@@ -10,12 +10,34 @@ class Users_Model extends Model {
         $this->steam = new Locomotive();
     }
 
-    public function getProfile($query, $no_update = FALSE) {
-        $community_id = $this->steam->tools->users->getCommunityIdFromInput($query);
-        if (! isset($community_id)) {
-            // TODO: Handle error
-            return FALSE;
+    /**
+     * @param $query Steam ID, Community ID, or Vanity URL
+     * @return array Array of results
+     * Result is empty if nothing was found
+     */
+    public function search($query) {
+        $query_type = $this->steam->tools->users->getTypeOfQuery($query);
+        switch ($query_type) {
+            case TYPE_COMMUNITY_ID:
+                $result = $this->steam->webapi->GetPlayerSummaries(array($query));
+                break;
+            case TYPE_STEAM_ID:
+                // TODO: Search in database in case vanity url or something else other than community/steam id has been requested
+                $community_id = $this->steam->tools->users->convertToCommunityID($query);
+                $result = $this->steam->webapi->GetPlayerSummaries(array($community_id));
+                break;
+            case TYPE_VANITY:
+                $community_id = $this->steam->webapi->ResolveVanityURL($query);
+                $result = $this->steam->webapi->GetPlayerSummaries(array($community_id));
+                break;
+            default:
+                // Error (unknown type of query)
+                $result = array();
         }
+        return $result;
+    }
+
+    public function getProfile($community_id, $no_update = FALSE) {
         $update_status = NULL;
         if ($no_update === FALSE) {
             try {
@@ -194,11 +216,11 @@ class Users_Model extends Model {
 
     private function getAdditionalProfileInfo($community_id) {
         $url = 'http://steamcommunity.com/profiles/'.$community_id.'/?xml=1&l=english';
-        $contents = file_get_contents($url);
+        $contents = @file_get_contents($url);
         if ($contents === FALSE) return FALSE;
         try {
-        $additional_info = new SimpleXMLElement($contents);
-        if (isset($additional_info->error)) return FALSE;
+            $additional_info = new SimpleXMLElement($contents);
+            if (isset($additional_info->error)) return FALSE;
         } catch (Exception $e) {
             return FALSE;
         }
