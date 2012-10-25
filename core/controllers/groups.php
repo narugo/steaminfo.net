@@ -7,11 +7,7 @@ class Groups extends Controller {
    }
 
     public function index() {
-        $this->view->render("groups");
-    }
-
-    public function search() {
-        // TODO: Implemet search
+        $this->view->render("groups/index");
     }
 
 }

@@ -99,6 +99,26 @@
       }
     }
   }
+  #groups-tab {
+    #groups-table {
+      .id {
+        width: 18px;
+        text-align: right;
+      }
+      .avatar {
+        width: 34px;
+        img {
+          width: 32px;
+          height: 32px;
+          border: 1px solid #121212;
+          box-shadow: rgba(255, 255, 255, 0.07) 1px 0 0;
+        }
+      }
+      .name {
+        text-align: left;
+      }
+    }
+  }
 }
 
 .nav-tabs > li, .nav-pills > li {

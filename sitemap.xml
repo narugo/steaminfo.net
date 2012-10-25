@@ -11,6 +11,12 @@
         <loc>http://steaminfo.net/users/</loc>
     </url>
     <url>
+        <loc>http://steaminfo.net/groups/</loc>
+    </url>
+    <url>
+        <loc>http://steaminfo.net/stats/</loc>
+    </url>
+    <url>
         <loc>http://steaminfo.net/about/</loc>
     </url>
 </urlset>

@@ -63,7 +63,7 @@ class Users_Model extends Model {
         $statement->execute(array(':id' => $community_id));
         // TODO: Check if found
         return array(
-            'profile' => $statement->fetchObject(),
+            'profile' => new User($statement->fetchObject()),
             'update_status' => $update_status);
     }
 
@@ -362,5 +362,163 @@ class Users_Model extends Model {
         }
     }
 
+}
+
+class User
+{
+
+    private $community_id;
+
+    private $nickname;
+
+    private $avatar_url;
+    private $tag;
+    private $time_created;
+    private $real_name;
+
+    // Current status
+    private $status;
+    private $last_login_time;
+    private $current_game_id;
+    private $current_game_name;
+    private $current_game_server_ip;
+
+    // Bans info
+    private $is_vac_banned;
+    private $is_limited_account;
+    private $trade_ban_state;
+
+    // Location
+    private $location_city_id;
+    private $location_country_code;
+    private $location_state_code;
+
+    private $primary_group_id;
+    private $last_updated;
+
+
+    /**
+     * @param $profile Object, containing information about user received from Steam API
+     */
+    function __construct($profile) {
+        $this->community_id = $profile->community_id;
+        $this->nickname = $profile->nickname;
+        $this->avatar_url = $profile->avatar_url;
+        $this->tag = $profile->tag;
+        $this->time_created = $profile->time_created;
+        $this->real_name = $profile->real_name;
+        $this->status = $profile->status;
+        $this->last_login_time = $profile->last_login_time;
+        $this->current_game_id = $profile->current_game_id;
+        $this->current_game_name = $profile->current_game_name;
+        $this->current_game_server_ip = $profile->current_game_server_ip;
+        $this->is_vac_banned = $profile->is_vac_banned;
+        $this->is_limited_account = $profile->is_limited_account;
+        $this->trade_ban_state = $profile->trade_ban_state;
+        $this->location_city_id = $profile->location_city_id;
+        $this->location_country_code = $profile->location_country_code;
+        $this->location_state_code = $profile->location_state_code;
+        $this->primary_group_id = $profile->primary_group_id;
+        $this->last_updated = $profile->last_updated;
+
+        $this->steam = new Locomotive();
+    }
+
+    public function getAvatarUrl() { return $this->avatar_url; }
+
+    public function getCommunityId() { return $this->community_id; }
+
+    /**
+     * @return string Returns user's Steam ID
+     */
+    public function getSteamId() {
+        return $this->steam->tools->users->convertToSteamID($this->community_id);
+    }
+
+    public function getStatus()
+    {
+        switch ($this->status) {
+            case '1': return 'Online';
+            case '2': return 'Busy';
+            case '3': return 'Away';
+            case '4': return 'Snooze';
+            case '5': return 'Looking to trade';
+            case '5': return 'Looking to play';
+            case '0':
+            default:
+                return 'Offline';
+        }
+    }
+
+    public function getCurrentGameId() { return $this->current_game_id; }
+
+    public function isInGame() {
+        if (isset($this->current_game_id)) return TRUE;
+        else return FALSE;
+    }
+
+    public function getCurrentGameStorePageURL() {
+        if (isset($this->current_game_id)) {
+            return 'http://store.steampowered.com/app/' . $this->current_game_id;
+        }
+        return NULL;
+    }
+
+    public function getCurrentGameName() { return $this->current_game_name; }
+
+    /**
+     * @return null|string Returns connection URL if current server IP is set, NULL otherwise.
+     */
+    public function getConnectionUrl() {
+        if (isset($this->current_game_server_ip)) {
+            return 'steam://connect/' . $this->current_game_server_ip;
+        }
+        return NULL;
+    }
+
+    public function getCurrentGameServerIp() { return $this->current_game_server_ip; }
+
+    public function getIsLimitedAccount() { return $this->is_limited_account; }
+    public function isVacBanned() { return $this->is_vac_banned; }
+    public function getTradeBanState() { return $this->trade_ban_state; }
+
+    public function getLastLoginTime() { return $this->last_login_time; }
+
+    public function getLastUpdateTime() { return $this->last_updated; }
+
+    /**
+     * @return null|string Returns string containing location info (country, state, and city). NULL if there is no info.
+     */
+    public function getLocation()
+    {
+        $result = NULL;
+        if (isset($this->location_country_code))
+        {
+            $result = $this->location_country_code;
+            if (isset($this->location_state_code))
+                $result += ', ' + $this->location_state_code;
+            if (isset($this->location_city_id))
+                $result += ', ' + $this->location_city_id;
+        }
+        return $result;
+    }
+
+    /**
+     * @return string Returns string containing user's nickname
+     */
+    public function getNickname() { return (string)$this->nickname; }
+
+    /**
+     * @return mixed Returns ID of user's primary group
+     */
+    public function getPrimaryGroupId() { return $this->primary_group_id; }
+
+    public function getRealName() { return $this->real_name; }
+
+    public function getTag() { return $this->tag; }
+
+    public function getCreationTime() {
+        return date(DATE_RFC850, $this->time_created);
+    }
 
 }

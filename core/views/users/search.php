@@ -2,5 +2,5 @@
 
 Not implemented
 <?php
-// TODO: Implement list if results
+// TODO: Implement list of results
 ?>

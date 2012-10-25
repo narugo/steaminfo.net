@@ -53,8 +53,4 @@ class Users extends Controller {
         $this->view->render("users/includes/groups", TRUE);
     }
 
-    function search() {
-        // TODO: Implement search
-    }
-
 }

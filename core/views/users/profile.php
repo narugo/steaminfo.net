@@ -6,7 +6,7 @@ $loading_img = '<img class="loading" src="/img/loading.gif" />';
 ?>
 
 <h2 id="name">
-    <img id="avatar" src="<?php echo $profile->avatar_url; ?>" /><?php echo $profile->nickname; ?></a>
+    <img id="avatar" src="<?php echo $profile->getAvatarUrl(); ?>" /><?php echo $profile->getNickname(); ?></a>
 </h2>
 
 <ul class="nav nav-tabs" id="navigation">
@@ -20,39 +20,17 @@ $loading_img = '<img class="loading" src="/img/loading.gif" />';
     <div class="tab-pane" id="info-tab">
         <div id="main">
             <?php
-            // Real name and tag
-            if (! empty($profile->real_name))
-            {
-                echo '<h3 id="real-name">'.$profile->real_name.'</h3>';
-                if (! empty($profile->tag))
-                    echo '<span class="badge badge-info">'.$profile->tag.'</span>';
-            }
-            else
-            {
-                if (! empty($profile->tag))
-                    echo '<span class="badge badge-info">'.$profile->tag.'</span>';
-            }
+            $real_name = $profile->getRealName();
+            if (! empty($real_name))
+                echo '<h3 id="real-name">' . $real_name . '</h3>';
 
-            /*
-            * Current status
-            */
+            $tag = $profile->getTag();
+            if (! empty($tag))
+                echo '<span class="badge badge-info">' . $tag . '</span>';
+
             echo '<p style="clear:both;">';
-            if (strlen($profile->status) > 0)
-            {
-                echo '<strong>';
-                switch ($profile->status) {
-                    case '1': echo 'Online'; break;
-                    case '2': echo 'Busy'; break;
-                    case '3': echo 'Away'; break;
-                    case '4': echo 'Snooze'; break;
-                    case '5': echo 'Looking to trade'; break;
-                    case '5': echo 'Looking to play'; break;
-                    case '0':
-                    default:
-                        echo 'Offline'; break;
-                }
-                echo '</strong>';
-            }
+            echo '<strong>' . $profile->getStatus() . '</strong>';
+
             if (! empty($profile->current_game_name))
                 echo '<strong>, playing <a href="http://store.steampowered.com/app/'.$profile->current_game_id.'">'.$profile->current_game_name.'</a></strong>';
             if (! empty($profile->current_game_server_ip))
@@ -64,34 +42,26 @@ $loading_img = '<img class="loading" src="/img/loading.gif" />';
             /**
              * IDs
              */
-            if (! empty($profile->community_id))
-            {
-                echo '<p>
-                <strong>Steam ID:</strong> './/$users->convertToSteamID($profile->community_id).
-                    '<br /><strong>Community ID:</strong> '.$profile->community_id.
-                    '</p>';
-            }
+            echo '<p><strong>Steam ID:</strong> ' . $profile->getSteamId() . '<br /><strong>Community ID:</strong> ' . $profile->getCommunityId() . '</p>';
 
             // Profile creation time
-            if (! empty($profile->time_created))
-                echo 'Steam user since '.date(DATE_RFC850, $profile->time_created);
+            $creation_time = $profile->getCreationTime();
+            if (! empty($creation_time)) echo 'Steam user since ' . $creation_time;
 
             // Location
-            if (! empty($profile->loc_country_code)) {
-                echo '<br />Location: '.$profile->loc_country_code;
-                if (! empty($profile->loc_state_code)) echo ', '.$profile->loc_state_code;
-                if (! empty($profile->loc_city_id)) echo ', '.$profile->loc_city_id;
-            }
+            $location = $profile->getLocation();
+            if (! empty($location)) echo '<br />Location: ' . $location;
 
-            if (! empty($profile->primary_group_id))
-                echo '<br />Primary group ID: '.$profile->primary_group_id;
+            $primary_group_id = $profile->getPrimaryGroupId();
+            if (! empty($primary_group_id))
+                echo '<br />Primary group ID: ' . $primary_group_id;
 
             /*
-            * Bans info
-            */
+             * Bans info
+             */
             echo '<p><h4>Bans info:</h4>';
             // VAC ban
-            switch ($profile->is_vac_banned)
+            switch ($profile->isVacBanned())
             {
                 case '0': echo '<span class="label label-success">Not VAC banned</span>'; break;
                 case '1': echo '<span class="label label-important">VAC banned</span>'; break;
@@ -99,17 +69,15 @@ $loading_img = '<img class="loading" src="/img/loading.gif" />';
             }
             // Account limitations
             echo '&nbsp;';
-            switch ($profile->is_limited_account)
+            switch ($profile->isInGame())
             {
                 case '0': echo '<span class="label label-success">Account is not limited</span>'; break;
                 case '1': echo '<span class="label label-important">Account is limited</span>'; break;
                 default: echo '<span class="label">Account limitations info is unknown</span>';
             }
             // Trade ban
-            echo '<br /><b>Trade ban status:</b> ';
-            if (! empty($profile->trade_ban_state))
-            {
-                switch ($profile->trade_ban_state)
+            echo '<br /><b>Trade ban state:</b> ';
+                switch ($profile->getTradeBanState())
                 {
                     case 'None':
                         echo '<span class="label label-success">';
@@ -123,12 +91,10 @@ $loading_img = '<img class="loading" src="/img/loading.gif" />';
                     default:
                         echo '<span class="label">';
                 }
-                echo $profile->trade_ban_state;
+                echo $profile->getTradeBanState();
                 echo '</span>';
-            }
-            else
-                echo '<span class="label">Unknown</span>';
             echo '</p>';
+
             ?>
         </div>
         <div id="sidebar">
@@ -153,7 +119,7 @@ $loading_img = '<img class="loading" src="/img/loading.gif" />';
         </div>
 
         <hr style="clear:both;" />
-        <a href="http://steamcommunity.com/profiles/<?php echo $profile->community_id; ?>">View profile on Steam Community website</a>
+        <a href="http://steamcommunity.com/profiles/<?php echo $profile->getCommunityId(); ?>">View profile on Steam Community website</a>
     </div>
     <div class="tab-pane" id="apps-tab"><?php echo $loading_img; ?></div>
     <div class="tab-pane" id="friends-tab"><?php echo $loading_img; ?></div>
@@ -169,19 +135,19 @@ $loading_img = '<img class="loading" src="/img/loading.gif" />';
             case "#apps-tab":
                 if (!appsTabLoaded) {
                     appsTabLoaded = true;
-                    $("#apps-tab").load("/users/apps/<?php echo $profile->community_id; ?>");
+                    $("#apps-tab").load("/users/apps/<?php echo $profile->getCommunityId(); ?>");
                 }
                 break;
             case "#friends-tab":
                 if (!friendsTabLoaded) {
                     friendsTabLoaded = true;
-                    $("#friends-tab").load("/users/friends/<?php echo $profile->community_id; ?>");
+                    $("#friends-tab").load("/users/friends/<?php echo $profile->getCommunityId(); ?>");
                 }
                 break;
             case "#groups-tab":
                 if (!groupsTabLoaded) {
                     groupsTabLoaded = true;
-                    $("#groups-tab").load("/users/groups/<?php echo $profile->community_id; ?>");
+                    $("#groups-tab").load("/users/groups/<?php echo $profile->getCommunityId(); ?>");
                 }
                 break;
         }
