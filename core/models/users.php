@@ -517,6 +517,10 @@ class User
 
     public function getTag() { return $this->tag; }
 
+    public function getBadgesHTML() {
+        return $this->steam->tools->users->getBadges($this->community_id);
+    }
+
     public function getCreationTime() {
         return date(DATE_RFC850, $this->time_created);
     }
