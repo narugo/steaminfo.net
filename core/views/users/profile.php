@@ -28,15 +28,20 @@ $loading_img = '<img class="loading" src="/img/loading.gif" />';
             if (! empty($tag))
                 echo '<span class="badge badge-info">' . $tag . '</span>';
 
+            /**
+             * Status
+             */
             echo '<p style="clear:both;">';
             echo '<strong>' . $profile->getStatus() . '</strong>';
-
-            if (! empty($profile->current_game_name))
-                echo '<strong>, playing <a href="http://store.steampowered.com/app/'.$profile->current_game_id.'">'.$profile->current_game_name.'</a></strong>';
-            if (! empty($profile->current_game_server_ip))
-                echo '<br />Server: <a href="steam://connect/'.$profile->current_game_server_ip.'" title="Join game">'.$profile->current_game_server_ip.'</a>';
-            if (! empty($profile->last_time_online))
-                echo '<br />Last log in: '.date(DATE_RFC850, $profile->last_time_online);
+            $current_app_name = $profile->getCurrentAppName();
+            if (! empty($current_app_name))
+                echo '<strong>, in <a href="' .$profile->getCurrentAppStorePageURL() . '">' . $current_app_name . '</a></strong>';
+            $current_server_ip = $profile->getCurrentGameServerIp();
+            if (! empty($current_server_ip))
+                echo '<br />Server: <a href="' . $profile->getConnectionUrl() . '" title="Join game">' . $current_server_ip . '</a>';
+            $last_login_time = $profile->getLastLoginTime();
+            if (! empty($last_login_time))
+                echo '<br />Last log in: ' . $last_login_time;
             echo '</p>';
 
             /**
@@ -59,7 +64,7 @@ $loading_img = '<img class="loading" src="/img/loading.gif" />';
             /*
              * Bans info
              */
-            echo '<p><h4>Bans info:</h4>';
+            echo '<p>';
             // VAC ban
             switch ($profile->isVacBanned())
             {
@@ -77,22 +82,22 @@ $loading_img = '<img class="loading" src="/img/loading.gif" />';
             }
             // Trade ban
             echo '<br /><b>Trade ban state:</b> ';
-                switch ($profile->getTradeBanState())
-                {
-                    case 'None':
-                        echo '<span class="label label-success">';
-                        break;
-                    case 'Banned':
-                        echo '<span class="label label-important">';
-                        break;
-                    case 'Probation':
-                        echo '<span class="label label-warning">';
-                        break;
-                    default:
-                        echo '<span class="label">';
-                }
-                echo $profile->getTradeBanState();
-                echo '</span>';
+            switch ($profile->getTradeBanState())
+            {
+                case 'None':
+                    echo '<span class="label label-success">';
+                    break;
+                case 'Banned':
+                    echo '<span class="label label-important">';
+                    break;
+                case 'Probation':
+                    echo '<span class="label label-warning">';
+                    break;
+                default:
+                    echo '<span class="label">';
+            }
+            echo $profile->getTradeBanState();
+            echo '</span>';
             echo '</p>';
 
             ?>

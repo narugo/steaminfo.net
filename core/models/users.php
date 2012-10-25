@@ -457,14 +457,14 @@ class User
         else return FALSE;
     }
 
-    public function getCurrentGameStorePageURL() {
+    public function getCurrentAppStorePageURL() {
         if (isset($this->current_game_id)) {
             return 'http://store.steampowered.com/app/' . $this->current_game_id;
         }
         return NULL;
     }
 
-    public function getCurrentGameName() { return $this->current_game_name; }
+    public function getCurrentAppName() { return $this->current_game_name; }
 
     /**
      * @return null|string Returns connection URL if current server IP is set, NULL otherwise.
@@ -482,9 +482,15 @@ class User
     public function isVacBanned() { return $this->is_vac_banned; }
     public function getTradeBanState() { return $this->trade_ban_state; }
 
-    public function getLastLoginTime() { return $this->last_login_time; }
+    public function getLastLoginTime($raw = FALSE) {
+        if ($raw) return $this->last_login_time;
+        else return date(DATE_RFC850, $this->last_login_time);
+    }
 
-    public function getLastUpdateTime() { return $this->last_updated; }
+    public function getLastUpdateTime($raw = FALSE) {
+        if ($raw) return $this->last_updated;
+        else return date(DATE_RFC850, $this->last_updated);
+    }
 
     /**
      * @return null|string Returns string containing location info (country, state, and city). NULL if there is no info.
