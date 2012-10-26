@@ -12,6 +12,7 @@
     <link href="/css/users.css" rel="stylesheet" type="text/css">
     <script src="/js/jquery.js" type="text/javascript"></script>
     <script src="/js/bootstrap-tab.js" type="text/javascript"></script>
+    <script src="/js/jquery.tablesorter.min.js" type="text/javascript"></script>
 </head>
 <body>
 <div id="wrapper">

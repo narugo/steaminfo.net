@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html>
 <body>
+<div class="alert alert-info">
+    Click on the names of columns to sort this table.
+</div>
 <?php $groups = $this->groups; ?>
-<table id="groups-table" class="table table-condensed">
+<table id="groups-table" class="table table-condensed tablesorter">
     <thead>
     <tr>
         <th class="id">#</th>
@@ -36,5 +39,12 @@
     ?>
     </tbody>
 </table>
+<script type="text/javascript">
+    $(document).ready(function()
+            {
+                $("#groups-table").tablesorter();
+            }
+    );
+</script>
 </body>
 </html>

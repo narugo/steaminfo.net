@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html>
 <body>
+<div class="alert alert-info">
+    Click on the names of columns to sort this table.
+</div>
 <?php $friends = $this->friends; ?>
-<table id="friends-table" class="table table-condensed">
+<table id="friends-table" class="table table-condensed tablesorter">
     <thead>
     <tr>
         <th class="id">#</th>
@@ -36,7 +39,7 @@
             <span class="badge badge-success"><?php echo $friend->tag; ?></span>
             <?php endif; ?>
         </td>
-        <td class="since"><?php echo $friend->since; ?></td>
+        <td class="since"><?php echo date(DATE_RFC850, $friend->since); ?></td>
     </tr>
         <?php
         $index++;
@@ -44,5 +47,12 @@
     ?>
     </tbody>
 </table>
+<script type="text/javascript">
+    $(document).ready(function()
+            {
+                $("#friends-table").tablesorter();
+            }
+    );
+</script>
 </body>
 </html>

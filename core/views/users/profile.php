@@ -47,19 +47,20 @@ $loading_img = '<img class="loading" src="/img/loading.gif" />';
             /**
              * IDs
              */
-            echo '<p><strong>Steam ID:</strong> ' . $profile->getSteamId() . '<br /><strong>Community ID:</strong> ' . $profile->getCommunityId() . '</p>';
+            echo '<p><strong>Steam ID:</strong> ' . $profile->getSteamId();
+            echo '<br /><strong>Community ID:</strong> ' . $profile->getCommunityId() . '</p>';
 
             // Profile creation time
             $creation_time = $profile->getCreationTime();
-            if (! empty($creation_time)) echo 'Steam user since ' . $creation_time;
+            if (! empty($creation_time)) echo '<p>Steam user since ' . $creation_time . '</p>';
 
             // Location
             $location = $profile->getLocation();
-            if (! empty($location)) echo '<br />Location: ' . $location;
+            if (! empty($location)) echo '<p>Location: ' . $location . '</p>';
 
             $primary_group_id = $profile->getPrimaryGroupId();
             if (! empty($primary_group_id))
-                echo '<br />Primary group ID: ' . $primary_group_id;
+                echo '<p>Primary group ID: ' . $primary_group_id . '</p>';
 
             /*
              * Bans info
