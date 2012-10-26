@@ -118,9 +118,18 @@ $loading_img = '<img class="loading" src="/img/loading.gif" />';
         <hr style="clear:both;" />
         <a href="http://steamcommunity.com/profiles/<?php echo $profile->getCommunityId(); ?>">View profile on Steam Community website</a>
     </div>
-    <div class="tab-pane" id="apps-tab"><?php echo $loading_img; ?></div>
-    <div class="tab-pane" id="friends-tab"><?php echo $loading_img; ?></div>
-    <div class="tab-pane" id="groups-tab"><?php echo $loading_img; ?></div>
+    <div class="tab-pane" id="apps-tab">
+        Getting list of apps. Please wait.
+        <?php echo $loading_img; ?>
+    </div>
+    <div class="tab-pane" id="friends-tab">
+        Getting list of friends and updating their info. Please wait.
+        <?php echo $loading_img; ?>
+    </div>
+    <div class="tab-pane" id="groups-tab">
+        Getting list of groups. Please wait.
+        <?php echo $loading_img; ?>
+    </div>
 </div>
 
 <script type="text/javascript">
