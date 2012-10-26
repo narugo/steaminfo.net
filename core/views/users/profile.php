@@ -26,7 +26,7 @@ $loading_img = '<img class="loading" src="/img/loading.gif" />';
 
             $tag = $profile->getTag();
             if (! empty($tag))
-                echo '<span class="badge badge-info">' . $tag . '</span>';
+                echo '<p><span class="badge badge-info">' . $tag . '</span></p>';
 
             /**
              * Status
@@ -56,7 +56,9 @@ $loading_img = '<img class="loading" src="/img/loading.gif" />';
 
             // Location
             $location = $profile->getLocation();
-            if (! empty($location)) echo '<p>Location: ' . $location . '</p>';
+            if (! empty($location)) {
+                echo '<p>Location: <img src="/img/flags/' . $profile->getLocationCountryCode() . '.png" /> ' . $location . '</p>';
+            }
 
             $primary_group_id = $profile->getPrimaryGroupId();
             if (! empty($primary_group_id))

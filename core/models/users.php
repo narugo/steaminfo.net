@@ -502,11 +502,17 @@ class User
         {
             $result = $this->location_country_code;
             if (isset($this->location_state_code))
-                $result += ', ' + $this->location_state_code;
+                $result .= ', ' . $this->location_state_code;
             if (isset($this->location_city_id))
-                $result += ', ' + $this->location_city_id;
+                $result .= ', ' . $this->location_city_id;
         }
         return $result;
+    }
+
+    public function getLocationCountryCode() {
+        if (isset($this->location_country_code))
+            return strtoupper($this->location_country_code);
+        return $this->location_country_code;
     }
 
     /**
