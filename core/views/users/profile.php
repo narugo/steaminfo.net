@@ -77,7 +77,7 @@ $loading_img = '<img class="loading" src="/img/loading.gif" />';
             }
             // Account limitations
             echo '&nbsp;';
-            switch ($profile->isInGame())
+            switch ($profile->isLimitedAccount())
             {
                 case '0': echo '<span class="label label-success">Account is not limited</span>'; break;
                 case '1': echo '<span class="label label-important">Account is limited</span>'; break;

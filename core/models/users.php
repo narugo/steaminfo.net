@@ -38,6 +38,9 @@ class Users_Model extends Model {
     }
 
     public function getProfile($community_id, $no_update = FALSE) {
+        if (! $this->steam->tools->users->validateUserId($community_id, TYPE_COMMUNITY_ID)) {
+            throw new WrongIDException();
+        }
         $update_status = NULL;
         if ($no_update === FALSE) {
             try {
@@ -100,7 +103,16 @@ class Users_Model extends Model {
         if ($no_update === FALSE) {
             try {
                 $friends = $this->steam->webapi->GetFriendList($community_id);
-                self::updateFriends($community_id, $friends);
+                self::updateFriendsList($community_id, $friends);
+                // Updating friend's profiles
+                $friend_ids = array();
+                foreach ($friends as $friend) {
+                    array_push($friend_ids, $friend->steamid);
+                }
+                $friend_profiles = $this->steam->webapi->GetPlayerSummaries($friend_ids);
+                foreach ($friend_profiles as $friend_profile) {
+                    self::updateUserInfo($friend_profile);
+                }
                 $update_status = "success";
             } catch (Exception $e) {
                 if ($e instanceof PrivateProfileException) {
@@ -151,11 +163,19 @@ class Users_Model extends Model {
      */
 
     private function updateUserInfo($profile) {
+        // Adding primary group into 'groups' table
+        if (isset($profile->primaryclanid)) {
+            $sql = 'INSERT IGNORE INTO groups (id) VALUES (:group_id)';
+            $statement = $this->db->prepare($sql);
+            $statement->execute(array(":group_id" => $profile->primaryclanid));
+            $statement->closeCursor();
+        }
+
         $sql = "INSERT INTO users (
                 community_id,
                 nickname,
                 avatar_url,
-                time_created,
+                creation_time,
                 real_name,
                 location_country_code,
                 location_state_code,
@@ -170,7 +190,7 @@ class Users_Model extends Model {
                 :community_id,
                 :nickname,
                 :avatar_url,
-                :time_created,
+                :creation_time,
                 :real_name,
                 :location_country_code,
                 :location_state_code,
@@ -185,7 +205,7 @@ class Users_Model extends Model {
                 community_id = :community_id,
                 nickname = :nickname,
                 avatar_url = :avatar_url,
-                time_created = :time_created,
+                creation_time = :creation_time,
                 real_name = :real_name,
                 location_country_code = :location_country_code,
                 location_state_code = :location_state_code,
@@ -201,7 +221,7 @@ class Users_Model extends Model {
             ":community_id" => $profile->steamid,
             ":nickname" => $profile->personaname,
             ":avatar_url" => $profile->avatar,
-            ":time_created" => $profile->timecreated,
+            ":creation_time" => $profile->timecreated,
             ":real_name" => $profile->realname,
             ":location_country_code" => $profile->loccountrycode,
             ":location_state_code" => $profile->locstatecode,
@@ -274,10 +294,10 @@ class Users_Model extends Model {
         }
     }
 
-    private function updateFriends($community_id, $friends_list)
+    private function updateFriendsList($community_id, $friends_list)
     {
         // Removing old records
-        $sql = 'DELETE FROM friends WHERE user_community_id1= :user_id;';
+        $sql = 'DELETE FROM friends WHERE user_community_id1 = :user_id;';
         $statement = $this->db->prepare($sql);
         $statement->execute(array(":user_id" => $community_id));
         $statement->closeCursor();
@@ -292,35 +312,12 @@ class Users_Model extends Model {
             $statement->execute(array(
                 ":user_id" => $community_id,
                 ":friend_id" => $friend->steamid,
-                ":friend_since" => date(DATE_W3C, $friend->friend_since)));
-            // TODO: Fix: friend_since variable can be "0"
+                ":friend_since" => $friend->friend_since));
             $statement->closeCursor();
         }
     }
 
-
-
-    private function getMultipleUsersInfo($ids) {
-        $url = 'http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key='.STEAM_API_KEY.'&steamids=';
-        global $db;
-        $result = array();
-        foreach (array_chunk($ids, 100) as $chunk) {
-            $string = implode(",", $chunk);
-            $contents = @file_get_contents($url.$string);
-            if ($contents === FALSE) throw new SteamAPIUnavailableException($contents);
-            $json = json_decode($contents);
-            $profiles = $json->response->players;
-            foreach ($profiles as $profile) {
-                // TODO: Optimize (right now there are 2 DB queries per profile)
-                $db->updateUserInfo($profile);
-                array_push($result, $db->getUserInfo($profile->steamid));
-            }
-        }
-        return $result;
-    }
-
-
-// TODO: Move this method to another model
+    // TODO: Move this method to another model
     private function updateAppsInfo($apps)
     {
         $sql = 'INSERT INTO apps (id, name, logo_url)
@@ -373,7 +370,7 @@ class User
 
     private $avatar_url;
     private $tag;
-    private $time_created;
+    private $creation_time;
     private $real_name;
 
     // Current status
@@ -405,7 +402,7 @@ class User
         $this->nickname = $profile->nickname;
         $this->avatar_url = $profile->avatar_url;
         $this->tag = $profile->tag;
-        $this->time_created = $profile->time_created;
+        $this->creation_time = $profile->creation_time;
         $this->real_name = $profile->real_name;
         $this->status = $profile->status;
         $this->last_login_time = $profile->last_login_time;
@@ -478,7 +475,7 @@ class User
 
     public function getCurrentGameServerIp() { return $this->current_game_server_ip; }
 
-    public function getIsLimitedAccount() { return $this->is_limited_account; }
+    public function isLimitedAccount() { return $this->is_limited_account; }
     public function isVacBanned() { return $this->is_vac_banned; }
     public function getTradeBanState() { return $this->trade_ban_state; }
 
@@ -534,7 +531,7 @@ class User
     }
 
     public function getCreationTime() {
-        return date(DATE_RFC850, $this->time_created);
+        return date(DATE_RFC850, $this->creation_time);
     }
 
 }
