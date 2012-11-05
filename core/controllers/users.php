@@ -8,22 +8,7 @@ class Users extends Controller {
     }
 
     function index() {
-        $query = trim($_GET['q']);
-        if (empty($query)) {
-            $this->view->render("users/index");
-        } else {
-            $result = $this->model->search($query);
-            if (count($result) < 1) { // Nothing has been found
-                $this->view->render("users/noresults");
-            } elseif (count($result) == 1) { // One result
-                // TODO: Fix redirecting
-                //header("Location: http://steaminfo.net/users/profile/" + $this->view->result->steamid); // Redirect browser
-                //exit();
-                self::profile(array($result[0]->steamid));
-            } else { // More than one result
-                $this->view->render("users/search");
-            }
-        }
+        $this->view->render("users/index");
     }
 
     function profile($params) {
@@ -52,5 +37,15 @@ class Users extends Controller {
         $this->view->groups = $this->model->getGroups($params[0]);
         $this->view->render("users/includes/groups", TRUE);
     }
+
+    function search() {
+        $result = $this->model->search(trim($_GET['q']));
+        header('Content-type: application/json');
+        echo json_encode($result);
+    }
+
+    function searchSuggest() {}
+
+
 
 }

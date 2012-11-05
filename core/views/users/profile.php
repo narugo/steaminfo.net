@@ -1,8 +1,6 @@
 <?php
-include "includes/search.php";
-
 $profile = $this->profile;
-$loading_img = '<img class="loading" src="/img/loading.gif" />';
+$loading_img = '<img class="loading-animation" src="/img/loading.gif" />';
 ?>
 
 <h2 id="name">

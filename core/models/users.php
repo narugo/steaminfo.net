@@ -19,22 +19,30 @@ class Users_Model extends Model {
         $query_type = $this->steam->tools->users->getTypeOfQuery($query);
         switch ($query_type) {
             case TYPE_COMMUNITY_ID:
-                $result = $this->steam->webapi->GetPlayerSummaries(array($query));
+                $result = self::getProfileSummary($query);
                 break;
             case TYPE_STEAM_ID:
-                // TODO: Search in database in case vanity url or something else other than community/steam id has been requested
                 $community_id = $this->steam->tools->users->convertToCommunityID($query);
-                $result = $this->steam->webapi->GetPlayerSummaries(array($community_id));
+                $result = self::getProfileSummary($community_id);
                 break;
             case TYPE_VANITY:
+                // TODO: Search in DB for other users (maybe nickname has been requested, not Vanity URL)
                 $community_id = $this->steam->webapi->ResolveVanityURL($query);
-                $result = $this->steam->webapi->GetPlayerSummaries(array($community_id));
+                $result = self::getProfileSummary($community_id);
                 break;
             default:
-                // Error (unknown type of query)
+                // TODO: Search in DB for users with that (query) nickname
                 $result = array();
         }
         return $result;
+    }
+
+    public function getProfileSummary($community_id, $no_update = FALSE) {
+        if ($no_update === FALSE) self::updateUserInfo($community_id);
+        $statement = $this->db->prepare('SELECT community_id, nickname, avatar_url, tag FROM users WHERE community_id=:id');
+        $statement->execute(array(':id' => $community_id));
+        // TODO: Check if found
+        return $statement->fetchObject();
     }
 
     public function getProfile($community_id, $no_update = FALSE) {
@@ -43,28 +51,21 @@ class Users_Model extends Model {
         }
         $update_status = NULL;
         if ($no_update === FALSE) {
-            try {
-                $results = $this->steam->webapi->GetPlayerSummaries(array($community_id));
-                $profile = $results[0];
-                self::updateUserInfo($profile);
+            self::updateUserInfo($community_id);
 
-                // Trying to get more info from Community API
-                $additional_info = self::getAdditionalProfileInfo($community_id);
-                if ($additional_info === FALSE) {
-                    $update_status = "incomplete";
-                } else {
-                    self::updateAdditionalProfileInfo($additional_info);
-                    $update_status = "success";
-                }
-            } catch (SteamAPIUnavailableException $e) {
-                $update_status = "fail";
+            // Trying to get more info from Community API
+            $additional_info = self::getAdditionalProfileInfo($community_id);
+            if ($additional_info === FALSE) {
+                $update_status = "incomplete";
+            } else {
+                self::updateAdditionalProfileInfo($additional_info);
+                $update_status = "success";
             }
         } else {
             $update_status = "no_update";
         }
         $statement = $this->db->prepare('SELECT * FROM users WHERE community_id=:id');
         $statement->execute(array(':id' => $community_id));
-        // TODO: Check if found
         return array(
             'profile' => new User($statement->fetchObject()),
             'update_status' => $update_status);
@@ -162,7 +163,10 @@ class Users_Model extends Model {
      * Database info updaters
      */
 
-    private function updateUserInfo($profile) {
+    private function updateUserInfo($community_id) {
+        $result = $this->steam->webapi->GetPlayerSummaries(array($community_id));
+        $profile = $result[0];
+
         // Adding primary group into 'groups' table
         if (isset($profile->primaryclanid)) {
             $sql = 'INSERT IGNORE INTO groups (id) VALUES (:group_id)';
