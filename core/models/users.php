@@ -38,7 +38,10 @@ class Users_Model extends Model {
     }
 
     public function getProfileSummary($community_id, $no_update = FALSE) {
-        if ($no_update === FALSE) self::updateUserInfo($community_id);
+        if ($no_update === FALSE) {
+            $profile = $this->steam->webapi->GetPlayerSummaries($community_id);
+            self::updateUserInfo($profile);
+        }
         $statement = $this->db->prepare('SELECT community_id, nickname, avatar_url, tag FROM users WHERE community_id=:id');
         $statement->execute(array(':id' => $community_id));
         // TODO: Check if found
@@ -51,7 +54,8 @@ class Users_Model extends Model {
         }
         $update_status = NULL;
         if ($no_update === FALSE) {
-            self::updateUserInfo($community_id);
+            $profile = $this->steam->webapi->GetPlayerSummaries($community_id);
+            self::updateUserInfo($profile);
 
             // Trying to get more info from Community API
             $additional_info = self::getAdditionalProfileInfo($community_id);
@@ -163,10 +167,7 @@ class Users_Model extends Model {
      * Database info updaters
      */
 
-    private function updateUserInfo($community_id) {
-        $result = $this->steam->webapi->GetPlayerSummaries(array($community_id));
-        $profile = $result[0];
-
+    private function updateUserInfo($profile) {
         // Adding primary group into 'groups' table
         if (isset($profile->primaryclanid)) {
             $sql = 'INSERT IGNORE INTO groups (id) VALUES (:group_id)';

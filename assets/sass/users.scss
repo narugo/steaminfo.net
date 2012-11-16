@@ -1,0 +1,133 @@
+@import "base";
+
+#search {
+  float: left;
+  margin: 18px 0 0 20px;
+  #query {
+    margin-bottom: 0;
+    width: 256px;
+  }
+  .btn {
+    width: 82px;
+  }
+}
+
+#avatar {
+  margin-right: 10px;
+  border: 1px solid #121212;
+  border-bottom: none;
+  box-shadow: rgba(255, 255, 255, 0.07) 1px 0 0;
+}
+
+#name {
+  width: 420px;
+  float: left;
+  margin: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  position: relative;
+  top: 5px;
+  line-height: 0;
+  img {
+    max-width: none;
+  }
+}
+
+.loading-animation {
+  display: block;
+  margin: 0 auto;
+  width: 16px;
+  margin-top: 30px;
+}
+
+#info-tab {
+  #main {
+    float: left;
+    width: 534px;
+    #real-name {
+      float: left;
+      margin-right: 6px;
+      margin-top: 0px;
+      line-height: 20px;
+    }
+  }
+  #sidebar {
+    float: right;
+    max-width: 164px;
+    #badges {
+      max-width: 164px;
+      border: 1px solid #121212;
+      background-color: $darker;
+      box-shadow: rgba(255, 255, 255, 0.07) 0 1px 0;
+    }
+  }
+}
+
+#friends-tab {
+  #friends-table {
+    .id {
+      text-align: right;
+    }
+    .avatar {
+      width: 34px;
+      img {
+        width: 32px;
+        height: 32px;
+        border: 1px solid #121212;
+        box-shadow: rgba(255, 255, 255, 0.07) 1px 0 0;
+      }
+    }
+  }
+}
+
+#apps-tab {
+  #apps-table {
+    .id {
+      width: 18px;
+      text-align: right;
+    }
+    .logo {
+      width: 85px;
+      img {
+        width: 85px;
+        height: 32px;
+        border: 1px solid #121212;
+        box-shadow: rgba(255, 255, 255, 0.07) 1px 0 0;
+      }
+    }
+    .used-2w {
+      width: 142px;
+      text-align: center;
+    }
+    .used-total {
+      width: 78px;
+      text-align: center;
+    }
+  }
+}
+
+#groups-tab {
+  #groups-table {
+    .id {
+      width: 18px;
+      text-align: right;
+    }
+    .avatar {
+      width: 34px;
+      img {
+        width: 32px;
+        height: 32px;
+        border: 1px solid #121212;
+        box-shadow: rgba(255, 255, 255, 0.07) 1px 0 0;
+      }
+    }
+    .name {
+      text-align: left;
+    }
+  }
+}
+
+.nav-tabs > li, .nav-pills > li {
+  float: right;
+}

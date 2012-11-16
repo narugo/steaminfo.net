@@ -25,11 +25,11 @@
 
     <div id="loading" style="display: none">
         Searching. Please wait.
-        <br /><img class="loading-animation" src="/img/loading.gif" />
+
     </div>
 
     <div id="result" style="display: none">
-        <span id="error"><iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/m04cuu-bfQw?rel=0" frameborder="0" allowfullscreen></iframe></span>
+        <div id="error"><iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/m04cuu-bfQw?rel=0" frameborder="0" allowfullscreen></iframe></div>
         <div id="profile-summary" style="display: none"></div>
     </div>
 
@@ -77,4 +77,25 @@
         });
         return false;
     });
+
+    // Loading animation
+    var opts = {
+        lines: 11, // The number of lines to draw
+        length: 0, // The length of each line
+        width: 4, // The line thickness
+        radius: 10, // The radius of the inner circle
+        corners: 1, // Corner roundness (0..1)
+        rotate: 0, // The rotation offset
+        color: '#fff', // #rgb or #rrggbb
+        speed: 1.8, // Rounds per second
+        trail: 60, // Afterglow percentage
+        shadow: false, // Whether to render a shadow
+        hwaccel: false, // Whether to use hardware acceleration
+        className: 'spinner', // The CSS class to assign to the spinner
+        zIndex: 2e9, // The z-index (defaults to 2000000000)
+        top: 50, // Top position relative to parent in px
+        left: 350 // Left position relative to parent in px
+    };
+    var target = document.getElementById('loading');
+    var spinner = new Spinner(opts).spin(target);
 </script>

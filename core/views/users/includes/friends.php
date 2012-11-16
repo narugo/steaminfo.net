@@ -24,7 +24,7 @@
         <td class="id"><?php echo $index; ?></td>
         <td class="avatar">
             <img src="<?php
-                if (is_null($friend->avatar_url)) echo "/img/no_avatar.png";
+                if (is_null($friend->avatar_url)) echo "/assets/img/no_avatar.png";
                 else echo $friend->avatar_url;
                 ?>" />
         </td>

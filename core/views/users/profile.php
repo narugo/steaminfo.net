@@ -1,10 +1,11 @@
 <?php
 $profile = $this->profile;
-$loading_img = '<img class="loading-animation" src="/img/loading.gif" />';
+$loading_img = '<img class="loading-animation" src="/assets/img/loading.gif" />';
 ?>
 
 <h2 id="name">
-    <img id="avatar" src="<?php echo $profile->getAvatarUrl(); ?>" /><?php echo $profile->getNickname(); ?></a>
+    <img id="avatar" src="<?php echo $profile->getAvatarUrl(); ?>" />
+    <?php echo $profile->getNickname(); ?>
 </h2>
 
 <ul class="nav nav-tabs" id="navigation">
@@ -55,7 +56,7 @@ $loading_img = '<img class="loading-animation" src="/img/loading.gif" />';
             // Location
             $location = $profile->getLocation();
             if (! empty($location)) {
-                echo '<p>Location: <img src="/img/flags/' . $profile->getLocationCountryCode() . '.png" /> ' . $location . '</p>';
+                echo '<p>Location: <img src="/assets/img/flags/' . $profile->getLocationCountryCode() . '.png" /> ' . $location . '</p>';
             }
 
             $primary_group_id = $profile->getPrimaryGroupId();

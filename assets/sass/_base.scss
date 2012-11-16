@@ -5,4 +5,7 @@ $darker: #202020;
 $text-main: rgba(255, 255, 255, 0.9);
 $link-color: #84BCDE;
 
+$footer-height: 44px;
+
 @import "compass/utilities";
+@import "compass/typography";
