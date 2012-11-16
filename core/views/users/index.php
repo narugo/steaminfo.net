@@ -65,6 +65,18 @@
                     $('#badge').append(data['tag']).show();
                 }
                 jQuery('<br>').appendTo('#profile-summary');
+                switch (data['status']) {
+                    case '1': $('#profile-summary').append('Online'); break;
+                    case '2': $('#profile-summary').append('Busy'); break;
+                    case '3': $('#profile-summary').append('Away'); break;
+                    case '4': $('#profile-summary').append('Snooze'); break;
+                    case '5': $('#profile-summary').append('Looking to trade'); break;
+                    case '6': $('#profile-summary').append('Looking to play'); break;
+                    case '0':
+                    default:
+                        $('#profile-summary').append('Offline'); break;
+                }
+                jQuery('<br>').appendTo('#profile-summary');
                 jQuery('<a/>', {
                     href: '/users/profile/' + data['community_id'],
                     id: 'more-link'
@@ -91,11 +103,11 @@
         trail: 60, // Afterglow percentage
         shadow: false, // Whether to render a shadow
         hwaccel: false, // Whether to use hardware acceleration
-        className: 'spinner', // The CSS class to assign to the spinner
+        className: 'loading-animation', // The CSS class to assign to the spinner
         zIndex: 2e9, // The z-index (defaults to 2000000000)
-        top: 50, // Top position relative to parent in px
-        left: 350 // Left position relative to parent in px
+        top: 'auto', // Top position relative to parent in px
+        left: 'auto' // Left position relative to parent in px
     };
-    var target = document.getElementById('loading');
-    var spinner = new Spinner(opts).spin(target);
+    var spinner = new Spinner(opts).spin();
+    document.getElementById('loading').appendChild(spinner.el);
 </script>

@@ -1,6 +1,5 @@
 <?php
 $profile = $this->profile;
-$loading_img = '<img class="loading-animation" src="/assets/img/loading.gif" />';
 ?>
 
 <h2 id="name">
@@ -87,19 +86,20 @@ $loading_img = '<img class="loading-animation" src="/assets/img/loading.gif" />'
             switch ($profile->getTradeBanState())
             {
                 case 'None':
-                    echo '<span class="label label-success">';
+                    echo '<span class="label label-success">None</span>';
                     break;
                 case 'Banned':
-                    echo '<span class="label label-important">';
+                    echo '<span class="label label-important">Banned</span>';
                     break;
                 case 'Probation':
-                    echo '<span class="label label-warning">';
+                    echo '<span class="label label-warning">Probation</span>';
                     break;
                 default:
-                    echo '<span class="label">';
+                    echo '<span class="label">Unknown';
+                    if (! is_null($profile->getTradeBanState()))
+                        echo ' ('.$profile->getTradeBanState().')';
+                    echo '</span>';
             }
-            echo $profile->getTradeBanState();
-            echo '</span>';
             echo '</p>';
 
             ?>
@@ -119,15 +119,12 @@ $loading_img = '<img class="loading-animation" src="/assets/img/loading.gif" />'
     </div>
     <div class="tab-pane" id="apps-tab">
         Getting list of apps. Please wait.
-        <?php echo $loading_img; ?>
     </div>
     <div class="tab-pane" id="friends-tab">
         Getting list of friends and updating their info. Please wait.
-        <?php echo $loading_img; ?>
     </div>
     <div class="tab-pane" id="groups-tab">
         Getting list of groups. Please wait.
-        <?php echo $loading_img; ?>
     </div>
 </div>
 
@@ -157,6 +154,29 @@ $loading_img = '<img class="loading-animation" src="/assets/img/loading.gif" />'
                 break;
         }
     });
+
+    // Loading animation
+    var opts = {
+        lines: 11, // The number of lines to draw
+        length: 0, // The length of each line
+        width: 4, // The line thickness
+        radius: 10, // The radius of the inner circle
+        corners: 1, // Corner roundness (0..1)
+        rotate: 0, // The rotation offset
+        color: '#fff', // #rgb or #rrggbb
+        speed: 1.8, // Rounds per second
+        trail: 60, // Afterglow percentage
+        shadow: false, // Whether to render a shadow
+        hwaccel: false, // Whether to use hardware acceleration
+        className: 'loading-animation', // The CSS class to assign to the spinner
+        zIndex: 2e9, // The z-index (defaults to 2000000000)
+        top: 50, // Top position relative to parent in px
+        left: 350 // Left position relative to parent in px
+    };
+    var spinner = new Spinner(opts).spin();
+    document.getElementById('apps-tab').appendChild(spinner.el);
+    document.getElementById('friends-tab').appendChild(spinner.el);
+    document.getElementById('groups-tab').appendChild(spinner.el);
 
     // Activating last (actually first) tab
     $(function() {

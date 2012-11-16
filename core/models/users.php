@@ -39,10 +39,30 @@ class Users_Model extends Model {
 
     public function getProfileSummary($community_id, $no_update = FALSE) {
         if ($no_update === FALSE) {
-            $profile = $this->steam->webapi->GetPlayerSummaries($community_id);
+            $response = $this->steam->webapi->GetPlayerSummaries($community_id);
+            $profile = $response[0];
             self::updateUserInfo($profile);
         }
-        $statement = $this->db->prepare('SELECT community_id, nickname, avatar_url, tag FROM users WHERE community_id=:id');
+        $statement = $this->db->prepare('
+                SELECT community_id,
+                    nickname,
+                    avatar_url,
+                    tag,
+                    creation_time,
+                    real_name,
+                    location_country_code,
+                    location_state_code,
+                    location_city_id,
+                    last_login_time,
+                    status,
+                    current_game_server_ip,
+                    current_game_name,
+                    current_game_id,
+                    primary_group_id,
+                    last_updated
+                FROM users
+                WHERE community_id=:id
+             ');
         $statement->execute(array(':id' => $community_id));
         // TODO: Check if found
         return $statement->fetchObject();
@@ -54,7 +74,8 @@ class Users_Model extends Model {
         }
         $update_status = NULL;
         if ($no_update === FALSE) {
-            $profile = $this->steam->webapi->GetPlayerSummaries($community_id);
+            $response = $this->steam->webapi->GetPlayerSummaries($community_id);
+            $profile = $response[0];
             self::updateUserInfo($profile);
 
             // Trying to get more info from Community API
@@ -275,7 +296,6 @@ class Users_Model extends Model {
             ":is_limited_account" => $profile->isLimitedAccount,
             ":is_vac_banned" => $profile->vacBanned,
             ":trade_ban_state" => $profile->tradeBanState));
-
         if(isset($profile->groups))
         {
             // Removing old records
@@ -445,7 +465,7 @@ class User
             case '3': return 'Away';
             case '4': return 'Snooze';
             case '5': return 'Looking to trade';
-            case '5': return 'Looking to play';
+            case '6': return 'Looking to play';
             case '0':
             default:
                 return 'Offline';
