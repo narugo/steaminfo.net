@@ -152,13 +152,6 @@ hr {
   box-shadow: rgba(255, 255, 255, 0.07) 0 1px 0;
 }
 
-#wrapper {
-  min-height: 100%;
-}
-
-
-
-
 .nav-tabs {
   border-bottom: 1px solid #121212;
   box-shadow: rgba(255, 255, 255, 0.07) 0 1px 0;
@@ -180,6 +173,16 @@ hr {
   background-color: #121212;
   border: 1px solid #121212;
   box-shadow: rgba(255, 255, 255, 0.07) 1px 0 0;
+}
+
+.alert {
+  color: $text-main;
+  border: 1px solid #121212;
+  box-shadow: rgba(255, 255, 255, 0.1) 0 1px 0, rgba(0, 0, 0, 0.8) 0 1px 7px 0px inset;
+  text-align: center;
+  text-shadow: none;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .alert-danger, .alert-error {

@@ -36,7 +36,7 @@
                 ?>
             </a>
             <?php if (! is_null($friend->tag)) : ?>
-            <span class="badge badge-success"><?php echo $friend->tag; ?></span>
+            <span class="label label-important"><?php echo $friend->tag; ?></span>
             <?php endif; ?>
         </td>
         <td class="since"><?php echo date(DATE_RFC850, $friend->since); ?></td>

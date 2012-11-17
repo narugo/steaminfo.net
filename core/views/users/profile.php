@@ -3,7 +3,7 @@ $profile = $this->profile;
 ?>
 
 <h2 id="name">
-    <img id="avatar" src="<?php echo $profile->getAvatarUrl(); ?>" />
+    <img class="avatar" src="<?php echo $profile->getAvatarUrl(); ?>" />
     <?php echo $profile->getNickname(); ?>
 </h2>
 
@@ -24,7 +24,7 @@ $profile = $this->profile;
 
             $tag = $profile->getTag();
             if (! empty($tag))
-                echo '<p><span class="badge badge-info">' . $tag . '</span></p>';
+                echo '<p><span class="label label-important">' . $tag . '</span></p>';
 
             /**
              * Status

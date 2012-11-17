@@ -5,6 +5,7 @@
         <input type="submit" class="btn" value="Go" />
     </form>
 </div>
+
 <div id="content">
 
     <div id="help">
@@ -53,14 +54,14 @@
                 // TODO: Check what data has been received (array of search results or profile summary)
                 $('#profile-summary').empty();
                 jQuery('<img/>', {
-                    id: 'avatar',
+                    class: 'avatar',
                     src: data['avatar_url']
                 }).appendTo('#profile-summary');
                 $('#profile-summary').append(data['nickname'] + ' ').show();
                 if (data['tag'] != null) {
                     jQuery('<span/>', {
                         id: 'badge',
-                        class: 'badge badge-info'
+                        class: 'label label-important'
                     }).appendTo('#profile-summary');
                     $('#badge').append(data['tag']).show();
                 }
@@ -75,6 +76,9 @@
                     case '0':
                     default:
                         $('#profile-summary').append('Offline'); break;
+                }
+                if (data['current_game_id'] != null) {
+                    $('#profile-summary').append(', in ' + data['current_game_name']).show();
                 }
                 jQuery('<br>').appendTo('#profile-summary');
                 jQuery('<a/>', {
