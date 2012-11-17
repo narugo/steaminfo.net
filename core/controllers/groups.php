@@ -8,18 +8,20 @@ class Groups extends Controller {
     }
 
     function index() {
-        $query = trim($_GET['q']);
-        if (empty($query)) {
-            $this->view->render("groups/index");
-        } else {
-            $this->view->info = $this->model->getGroupInfo($query);
-            $this->view->render("groups/info");
-        }
+        $this->view->render("groups/index");
     }
 
-    function info($params) {
-        // TODO: Implement
-        $this->view->render("groups/index");
+    function search() {
+        $result = $this->model->search(trim($_GET['q']));
+        header('Content-type: application/json');
+        echo json_encode($result);
+    }
+
+    function searchSuggest() {}
+
+    function valve() {
+        echo "Updating tags of Valve employees...<br />";
+        return $this->model->updateValveEmployeeTags();
     }
 
 }

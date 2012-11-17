@@ -26,7 +26,6 @@
 
     <div id="loading" style="display: none">
         Searching. Please wait.
-
     </div>
 
     <div id="result" style="display: none">
@@ -51,13 +50,13 @@
             if (data == false) {
                 $('#error').show();
             } else {
-                // TODO: Check what data has been received (array of search results or profile summary)
+                // TODO: Check what kind of data has been received (array of search results or profile summary)
                 $('#profile-summary').empty();
                 jQuery('<img/>', {
                     class: 'avatar',
                     src: data['avatar_url']
                 }).appendTo('#profile-summary');
-                $('#profile-summary').append(data['nickname'] + ' ').show();
+                $('#profile-summary').append('<strong>' + data['nickname'] + '</strong> ').show();
                 if (data['tag'] != null) {
                     jQuery('<span/>', {
                         id: 'badge',

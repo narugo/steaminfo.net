@@ -180,8 +180,13 @@ class Users_Model extends Model {
             throw new WrongIDException();
         }
         // TODO: Modify function so it can get multiple IDs
-        $statement = $this->db->prepare('UPDATE users SET tag= :tag WHERE community_id= :id');
-        return $statement->execute(array(':tag' => $tag, ':id' => $community_id));
+        $sql = "INSERT INTO users (community_id, tag)
+            VALUES (:id, :tag)
+            ON DUPLICATE KEY UPDATE
+                community_id = :id,
+                tag = :tag";
+        $statement = $this->db->prepare($sql);
+        return $statement->execute(array(':id' => $community_id, ':tag' => $tag));
     }
 
     /**

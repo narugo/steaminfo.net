@@ -46,6 +46,4 @@ class Users extends Controller {
 
     function searchSuggest() {}
 
-
-
 }
