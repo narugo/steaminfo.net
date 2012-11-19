@@ -1,28 +1,39 @@
-<div id="submenu">
-    <h1 id="title">Groups</h1>
-    <form id="search">
-        <input type="text" id="query" autocomplete="off" autofocus="true" placeholder="Group ID or Vanity URL" />
-        <input type="submit" class="btn" value="Go" />
-    </form>
-</div>
+<div class="container">
 
-<div id="content">
+    <ul class="breadcrumb">
+        <li><a href="/users/">Users</a> <span class="divider">/</span></li>
+        <li><a href="/groups/">Groups</a> <span class="divider">/</span></li>
+        <li><a href="/stats/">Stats</a> <span class="divider">/</span></li>
+        <li><a href="/about/">About</a></li>
+    </ul>
 
-    <div id="help">
-        <h2>Examples</h2>
-        <p>
-            <b>Group ID:</b> 103582791429521412
-            <br /><b>Vanity URL:</b> Valve
-        </p>
+    <div id="submenu">
+        <h1 id="title">Groups</h1>
+        <form id="search">
+            <input type="text" id="query" autocomplete="off" autofocus="true" placeholder="Group ID or Vanity URL" />
+            <input type="submit" class="btn" value="Go" />
+        </form>
     </div>
 
-    <div id="loading" style="display: none">
-        Searching. Please wait.
-    </div>
+    <div id="content">
 
-    <div id="result" style="display: none">
-        <div id="error"><iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/m04cuu-bfQw?rel=0" frameborder="0" allowfullscreen></iframe></div>
-        <div id="info" style="display: none"></div>
+        <div id="help">
+            <h2>Examples</h2>
+            <p>
+                <b>Group ID:</b> 103582791429521412
+                <br /><b>Vanity URL:</b> Valve
+            </p>
+        </div>
+
+        <div id="loading" style="display: none">
+            Searching. Please wait.
+        </div>
+
+        <div id="result" style="display: none">
+            <div id="error"><iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/m04cuu-bfQw?rel=0" frameborder="0" allowfullscreen></iframe></div>
+            <div id="info" style="display: none"></div>
+        </div>
+
     </div>
 
 </div>
@@ -71,7 +82,7 @@
         radius: 10, // The radius of the inner circle
         corners: 1, // Corner roundness (0..1)
         rotate: 0, // The rotation offset
-        color: '#fff', // #rgb or #rrggbb
+        color: '#000', // #rgb or #rrggbb
         speed: 1.8, // Rounds per second
         trail: 60, // Afterglow percentage
         shadow: false, // Whether to render a shadow

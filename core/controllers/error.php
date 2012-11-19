@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Controller used to display HTTP errors
+ */
 class Error extends Controller {
 
     function __construct($http_status_code, $message = NULL) {

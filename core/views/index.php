@@ -1,16 +1,21 @@
-<p>
-    This website is an interface to different Steam APIs. <b>Most features are
-    not implemented yet.</b> Source code is hosted <a href="https://github.com/Tsukanov/steam-info">on GitHub</a>.
-</p>
+<div class="container">
 
-<p align="center">
-    <button class="btn btn-large btn-primary" type="button" onclick="window.location.href='/users'">Try searching users</button>
-</p>
+    <ul class="breadcrumb">
+        <li><a href="/users/">Users</a> <span class="divider">/</span></li>
+        <li><a href="/groups/">Groups</a> <span class="divider">/</span></li>
+        <li><a href="/stats/">Stats</a> <span class="divider">/</span></li>
+        <li><a href="/about/">About</a></li>
+    </ul>
 
-<p><em>
-    It's <a href="http://tsukanov.me">my</a> first big PHP project and I need
-    some time to make sure everything is working perfectly. Feel free to
-    <a href="mailto:roman@tsukanov.me">email me</a> or <a href="http://twitter.com/roman">follow me</a>
-    on Twitter. I'd be happy to take your advices and suggestions.
-    <br />Thanks for your patience.
-</em></p>
+    <div class="alert">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <strong>Warning!</strong> This website is in development. Most features aren't working properly or not implemented yet.
+    </div>
+
+    <h1>Steam Info</h1>
+
+    <form id="search">
+        <input type="text" id="query" autocomplete="off" autofocus="true" placeholder="Search" />
+    </form>
+
+</div>

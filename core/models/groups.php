@@ -92,6 +92,27 @@ class Groups_Model extends Model {
             ":name" => $group->groupDetails->groupName,
             ":summary" => $group->groupDetails->summary,
             ":url" => $group->groupDetails->groupURL));
+
+        // TODO: Update group members in database
+        /*
+                // Removing old records
+                $sql = 'DELETE FROM group_members WHERE user_community_id= :user_community_id;';
+                $statement = $this->db->prepare($sql);
+                $statement->execute(array(":user_community_id" => $profile->steamID64));
+                $statement->closeCursor();
+
+                $sql = 'INSERT IGNORE INTO groups (id) VALUES (:group_id);
+                            INSERT INTO group_members (group_id, user_community_id)
+                            VALUES (:group_id, :user_community_id)
+                            ON DUPLICATE KEY UPDATE group_id = :group_id, user_community_id = :user_community_id;';
+                $statement = $this->db->prepare($sql);
+                foreach ($profile->groups->group as $group)
+                {
+                    $statement->execute(array(
+                        ":group_id" => $group->groupID64,
+                        ":user_community_id" => $profile->steamID64));
+                    $statement->closeCursor();
+                }*/
     }
 
     public function getMembers($group_id) {}

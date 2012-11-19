@@ -1,9 +1,0 @@
-<?php
-
-class Apps_Model extends Model {
-
-    function __construct() {
-        parent::__construct();
-    }
-
-}
