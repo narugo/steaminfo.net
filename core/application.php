@@ -18,9 +18,9 @@ class Application {
     function __construct() {
 
         // Getting requested path
-        $path = $_GET['path'];
+        $path = $_SERVER['REQUEST_URI'];
 
-        if (! isset($path)) {
+        if (! isset($path[0])) {
             // Showing index page
             require 'core/controllers/index.php';
             $controller = new Index();
@@ -30,6 +30,7 @@ class Application {
             $path = rtrim($path, '/');
             $path = filter_var($path, FILTER_SANITIZE_URL);
             $path = explode('/', $path);
+            $path = array_splice($path, 1);
 
             // Trying to load controller
             $controller_path = 'core/controllers/'.$path[0].'.php';
