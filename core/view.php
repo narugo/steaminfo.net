@@ -1,21 +1,20 @@
 <?php
 
+define('PATH_TO_VIEWS', PATH_TO_CORE . 'views/');
+
 class View
 {
-    /**
-     * Prints contents of specific view
-     * @param $name Name of view to print
-     * @return bool Returns "TRUE" if view has been found, "FALSE" if not
-     */
-    public function render($name, $page_title, $js = array(), $css = array()) {
-        $view_path = "core/views/$name.php";
+
+    public function render($name, $page_title, $js = array(), $css = array())
+    {
+        $view_path = PATH_TO_VIEWS . $name . '.php';
         if (file_exists($view_path)) {
-            require "core/views/header.php";
+            require PATH_TO_VIEWS . 'header.php';
             require $view_path;
-            require "core/views/footer.php";
+            require PATH_TO_VIEWS . 'footer.php';
             return true;
         } else {
-            require 'core/controllers/error.php';
+            require PATH_TO_CONTROLLERS . 'error.php';
             $controller = new Error(404, "View not found!");
             $controller->index();
             return false;

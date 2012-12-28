@@ -6,11 +6,11 @@
     <?php
     // Loading styles
     foreach ($css as $current_css) {
-        echo '<link href="/assets/css/' . $current_css . '.css" rel="stylesheet" type="text/css" />';
+        echo '<link href="' . $current_css . '" rel="stylesheet" type="text/css" />';
     }
     // Loading scripts
     foreach ($js as $current_js) {
-        echo '<script src="/assets/js/' . $current_js . '.js" type="text/javascript"></script>';
+        echo '<script src="' . $current_js . '" type="text/javascript"></script>';
     }
     ?>
 </head>

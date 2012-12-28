@@ -37,6 +37,18 @@ class Users_Model extends Model {
         return $result;
     }
 
+    public function getSearchSuggestions($input) {
+        // TODO: Find a way to get better suggestions
+        $statement = $this->db->prepare('
+                SELECT community_id, nickname, avatar_url, tag
+                FROM users
+                WHERE SOUNDEX(nickname) = SOUNDEX(:input)
+                LIMIT 0, 5
+            ');
+        $statement->execute(array(":input" => $this->db->quote($input)));
+        return $statement->fetchAll();
+    }
+
     public function getProfileSummary($community_id, $no_update = FALSE) {
         if ($no_update === FALSE) {
             $response = $this->steam->webapi->GetPlayerSummaries($community_id);

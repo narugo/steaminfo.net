@@ -1,39 +1,48 @@
 <?php
-require 'core/controller.php';
-require 'core/view.php';
-require 'core/database.php';
-require 'core/model.php';
+
+define(PATH_TO_LIBS, PATH_TO_CORE . 'libs/');
 
 /**
- * Libraries
+ * Main modules
  */
-require 'core/libs/steam-locomotive/locomotive.php';
+require PATH_TO_CORE . 'controller.php';
+require PATH_TO_CORE . 'view.php';
+require PATH_TO_CORE . 'database.php';
+require PATH_TO_CORE . 'model.php';
+
+// Assets
+require PATH_TO_CORE . 'assets.php';
+
+// Libraries
+require PATH_TO_LIBS . 'libs.php';
 
 /**
  * Main application class
  * Parses requested path, calls controllers and methods, passes parameters
  */
-class Application {
+class Application
+{
 
-    function __construct() {
+    function __construct()
+    {
 
         // Getting requested path
         $path = $_SERVER['REQUEST_URI'];
 
-        if (! isset($path[0])) {
+        // Parsing url
+        $path = rtrim($path, '/');
+        $path = filter_var($path, FILTER_SANITIZE_URL);
+        $path = explode('/', $path);
+        $path = array_splice($path, 1);
+
+        if (!isset($path[0])) {
             // Showing index page
-            require 'core/controllers/index.php';
+            require PATH_TO_CONTROLLERS . 'index.php';
             $controller = new Index();
             $controller->index();
         } else {
-            // Parsing url
-            $path = rtrim($path, '/');
-            $path = filter_var($path, FILTER_SANITIZE_URL);
-            $path = explode('/', $path);
-            $path = array_splice($path, 1);
-
             // Trying to load controller
-            $controller_path = 'core/controllers/'.$path[0].'.php';
+            $controller_path = PATH_TO_CONTROLLERS . $path[0] . '.php';
             if (file_exists($controller_path)) {
                 require $controller_path;
                 $controller = new $path[0];
@@ -64,8 +73,9 @@ class Application {
         }
     }
 
-    function error() {
-        require 'controllers/error.php';
+    function error()
+    {
+        require PATH_TO_CONTROLLERS . 'error.php';
         $controller = new Error(404);
         $controller->index();
     }

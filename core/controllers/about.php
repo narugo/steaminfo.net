@@ -1,15 +1,18 @@
 <?php
 
-class About extends Controller {
+class About extends Controller
+{
 
-   function __construct() {
-       parent::__construct();
+    function __construct()
+    {
+        parent::__construct();
 
-       $this->required_js = array('bootstrap');
-       $this->required_css = array('bootstrap.min', 'screen');
-   }
+        $this->required_js = array(JS_BOOTSTRAP);
+        $this->required_css = array(CSS_BOOTSTRAP, CSS_MAIN);
+    }
 
-    public function index() {
+    public function index()
+    {
         $this->view->render("about", 'About - Steam Info', $this->required_js, $this->required_css);
     }
 
