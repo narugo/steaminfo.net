@@ -21,60 +21,44 @@
 </div>
 
 <script type="text/javascript">
-    var MIN_LENGTH_TO_SUGGEST = 4;
-
-    $('#search').bind('keypress', function () {
-       var query = $('#search').val();
-        if (query.length >= MIN_LENGTH_TO_SUGGEST) {
-            getSuggestions(query);
-        }
-    });
-
-    function getSuggestions(query) {
-        $.getJSON('/index/searchSuggest/?q=' + query, function (data) {
-            console.log(data);
-        });
-    }
-
-
-    $(function() {
-        function log( message ) {
-            $( "<div>" ).text( message ).prependTo( "#container" );
-            $( "#container" ).scrollTop( 0 );
+    $(function () {
+        function log(message) {
+            $("<div>").text(message).prependTo("#container");
+            $("#container").scrollTop(0);
         }
 
-        $( "#search" ).autocomplete({
-            source: function( request, response ) {
+        $("#search").autocomplete({
+            html: true,
+            source: function (request, response) {
                 $.ajax({
-                    url: "http://ws.geonames.org/searchJSON",
-                    dataType: "jsonp",
+                    url: "/index/searchSuggest/",
+                    dataType: "json",
                     data: {
-                        featureClass: "P",
-                        style: "full",
-                        maxRows: 12,
-                        name_startsWith: request.term
+                        query: request.term
                     },
-                    success: function( data ) {
-                        response( $.map( data.geonames, function( item ) {
+                    success: function (data) {
+                        console.log(data);
+                        response($.map(data, function (item) {
                             return {
-                                label: item.name + (item.adminName1 ? ", " + item.adminName1 : "") + ", " + item.countryName,
-                                value: item.name
+                                label: "<img src=\"" + item.avatar_url + "\" /> " + item.nickname
+                                    + " <span class=\"label label-info\">" + item.type + "</span>",
+                                value: item.community_id
                             }
                         }));
                     }
                 });
             },
-            minLength: 2,
-            select: function( event, ui ) {
-                log( ui.item ?
+            minLength: 3,
+            select: function (event, ui) {
+                log(ui.item ?
                     "Selected: " + ui.item.label :
                     "Nothing selected, input was " + this.value);
             },
-            open: function() {
-                $( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
+            open: function () {
+                $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
             },
-            close: function() {
-                $( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
+            close: function () {
+                $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
             }
         });
     });
