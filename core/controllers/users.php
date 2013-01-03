@@ -9,7 +9,7 @@ class Users extends Controller
         $this->loadModel("users");
 
         $this->required_js = array(JS_JQUERY, JS_BOOTSTRAP, JS_TABLESORTER, JS_SPIN);
-        $this->required_css = array(CSS_BOOTSTRAP, CSS_MAIN, CSS_USERS);
+        $this->required_css = array(CSS_BOOTSTRAP, CSS_FONT_AWESOME, CSS_MAIN, CSS_USERS);
     }
 
     function index()

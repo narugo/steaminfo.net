@@ -127,12 +127,15 @@ $profile = $this->profile;
             <a href="http://steamcommunity.com/profiles/<?php echo $profile->getCommunityId(); ?>">View profile on Steam Community website</a>
         </div>
         <div class="tab-pane" id="apps-tab">
+            <i class="icon-spinner icon-spin"></i>
             Getting list of apps. Please wait.
         </div>
         <div class="tab-pane" id="friends-tab">
+            <i class="icon-spinner icon-spin"></i>
             Getting list of friends and updating their info. Please wait.
         </div>
         <div class="tab-pane" id="groups-tab">
+            <i class="icon-spinner icon-spin"></i>
             Getting list of groups. Please wait.
         </div>
     </div>
@@ -165,29 +168,6 @@ $profile = $this->profile;
                 break;
         }
     });
-
-    // Loading animation
-    var opts = {
-        lines: 11, // The number of lines to draw
-        length: 0, // The length of each line
-        width: 4, // The line thickness
-        radius: 10, // The radius of the inner circle
-        corners: 1, // Corner roundness (0..1)
-        rotate: 0, // The rotation offset
-        color: '#fff', // #rgb or #rrggbb
-        speed: 1.8, // Rounds per second
-        trail: 60, // Afterglow percentage
-        shadow: false, // Whether to render a shadow
-        hwaccel: false, // Whether to use hardware acceleration
-        className: 'loading-animation', // The CSS class to assign to the spinner
-        zIndex: 2e9, // The z-index (defaults to 2000000000)
-        top: 50, // Top position relative to parent in px
-        left: 350 // Left position relative to parent in px
-    };
-    var spinner = new Spinner(opts).spin();
-    document.getElementById('apps-tab').appendChild(spinner.el);
-    document.getElementById('friends-tab').appendChild(spinner.el);
-    document.getElementById('groups-tab').appendChild(spinner.el);
 
     // Activating last (actually first) tab
     $(function() {

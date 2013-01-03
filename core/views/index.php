@@ -18,6 +18,8 @@
 
     <input type="text" id="search" autocomplete="off" autofocus="true" placeholder="Search"/>
 
+
+
 </div>
 
 <script type="text/javascript">
@@ -42,7 +44,7 @@
                             return {
                                 label: "<img src=\"" + item.avatar_url + "\" /> " + item.nickname
                                     + " <span class=\"label label-info\">" + item.type + "</span>",
-                                value: item.community_id
+                                value: item.nickname
                             }
                         }));
                     }
@@ -50,15 +52,10 @@
             },
             minLength: 3,
             select: function (event, ui) {
+                alert(this.value);
                 log(ui.item ?
                     "Selected: " + ui.item.label :
                     "Nothing selected, input was " + this.value);
-            },
-            open: function () {
-                $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
-            },
-            close: function () {
-                $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
             }
         });
     });

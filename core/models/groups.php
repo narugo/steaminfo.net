@@ -46,7 +46,7 @@ class Groups_Model extends Model {
                  name,
                  summary,
                  url
-                FROM groups
+                FROM group
                 WHERE id = :id
              ');
         $statement->execute(array(':id' => $group_id));
@@ -55,7 +55,7 @@ class Groups_Model extends Model {
     }
 
     public function updateGroupInfo($group) {
-        $sql = "INSERT INTO groups (
+        $sql = "INSERT INTO group (
                  id,
                  avatar_icon_url,
                  avatar_medium_url,

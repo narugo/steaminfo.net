@@ -25,7 +25,6 @@ class Application
 
     function __construct()
     {
-
         // Getting requested path
         $path = $_SERVER['REQUEST_URI'];
 

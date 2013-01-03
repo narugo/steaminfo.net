@@ -34,7 +34,7 @@
         </div>
 
         <div id="loading" style="display: none">
-            Searching. Please wait.
+            <i class="icon-spinner icon-spin"></i> Searching. Please wait.
         </div>
 
         <div id="result" style="display: none">
@@ -103,25 +103,4 @@
         });
         return false;
     });
-
-    // Loading animation
-    var opts = {
-        lines: 11, // The number of lines to draw
-        length: 0, // The length of each line
-        width: 4, // The line thickness
-        radius: 10, // The radius of the inner circle
-        corners: 1, // Corner roundness (0..1)
-        rotate: 0, // The rotation offset
-        color: '#000', // #rgb or #rrggbb
-        speed: 1.8, // Rounds per second
-        trail: 60, // Afterglow percentage
-        shadow: false, // Whether to render a shadow
-        hwaccel: false, // Whether to use hardware acceleration
-        className: 'loading-animation', // The CSS class to assign to the spinner
-        zIndex: 2e9, // The z-index (defaults to 2000000000)
-        top: 0, // Top position relative to parent in px
-        left: 0 // Left position relative to parent in px
-    };
-    var spinner = new Spinner(opts).spin();
-    document.getElementById('loading').appendChild(spinner.el);
 </script>
