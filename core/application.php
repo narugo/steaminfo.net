@@ -9,6 +9,7 @@ require PATH_TO_CORE . 'controller.php';
 require PATH_TO_CORE . 'view.php';
 require PATH_TO_CORE . 'database.php';
 require PATH_TO_CORE . 'model.php';
+require PATH_TO_CORE . 'logging.php';
 
 // Assets
 require PATH_TO_CORE . 'assets.php';

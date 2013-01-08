@@ -20,7 +20,12 @@ class Users extends Controller
     function profile($params)
     {
         // TODO: Check if info is loaded second time (that shouldn't happen)
-        $response = $this->model->getProfile($params[0]);
+        try {
+            $response = $this->model->getProfile($params[0]);
+        } catch (WrongIDException $e) {
+            echo "ERROR!";
+            die;
+        }
         $this->view->profile = $response['profile'];
         $this->view->update_status = $response['update_status'];
         $this->view->render("users/profile",
@@ -48,7 +53,11 @@ class Users extends Controller
     function groups($params)
     {
         $this->view->groups = $this->model->getGroups($params[0]);
+        if         (is_null($this->view->groups)) {
+
+        }         else {
         $this->view->render("users/includes/groups", 'Groups', $this->required_js, $this->required_css);
+        }
     }
 
     function search()

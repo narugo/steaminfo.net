@@ -9,8 +9,8 @@ define('PATH_TO_ASSETS', '//' . $_SERVER['HTTP_HOST'] . '/assets/');
 require PATH_TO_CORE . 'config.php';
 require PATH_TO_CORE . 'application.php';
 
-// Setting error reporting level
-error_reporting(E_ALL ^ E_NOTICE);
+ini_set('error_reporting', E_ALL ^ E_NOTICE);
+ini_set('display_errors', 1);
 
 // Starting main class
 $app = new Application();
