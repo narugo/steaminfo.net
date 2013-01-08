@@ -7,10 +7,10 @@ define('PATH_TO_CSS', PATH_TO_ASSETS . 'css/');
  * JS
  */
 define('JS_JQUERY', '//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js');
-define('JS_JQUERY_UI', '//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js');
-define('JS_JQUERY_UI_AUTOCOMPLETE_HTML', '//raw.github.com/scottgonzalez/jquery-ui-extensions/master/autocomplete/jquery.ui.autocomplete.html.js');
+define('JS_JQUERY_UI', '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js');
+define('JS_JQUERY_UI_AUTOCOMPLETE_HTML', PATH_TO_JS . 'jquery.ui.autocomplete.html.js');
 define('JS_BOOTSTRAP', '//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js');
-define('JS_TABLESORTER', PATH_TO_JS . 'jquery.tablesorter.min.js');
+define('JS_TABLESORTER', '//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.5.2/jquery.tablesorter.min.js');
 
 /**
  * CSS

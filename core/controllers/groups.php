@@ -7,7 +7,6 @@ class Groups extends Controller
     {
         parent::__construct();
         $this->loadModel("groups");
-
         $this->required_js = array(JS_JQUERY, JS_BOOTSTRAP);
         $this->required_css = array(CSS_BOOTSTRAP, CSS_FONT_AWESOME, CSS_MAIN);
     }

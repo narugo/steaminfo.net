@@ -15,6 +15,10 @@ function error($code, $message = '')
             header("HTTP/1.0 404 Not Found");
             $view->renderError('404', 'Not Found');
             break;
+        case 503:
+            header("HTTP/1.0 503 Service Unavailable");
+            $view->renderError('503', 'Service Unavailable');
+            break;
         case 500:
         default:
             header("HTTP/1.0 500 Internal Server Error");

@@ -7,7 +7,6 @@ class Users extends Controller
     {
         parent::__construct();
         $this->loadModel("users");
-
         $this->required_js = array(JS_JQUERY, JS_BOOTSTRAP, JS_TABLESORTER);
         $this->required_css = array(CSS_BOOTSTRAP, CSS_FONT_AWESOME, CSS_MAIN, CSS_USERS);
     }
