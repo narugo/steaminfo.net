@@ -2,6 +2,8 @@
 
 require_once PATH_TO_CORE . 'database.php';
 
+define('DEFAULT_LOG_FILE', '/home/roman/web/steaminfo.net/default.log');
+
 function write_log_to_db($message)
 {
     try {
@@ -23,8 +25,6 @@ function write_log_to_db($message)
     ));
 }
 
-define('LOG_FILE', '/home/roman/web/steaminfo.net/default.log');
-
 function write_log_to_file($message)
 {
     $time = $_SERVER['REQUEST_TIME'];
@@ -32,14 +32,14 @@ function write_log_to_file($message)
     $remote_addr = $_SERVER['REMOTE_ADDR'];
     $request_uri = $_SERVER['REQUEST_URI'];
 
-    if ($fd = @fopen(LOG_FILE, "a")) {
+    if ($fd = @fopen(DEFAULT_LOG_FILE, "a")) {
         $result = fputcsv($fd, array($date, $remote_addr, $request_uri, $message));
         fclose($fd);
         if ($result > 0)
             return array(status => true);
         else
-            return array(status => false, message => 'Unable to write to ' . LOG_FILE . '!');
+            return array(status => false, message => 'Unable to write to ' . DEFAULT_LOG_FILE . '!');
     } else {
-        return array(status => false, message => 'Unable to open log ' . LOG_FILE . '!');
+        return array(status => false, message => 'Unable to open log ' . DEFAULT_LOG_FILE . '!');
     }
 }

@@ -8,13 +8,13 @@ class Users extends Controller
         parent::__construct();
         $this->loadModel("users");
 
-        $this->required_js = array(JS_JQUERY, JS_BOOTSTRAP, JS_TABLESORTER, JS_SPIN);
+        $this->required_js = array(JS_JQUERY, JS_BOOTSTRAP, JS_TABLESORTER);
         $this->required_css = array(CSS_BOOTSTRAP, CSS_FONT_AWESOME, CSS_MAIN, CSS_USERS);
     }
 
     function index()
     {
-        $this->view->render("users/index", 'Users - Steam Info', $this->required_js, $this->required_css);
+        $this->view->render("users/index", 'Users', $this->required_js, $this->required_css);
     }
 
     function profile($params)
@@ -23,8 +23,7 @@ class Users extends Controller
         try {
             $response = $this->model->getProfile($params[0]);
         } catch (WrongIDException $e) {
-            echo "ERROR!";
-            die;
+            error(404, 'Wrong ID');
         }
         $this->view->profile = $response['profile'];
         $this->view->update_status = $response['update_status'];

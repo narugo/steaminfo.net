@@ -13,7 +13,7 @@ class Stats extends Controller
 
     public function index()
     {
-        $this->view->render("stats/index", 'Stats - Steam Info', $this->required_js, $this->required_css);
+        $this->view->render("stats/index", 'Stats', $this->required_js, $this->required_css);
     }
 
 }

@@ -13,7 +13,7 @@ class About extends Controller
 
     public function index()
     {
-        $this->view->render("about", 'About - Steam Info', $this->required_js, $this->required_css);
+        $this->view->render("about", 'About', $this->required_js, $this->required_css);
     }
 
 }

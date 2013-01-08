@@ -7,7 +7,7 @@ class Index extends Controller
     {
         parent::__construct();
 
-        $this->required_js = array(JS_JQUERY, JS_JQUERY_UI, JS_JQUERY_UI_AUTOCOMPLETE_HTML, JS_BOOTSTRAP, JS_SPIN);
+        $this->required_js = array(JS_JQUERY, JS_JQUERY_UI, JS_JQUERY_UI_AUTOCOMPLETE_HTML, JS_BOOTSTRAP);
         $this->required_css = array(CSS_JQUERY_UI, CSS_BOOTSTRAP, CSS_MAIN, CSS_INDEX);
     }
 

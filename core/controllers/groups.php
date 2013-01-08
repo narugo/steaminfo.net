@@ -8,13 +8,13 @@ class Groups extends Controller
         parent::__construct();
         $this->loadModel("groups");
 
-        $this->required_js = array(JS_JQUERY, JS_BOOTSTRAP, JS_SPIN);
+        $this->required_js = array(JS_JQUERY, JS_BOOTSTRAP);
         $this->required_css = array(CSS_BOOTSTRAP, CSS_FONT_AWESOME, CSS_MAIN);
     }
 
     function index()
     {
-        $this->view->render("groups/index", 'Groups - Steam Info', $this->required_js, $this->required_css);
+        $this->view->render("groups/index", 'Groups', $this->required_js, $this->required_css);
     }
 
     function search()

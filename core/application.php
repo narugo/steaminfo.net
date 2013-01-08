@@ -5,17 +5,18 @@ define(PATH_TO_LIBS, PATH_TO_CORE . 'libs/');
 /**
  * Main modules
  */
-require PATH_TO_CORE . 'controller.php';
-require PATH_TO_CORE . 'view.php';
-require PATH_TO_CORE . 'database.php';
-require PATH_TO_CORE . 'model.php';
-require PATH_TO_CORE . 'logging.php';
+require_once PATH_TO_CORE . 'logging.php';
+require_once PATH_TO_CORE . 'error_handling.php';
+require_once PATH_TO_CORE . 'controller.php';
+require_once PATH_TO_CORE . 'view.php';
+require_once PATH_TO_CORE . 'database.php';
+require_once PATH_TO_CORE . 'model.php';
 
 // Assets
-require PATH_TO_CORE . 'assets.php';
+require_once PATH_TO_CORE . 'assets.php';
 
 // Libraries
-require PATH_TO_LIBS . 'libs.php';
+require_once PATH_TO_LIBS . 'libs.php';
 
 /**
  * Main application class
@@ -62,22 +63,15 @@ class Application
                             $controller->{$method}();
                         }
                     } else {
-                        $this->error();
+                        error(404, 'Method not found');
                     }
                 } else {
                     $controller->index();
                 }
             } else {
-                $this->error();
+                error(404, 'Controller not found');
             }
         }
-    }
-
-    function error()
-    {
-        require PATH_TO_CONTROLLERS . 'error.php';
-        $controller = new Error(404);
-        $controller->index();
     }
 
 }
