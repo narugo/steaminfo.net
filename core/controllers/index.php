@@ -12,7 +12,7 @@ class Index extends Controller
 
     public function index()
     {
-        $this->view->render("index", 'Steam Info', $this->required_js, $this->required_css);
+        $this->view->renderPage("index", 'Steam Info', $this->required_js, $this->required_css);
     }
 
     function search()
@@ -27,7 +27,7 @@ class Index extends Controller
     {
         $result = array();
         // Getting search suggestions from users
-        $users_model = $this->getModel("users");
+        $users_model = getModel("users");
         $users_suggestions = $users_model->getSearchSuggestions($_GET['query']);
         foreach ($users_suggestions as $user_suggestion) {
             $user_suggestion["type"] = 'user';
@@ -35,6 +35,11 @@ class Index extends Controller
         }
         header('Content-type: application/json');
         echo json_encode($result);
+    }
+
+    function test() {
+        $steam = new Locomotive();
+        var_dump($steam->webapi->GetPlayerBans(array(76561197968575517, 76561197960265741)));
     }
 
 }

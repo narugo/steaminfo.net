@@ -1,14 +1,17 @@
 <?php
 
-class Groups_Model extends Model {
+class Groups_Model extends Model
+{
 
-    function __construct() {
+    function __construct()
+    {
         parent::__construct();
         $this->steam = new Locomotive();
     }
 
-    public function search($query) {
-        $query_type = $this->steam->tools->groups->getTypeOfQuery($query);
+    public function search($query)
+    {
+        $query_type = $this->steam->tools->groups->getTypeOfId($query);
         switch ($query_type) {
             case TYPE_COMMUNITY_ID:
                 try {
@@ -33,10 +36,28 @@ class Groups_Model extends Model {
                 // TODO: Search in DB for users with that (query) nickname
                 $result = array();
         }
+        var_dump($query_type);
         return $result;
     }
+    public function getGroups($community_id, $no_update = FALSE)
+    {
+        if (!$this->steam->tools->users->validateUserId($community_id, TYPE_COMMUNITY_ID)) {
+            throw new WrongIDException();
+        }
+        if ($no_update === FALSE) {
+            // TODO: Get groups from Steam
+        }
+        $statement = $this->db->prepare('SELECT id, name, url, avatar_url FROM group_members
+                INNER JOIN group ON group_members.group_id = group.id
+                WHERE user_community_id = :id');
+        $statement->execute(array(':id' => $community_id));
+        $groups = $statement->fetchAll(PDO::FETCH_OBJ);
+        if (empty($groups)) return NULL;
+        return $groups;
+    }
 
-    public function getGroupInfo($group_id) {
+    public function getGroupInfo($group_id)
+    {
         $statement = $this->db->prepare('
                 SELECT id,
                  avatar_icon_url,
@@ -54,7 +75,8 @@ class Groups_Model extends Model {
         return $statement->fetchObject();
     }
 
-    public function updateGroupInfo($group) {
+    public function updateGroupInfo($group)
+    {
         $sql = "INSERT INTO group (
                  id,
                  avatar_icon_url,
@@ -115,9 +137,12 @@ class Groups_Model extends Model {
                 }*/
     }
 
-    public function getMembers($group_id) {}
+    public function getMembers($group_id)
+    {
+    }
 
-    public function updateValveEmployeeTags() {
+    public function updateValveEmployeeTags()
+    {
         try {
             $valve_group_info = $this->steam->communityapi->getGroupInfoByName("Valve");
             // TODO: Find a better way to access other models

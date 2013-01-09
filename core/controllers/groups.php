@@ -6,19 +6,20 @@ class Groups extends Controller
     function __construct()
     {
         parent::__construct();
-        $this->loadModel("groups");
-        $this->required_js = array(JS_JQUERY, JS_BOOTSTRAP);
-        $this->required_css = array(CSS_BOOTSTRAP, CSS_FONT_AWESOME, CSS_MAIN);
+
     }
 
     function index()
     {
-        $this->view->render("groups/index", 'Groups', $this->required_js, $this->required_css);
+        $this->required_js = array(JS_JQUERY, JS_BOOTSTRAP);
+        $this->required_css = array(CSS_BOOTSTRAP, CSS_FONT_AWESOME, CSS_MAIN);
+        $this->view->renderPage("groups/index", 'Groups', $this->required_js, $this->required_css);
     }
 
     function search()
     {
-        $result = $this->model->search(trim($_GET['q']));
+        $groups_model = getModel('groups');
+        $result = $groups_model->search(trim($_GET['q']));
         header('Content-type: application/json');
         echo json_encode($result);
     }
@@ -30,7 +31,8 @@ class Groups extends Controller
     function valve()
     {
         echo "Updating tags of Valve employees...<br />";
-        return $this->model->updateValveEmployeeTags();
+        $groups_model = getModel('groups');
+        return $groups_model->updateValveEmployeeTags();
     }
 
 }

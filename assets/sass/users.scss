@@ -29,22 +29,11 @@
 }
 
 #info-tab {
-  #main {
+  #real-name {
     float: left;
-    width: 534px;
-    #real-name {
-      float: left;
-      margin-right: 6px;
-      margin-top: 0px;
-      line-height: 20px;
-    }
-  }
-  #sidebar {
-    float: right;
-    max-width: 164px;
-    #badges {
-      max-width: 164px;
-    }
+    margin-right: 6px;
+    margin-top: 0px;
+    line-height: 20px;
   }
 }
 

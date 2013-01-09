@@ -34,8 +34,7 @@
 
         <div id="result" style="display: none">
             <div id="error">
-                <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/m04cuu-bfQw?rel=0"
-                        frameborder="0" allowfullscreen></iframe>
+                Error!
             </div>
             <div id="info" style="display: none"></div>
         </div>

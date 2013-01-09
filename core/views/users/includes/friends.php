@@ -20,27 +20,32 @@
     date_default_timezone_set('UTC');
     foreach ($friends as $friend) :
         ?>
-    <tr>
-        <td class="id"><?php echo $index; ?></td>
-        <td class="avatar">
-            <img src="<?php
-                if (is_null($friend->avatar_url)) echo "/assets/img/no_avatar.png";
+        <tr>
+            <td class="id"><?php echo $index; ?></td>
+            <td class="avatar">
+                <img src="<?php
+                if (empty($friend->avatar_url)) echo "/assets/img/no_avatar.png";
                 else echo $friend->avatar_url;
-                ?>" />
-        </td>
-        <td class="name">
-            <a href="/users/profile/<?php echo $friend->community_id; ?>">
+                ?>"/>
+            </td>
+            <td class="name">
+                <a href="/users/profile/<?php echo $friend->community_id; ?>">
+                    <?php
+                    if (empty($friend->nickname)) echo $friend->community_id;
+                    else echo $friend->nickname;
+                    ?>
+                </a>
+                <?php if (!empty($friend->tag)) : ?>
+                    <span class="label label-important"><?php echo $friend->tag; ?></span>
+                <?php endif; ?>
+            </td>
+            <td class="since">
                 <?php
-                if (is_null($friend->nickname)) echo $friend->community_id;
-                else echo $friend->nickname;
+                if ($friend->since == '0') echo 'Unknown';
+                else echo date(DATE_RFC850, $friend->since);
                 ?>
-            </a>
-            <?php if (! is_null($friend->tag)) : ?>
-            <span class="label label-important"><?php echo $friend->tag; ?></span>
-            <?php endif; ?>
-        </td>
-        <td class="since"><?php echo date(DATE_RFC850, $friend->since); ?></td>
-    </tr>
+            </td>
+        </tr>
         <?php
         $index++;
     endforeach;
@@ -48,10 +53,9 @@
     </tbody>
 </table>
 <script type="text/javascript">
-    $(document).ready(function()
-            {
-                $("#friends-table").tablesorter();
-            }
+    $(document).ready(function () {
+            $("#friends-table").tablesorter();
+        }
     );
 </script>
 </body>
