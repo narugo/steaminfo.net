@@ -40,18 +40,18 @@ class Apps_Model extends Model
         $statement->execute(array(":user_id" => $community_id));
         $statement->closeCursor();
 
+        self::updateAppsInfo($apps);
+
         // Adding new
-        $sql = 'INSERT INTO app_owners (app_id, user_community_id, used_total, used_last_2_weeks)
-                VALUES (:app_id, :user_community_id, :used_total, :used_last_2_weeks);';
-        $statement = $this->db->prepare($sql);
+        $sql = "INSERT INTO app_owners (app_id, user_community_id, used_total, used_last_2_weeks) VALUES";
         foreach ($apps as $app) {
-            $statement->execute(array(
-                ":app_id" => $app->appID,
-                ":user_community_id" => $community_id,
-                ":used_total" => $app->hoursOnRecord,
-                ":used_last_2_weeks" => $app->hoursLast2Weeks));
-            $statement->closeCursor();
+            if (empty($app->hoursOnRecord)) $app->hoursOnRecord = 0;
+            if (empty($app->hoursLast2Weeks)) $app->hoursLast2Weeks = 0;
+            $sql = $sql . "($app->appID, $community_id, $app->hoursOnRecord, $app->hoursLast2Weeks),";
+
         }
+        $sql = substr($sql, 0, -1) . ";";
+        $this->db->query($sql);
     }
 
 }
