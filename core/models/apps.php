@@ -23,13 +23,8 @@ class Apps_Model extends Model
         }
     }
 
-    public function getAppsForUser($community_id, $force_update = FALSE)
+    public function getAppsForUser($community_id)
     {
-        if ($force_update === TRUE) {
-            $apps = $this->steam->communityapi->getAppsForUser($community_id);
-            self::updateAppsInfo($apps);
-            self::addAppsForUser($community_id, $apps);
-        }
         $statement = $this->db->prepare('SELECT id, name, logo_url, used_total, used_last_2_weeks FROM app_owners
             INNER JOIN app ON app_owners.app_id = app.id WHERE user_community_id = :id');
         $statement->execute(array(':id' => $community_id));
@@ -38,6 +33,7 @@ class Apps_Model extends Model
 
     public function addAppsForUser($community_id, $apps)
     {
+        // TODO: FIX! This function is VERY slow.
         // Removing old records
         $sql = 'DELETE FROM app_owners WHERE user_community_id= :user_id;';
         $statement = $this->db->prepare($sql);

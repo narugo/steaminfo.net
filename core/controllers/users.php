@@ -42,10 +42,12 @@ class Users extends Controller
         $users_model = getModel('users');
         $community_id = $_GET['id'];
         if (is_null($community_id)) error(400, 'Community ID not supplied');
-        if ($users_model->updateProfiles(array($community_id)) === TRUE) {
+        if ($users_model->updateProfile($community_id) === TRUE) {
             header("HTTP/1.0 200 OK");
+            echo "HTTP/1.0 200 OK";
         } else {
             header("HTTP/1.0 500 Internal Server Error");
+            echo "HTTP/1.0 500 Internal Server Error";
         }
     }
 

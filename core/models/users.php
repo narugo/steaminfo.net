@@ -48,22 +48,15 @@ class Users_Model extends Model
         return $statement->fetchAll();
     }
 
-    public function getProfile($community_id, $force_update = FALSE)
+    public function getProfile($community_id)
     {
-        if ($force_update === TRUE) {
-            try {
-                self::updateProfiles(array($community_id));
-            } catch (Exception $e) {
-                error(500, $e);
-            }
-        }
         $statement = $this->db->prepare('SELECT * FROM user WHERE community_id=:id');
         $statement->execute(array(':id' => $community_id));
         if ($statement->rowCount() == 0) return FALSE;
         return new User($statement->fetchObject());
     }
 
-    private function updateSummaries($summaries)
+    private function updateSummary($summary)
     {
         // TODO: Add primary group to "groups" table
         $sql = "INSERT INTO user (
@@ -115,28 +108,25 @@ class Users_Model extends Model
                 primary_group_id = :primary_group_id,
                 last_updated = CURRENT_TIMESTAMP";
         $statement = $this->db->prepare($sql);
-        foreach ($summaries as $summary) {
-            $statement->execute(array(
-                ":community_id" => $summary->steamid,
-                ":nickname" => $summary->personaname,
-                ":avatar_url" => $summary->avatar,
-                ":creation_time" => $summary->timecreated,
-                ":real_name" => $summary->realname,
-                ":location_country_code" => $summary->loccountrycode,
-                ":location_state_code" => $summary->locstatecode,
-                ":location_city_id" => $summary->loccityid,
-                ":last_login_time" => $summary->lastlogoff,
-                ":status" => $summary->personastate,
-                ":current_game_server_ip" => $summary->gameserverip,
-                ":current_game_name" => $summary->gameextrainfo,
-                ":current_game_id" => $summary->gameid,
-                ":primary_group_id" => $summary->primaryclanid
-            ));
-            $statement->closeCursor();
-        }
+        $statement->execute(array(
+            ":community_id" => $summary->steamid,
+            ":nickname" => $summary->personaname,
+            ":avatar_url" => $summary->avatar,
+            ":creation_time" => $summary->timecreated,
+            ":real_name" => $summary->realname,
+            ":location_country_code" => $summary->loccountrycode,
+            ":location_state_code" => $summary->locstatecode,
+            ":location_city_id" => $summary->loccityid,
+            ":last_login_time" => $summary->lastlogoff,
+            ":status" => $summary->personastate,
+            ":current_game_server_ip" => $summary->gameserverip,
+            ":current_game_name" => $summary->gameextrainfo,
+            ":current_game_id" => $summary->gameid,
+            ":primary_group_id" => $summary->primaryclanid
+        ));
     }
 
-    private function updateBans($bans)
+    private function updateBanStatuses($bans)
     {
         $sql = 'UPDATE user
                 SET is_community_banned = :is_community_banned,
@@ -144,37 +134,35 @@ class Users_Model extends Model
                     economy_ban_state = :economy_ban_state
                 WHERE community_id = :id';
         $statement = $this->db->prepare($sql);
-        foreach ($bans as $ban) {
-            $statement->execute(array(
-                ":is_community_banned" => $ban->CommunityBanned,
-                ":is_vac_banned" => $ban->VACBanned,
-                ":economy_ban_state" => $ban->EconomyBan,
-                ":id" => $ban->SteamId
-            ));
-            $statement->closeCursor();
-        }
+        $statement->execute(array(
+            ":is_community_banned" => $bans->CommunityBanned,
+            ":is_vac_banned" => $bans->VACBanned,
+            ":economy_ban_state" => $bans->EconomyBan,
+            ":id" => $bans->SteamId
+        ));
     }
 
-    public function updateProfiles($community_ids)
+    public function updateProfile($community_id)
     {
         try {
-            $summaries = $this->steam->webapi->GetPlayerSummaries($community_ids);
-            self::updateSummaries($summaries);
-            $ban_statuses = $this->steam->webapi->GetPlayerBans($community_ids);
-            self::updateBans($ban_statuses);
+            // Updating profile summary
+            $summary = $this->steam->webapi->GetPlayerSummaries(array($community_id));
+            self::updateSummary($summary[0]);
+            // Updating bans
+            $ban_statuses = $this->steam->webapi->GetPlayerBans(array($community_id));
+            self::updateBanStatuses($ban_statuses[0]);
+            // Updating friends
+            $friends = $this->steam->webapi->GetFriendList($community_id);
+            self::updateFriendsList($community_id, $friends);
+            // Updating apps
             $apps_model = getModel('apps');
-            foreach ($community_ids as $id) {
-                // Updating apps
-                $apps = $this->steam->communityapi->getAppsForUser($id);
-                $apps_model->addAppsForUser($id, $apps);
-                // Updating friends
-                $friends = $this->steam->webapi->GetFriendList($id);
-                self::updateFriendsList($id, $friends);
-            }
+            $apps = $this->steam->communityapi->getAppsForUser($community_id);
+            $apps_model->addAppsForUser($community_id, $apps);
         } catch (Exception $e) {
             write_log_to_db($e);
             return FALSE;
         }
+
         return TRUE;
     }
 
@@ -186,7 +174,7 @@ class Users_Model extends Model
             foreach ($friends as $friend) {
                 array_push($friend_ids, $friend->steamid);
             }
-            self::updateProfiles($friend_ids);
+            self::updateProfile($friend_ids);
             self::updateFriendsList($community_id, $friends);
         }
         $statement = $this->db->prepare('SELECT community_id, nickname, avatar_url, tag, since FROM friends
