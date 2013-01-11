@@ -23,24 +23,41 @@ class Apps_Model extends Model
         }
     }
 
-    public function getAppsForUser($community_id)
+    public function getUserApps($community_id)
     {
-        $statement = $this->db->prepare('SELECT id, name, logo_url, used_total, used_last_2_weeks FROM app_owners
+        $status = self::updateUserApps($community_id);
+
+        if ($status === STATUS_SUCCESS) {
+            $statement = $this->db->prepare('SELECT id, name, logo_url, used_total, used_last_2_weeks FROM app_owners
             INNER JOIN app ON app_owners.app_id = app.id WHERE user_community_id = :id');
-        $statement->execute(array(':id' => $community_id));
-        return $statement->fetchAll(PDO::FETCH_OBJ);
+            $statement->execute(array(':id' => $community_id));
+            return array(
+                'status' => $status,
+                'result' => $statement->fetchAll(PDO::FETCH_OBJ)
+            );
+        } else {
+            return array('status' => $status);
+        }
     }
 
-    public function addAppsForUser($community_id, $apps)
+    public function updateUserApps($community_id)
     {
-        // TODO: FIX! This function is VERY slow.
+        try {
+            $apps = $this->steam->communityapi->getAppsForUser($community_id);
+        } catch (Exception $e) {
+            write_log_to_db($e);
+            if ($e instanceof PrivateProfileException) return STATUS_PRIVATE;
+            else if ($e instanceof SteamAPIUnavailableException) return STATUS_API_UNAVAILABLE;
+            else return STATUS_UNKNOWN;
+        }
+
+        self::updateAppsInfo($apps);
+
         // Removing old records
         $sql = 'DELETE FROM app_owners WHERE user_community_id= :user_id;';
         $statement = $this->db->prepare($sql);
         $statement->execute(array(":user_id" => $community_id));
         $statement->closeCursor();
-
-        self::updateAppsInfo($apps);
 
         // Adding new
         $sql = "INSERT INTO app_owners (app_id, user_community_id, used_total, used_last_2_weeks) VALUES";
@@ -48,10 +65,11 @@ class Apps_Model extends Model
             if (empty($app->hoursOnRecord)) $app->hoursOnRecord = 0;
             if (empty($app->hoursLast2Weeks)) $app->hoursLast2Weeks = 0;
             $sql = $sql . "($app->appID, $community_id, $app->hoursOnRecord, $app->hoursLast2Weeks),";
-
         }
         $sql = substr($sql, 0, -1) . ";";
         $this->db->query($sql);
+
+        return STATUS_SUCCESS;
     }
 
 }

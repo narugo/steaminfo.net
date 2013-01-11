@@ -17,16 +17,16 @@ class Users_Model extends Model
         $query_type = $this->steam->tools->users->getTypeOfId($query);
         switch ($query_type) {
             case TYPE_COMMUNITY_ID:
-                $result = self::getProfile($query);
+                $result = self::getProfileSummary($query);
                 break;
             case TYPE_STEAM_ID:
                 $community_id = $this->steam->tools->users->steamIdToCommunityId($query);
-                $result = self::getProfile($community_id);
+                $result = self::getProfileSummary($community_id);
                 break;
             case TYPE_VANITY:
                 // TODO: Search in DB for other users (maybe nickname has been requested, not Vanity URL)
                 $community_id = $this->steam->webapi->ResolveVanityURL($query);
-                $result = self::getProfile($community_id);
+                $result = self::getProfileSummary($community_id);
                 break;
             default:
                 // TODO: Search in DB for users with that (query) nickname
@@ -48,16 +48,21 @@ class Users_Model extends Model
         return $statement->fetchAll();
     }
 
-    public function getProfile($community_id)
+
+    public function getProfileSummary($community_id)
     {
+        self::updateSummary($community_id);
         $statement = $this->db->prepare('SELECT * FROM user WHERE community_id=:id');
         $statement->execute(array(':id' => $community_id));
         if ($statement->rowCount() == 0) return FALSE;
         return new User($statement->fetchObject());
     }
 
-    private function updateSummary($summary)
+    private function updateSummary($community_id)
     {
+        // Updating profile summary
+        $responce = $this->steam->webapi->GetPlayerSummaries(array($community_id));
+        $summary = $responce[0];
         // TODO: Add primary group to "groups" table
         $sql = "INSERT INTO user (
                 community_id,
@@ -124,6 +129,10 @@ class Users_Model extends Model
             ":current_game_id" => $summary->gameid,
             ":primary_group_id" => $summary->primaryclanid
         ));
+
+        // Updating bans info
+        $ban_statuses = $this->steam->webapi->GetPlayerBans(array($community_id));
+        self::updateBanStatuses($ban_statuses[0]);
     }
 
     private function updateBanStatuses($bans)
@@ -142,46 +151,22 @@ class Users_Model extends Model
         ));
     }
 
-    public function updateProfile($community_id)
+    public function getFriends($community_id)
     {
-        try {
-            // Updating profile summary
-            $summary = $this->steam->webapi->GetPlayerSummaries(array($community_id));
-            self::updateSummary($summary[0]);
-            // Updating bans
-            $ban_statuses = $this->steam->webapi->GetPlayerBans(array($community_id));
-            self::updateBanStatuses($ban_statuses[0]);
-            // Updating friends
-            $friends = $this->steam->webapi->GetFriendList($community_id);
-            self::updateFriendsList($community_id, $friends);
-            // Updating apps
-            $apps_model = getModel('apps');
-            $apps = $this->steam->communityapi->getAppsForUser($community_id);
-            $apps_model->addAppsForUser($community_id, $apps);
-        } catch (Exception $e) {
-            write_log_to_db($e);
-            return FALSE;
-        }
+        $status = self::updateFriendsList($community_id);
 
-        return TRUE;
-    }
-
-    public function getFriends($community_id, $force_update = FALSE)
-    {
-        if ($force_update === TRUE) {
-            $friends = $this->steam->webapi->GetFriendList($community_id);
-            $friend_ids = array();
-            foreach ($friends as $friend) {
-                array_push($friend_ids, $friend->steamid);
-            }
-            self::updateProfile($friend_ids);
-            self::updateFriendsList($community_id, $friends);
-        }
-        $statement = $this->db->prepare('SELECT community_id, nickname, avatar_url, tag, since FROM friends
+        if ($status === STATUS_SUCCESS) {
+            $statement = $this->db->prepare('SELECT community_id, nickname, avatar_url, tag, since FROM friends
                 INNER JOIN user ON friends.user_community_id2 = user.community_id
                 WHERE user_community_id1 = :id');
-        $statement->execute(array(':id' => $community_id));
-        return $statement->fetchAll(PDO::FETCH_OBJ);
+            $statement->execute(array(':id' => $community_id));
+            return array(
+                'status' => $status,
+                'result' => $statement->fetchAll(PDO::FETCH_OBJ)
+            );
+        } else {
+            return array('status' => $status);
+        }
     }
 
     public function setTag($community_id, $tag)
@@ -194,27 +179,40 @@ class Users_Model extends Model
         return $statement->execute(array(':id' => $community_id, ':tag' => $tag));
     }
 
-    private function updateFriendsList($community_id, $friends_list)
+    private function updateFriendsList($community_id)
     {
-        // Removing old records
-        $sql = 'DELETE FROM friends WHERE user_community_id1 = :user_id;';
-        $statement = $this->db->prepare($sql);
+        try {
+            $friends_list = $this->steam->webapi->GetFriendList($community_id);
+        } catch (Exception $e) {
+            write_log_to_db($e);
+            if ($e instanceof PrivateProfileException) return STATUS_PRIVATE;
+            else if ($e instanceof SteamAPIUnavailableException) return STATUS_API_UNAVAILABLE;
+            else return STATUS_UNKNOWN;
+        }
+
+        // Removing old friends
+        $remove_old = 'DELETE FROM friends WHERE user_community_id1 = :user_id;';
+        $statement = $this->db->prepare($remove_old);
         $statement->execute(array(":user_id" => $community_id));
         $statement->closeCursor();
 
-        // Adding new
-        $sql = 'INSERT IGNORE INTO user (community_id) VALUES (:friend_id);
-                INSERT INTO friends (user_community_id1, user_community_id2, since)
-                VALUES (:user_id, :friend_id, :friend_since);';
-        $statement = $this->db->prepare($sql);
+        // Adding unknown users
+        $insert_users = 'INSERT IGNORE INTO user (community_id) VALUES ';
         foreach ($friends_list as $friend) {
-            $statement->execute(array(
-                ":user_id" => $community_id,
-                ":friend_id" => $friend->steamid,
-                ":friend_since" => $friend->friend_since
-            ));
-            $statement->closeCursor();
+            $insert_users = $insert_users . "($friend->steamid),";
         }
+        $insert_users = substr($insert_users, 0, -1) . ";";
+        $this->db->query($insert_users);
+
+        // Adding new friends
+        $insert_profiles = 'INSERT INTO friends (user_community_id1, user_community_id2, since) VALUES ';
+        foreach ($friends_list as $friend) {
+            if (empty($friend->friend_since)) $friend->friend_since = "NULL";
+            $insert_profiles = $insert_profiles . "($community_id, $friend->steamid, $friend->friend_since),";
+        }
+        $insert_profiles = substr($insert_profiles, 0, -1) . ";";
+        $this->db->query($insert_profiles);
+        return STATUS_SUCCESS;
     }
 
 }
@@ -251,10 +249,6 @@ class User
     public $primary_group_id;
     public $last_updated;
 
-
-    /**
-     * @param $profile Object, containing information about user received from Steam API
-     */
     function __construct($profile)
     {
         $this->community_id = $profile->community_id;
@@ -288,9 +282,6 @@ class User
         return $this->community_id;
     }
 
-    /**
-     * @return string Returns user's Steam ID
-     */
     public function getSteamId()
     {
         $steam = new Locomotive();
@@ -385,7 +376,7 @@ class User
     }
 
     /**
-     * @return null|string Returns string containing location info (country, state, and city). NULL if there is no info.
+     * @return null|string
      */
     public function getLocation()
     {
@@ -407,17 +398,11 @@ class User
         return $this->location_country_code;
     }
 
-    /**
-     * @return string Returns string containing user's nickname
-     */
     public function getNickname()
     {
         return (string)$this->nickname;
     }
 
-    /**
-     * @return mixed Returns ID of user's primary group
-     */
     public function getPrimaryGroupId()
     {
         return $this->primary_group_id;

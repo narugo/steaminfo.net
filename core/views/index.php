@@ -50,7 +50,7 @@
                     }
                 });
             },
-            minLength: 3,
+            minLength: 2,
             select: function (event, ui) {
                 window.location = ("/users/profile/" + ui.item.value);
             }

@@ -19,53 +19,48 @@ class Users extends Controller
     {
         $users_model = getModel('users');
         $this->view->id = $params[0];
-        $this->view->profile = $users_model->getProfile($this->view->id);
-        if ($this->view->profile === FALSE OR $this->view->profile->getNickname() == '') {
-            $this->view->renderPage(
-                "users/not_indexed",
-                $this->view->id,
-                $this->required_js,
-                $this->required_css
-            );
-        } else {
-            $this->view->renderPage(
-                "users/profile",
-                $this->view->profile->getNickname(),
-                $this->required_js,
-                $this->required_css
-            );
-        }
-    }
-
-    function update()
-    {
-        $users_model = getModel('users');
-        $community_id = $_GET['id'];
-        if (is_null($community_id)) error(400, 'Community ID not supplied');
-        if ($users_model->updateProfile($community_id) === TRUE) {
-            header("HTTP/1.0 200 OK");
-            echo "HTTP/1.0 200 OK";
-        } else {
-            header("HTTP/1.0 500 Internal Server Error");
-            echo "HTTP/1.0 500 Internal Server Error";
-        }
+        $this->view->profile = $users_model->getProfileSummary($this->view->id);
+        $this->view->renderPage(
+            "users/profile",
+            $this->view->profile->getNickname(),
+            $this->required_js,
+            $this->required_css
+        );
     }
 
     function apps($params)
     {
         $apps_model = getModel('apps');
-        $this->view->apps = $apps_model->getAppsForUser($params[0]);
-        $this->view->renderPage("users/includes/apps", 'Apps', $this->required_js, $this->required_css, TRUE);
+        $response = $apps_model->getUserApps($params[0]);
+        if ($response['status'] === STATUS_SUCCESS) {
+            $this->view->apps = $response['result'];
+            if (!empty($this->view->apps)) {
+                $this->view->renderPage("users/includes/apps", 'Apps', $this->required_js, $this->required_css, TRUE);
+            } else {
+                echo "No apps!";
+            }
+        } elseif ($response['status'] === STATUS_PRIVATE) {
+            echo "Profile is private!";
+        } else {
+            echo "Unknown error.";
+        }
     }
 
     function friends($params)
     {
         $users_model = getModel('users');
-        $this->view->friends = $users_model->getFriends($params[0]);
-        if (!empty($this->view->friends)) {
-            $this->view->renderPage("users/includes/friends", 'Friends', $this->required_js, $this->required_css, TRUE);
+        $response = $users_model->getFriends($params[0]);
+        if ($response['status'] === STATUS_SUCCESS) {
+            $this->view->friends = $response['result'];
+            if (!empty($this->view->friends)) {
+                $this->view->renderPage("users/includes/friends", 'Friends', $this->required_js, $this->required_css, TRUE);
+            } else {
+                echo "No friends!";
+            }
+        } elseif ($response['status'] === STATUS_PRIVATE) {
+            echo "Profile is private!";
         } else {
-            echo "No friends!";
+            echo "Unknown error.";
         }
     }
 

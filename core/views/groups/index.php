@@ -1,44 +1,33 @@
-<div class="container">
+<div id="submenu">
+    <h1 id="title">Groups</h1>
 
-    <ul class="breadcrumb">
-        <li><a href="/">Home</a> <span class="divider">/</span></li>
-        <li><a href="/users/">Users</a> <span class="divider">/</span></li>
-        <li><a href="/groups/">Groups</a> <span class="divider">/</span></li>
-        <li><a href="/stats/">Stats</a> <span class="divider">/</span></li>
-        <li><a href="/about/">About</a></li>
-    </ul>
+    <form id="search">
+        <input type="text" id="query" autocomplete="off" autofocus="true" placeholder="Group ID or Vanity URL"/>
+        <input type="submit" class="btn" value="Go"/>
+    </form>
+</div>
 
-    <div id="submenu">
-        <h1 id="title">Groups</h1>
+<div id="content">
 
-        <form id="search">
-            <input type="text" id="query" autocomplete="off" autofocus="true" placeholder="Group ID or Vanity URL"/>
-            <input type="submit" class="btn" value="Go"/>
-        </form>
+    <div id="help">
+        <h2>Examples</h2>
+
+        <p>
+            <b>Group ID:</b> 103582791429521412
+            <br/><b>Vanity URL:</b> Valve
+        </p>
     </div>
 
-    <div id="content">
+    <div id="loading" style="display: none">
+        <i class="icon-spinner icon-spin"></i>
+        Searching. Please wait.
+    </div>
 
-        <div id="help">
-            <h2>Examples</h2>
-
-            <p>
-                <b>Group ID:</b> 103582791429521412
-                <br/><b>Vanity URL:</b> Valve
-            </p>
+    <div id="result" style="display: none">
+        <div id="error">
+            Error!
         </div>
-
-        <div id="loading" style="display: none">
-            Searching. Please wait.
-        </div>
-
-        <div id="result" style="display: none">
-            <div id="error">
-                Error!
-            </div>
-            <div id="info" style="display: none"></div>
-        </div>
-
+        <div id="info" style="display: none"></div>
     </div>
 
 </div>
@@ -78,25 +67,4 @@
         });
         return false;
     });
-
-    // Loading animation
-    var opts = {
-        lines: 11, // The number of lines to draw
-        length: 0, // The length of each line
-        width: 4, // The line thickness
-        radius: 10, // The radius of the inner circle
-        corners: 1, // Corner roundness (0..1)
-        rotate: 0, // The rotation offset
-        color: '#000', // #rgb or #rrggbb
-        speed: 1.8, // Rounds per second
-        trail: 60, // Afterglow percentage
-        shadow: false, // Whether to render a shadow
-        hwaccel: false, // Whether to use hardware acceleration
-        className: 'loading-animation', // The CSS class to assign to the spinner
-        zIndex: 2e9, // The z-index (defaults to 2000000000)
-        top: 'auto', // Top position relative to parent in px
-        left: 'auto' // Left position relative to parent in px
-    };
-    var spinner = new Spinner(opts).spin();
-    document.getElementById('loading').appendChild(spinner.el);
 </script>
