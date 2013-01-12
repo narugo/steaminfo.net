@@ -1,4 +1,4 @@
-<h1>About</h1>
+<h2>About</h2>
 
 <p>
     This website is an interface to different Steam APIs. <b>Most features are
@@ -14,7 +14,7 @@
         <br/>Thanks for your patience.
     </em></p>
 
-<h2>Legal info</h2>
+<h3>Legal info</h3>
 This website uses <a href="http://www.google.com/analytics/">Google Analytics</a> which stores 3-5 cookies on your
 computer.
 They are used to track you, but do not provide personally identifiable information.
@@ -28,6 +28,6 @@ Some parts of this website are hosted on other services like
 <br/>This website is powered by Steam APIs and not affiliated with Valve.
 Steam and the Steam logo are trademarks and/or registered trademarks of Valve Corporation.
 
-<h3>More info</h3>
+<h4>More info</h4>
 <a href="http://valvesoftware.com/legal.html">Valve's Legal Info</a>,
 <a href="http://steamcommunity.com/dev/apiterms">Steam Web API Terms of Use</a>.

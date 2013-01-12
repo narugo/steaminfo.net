@@ -1,5 +1,16 @@
 @import "base";
 
+#search {
+  input {
+    width: 250px;
+  }
+}
+
+.well {
+  width: 370px;
+  height: 210px;
+}
+
 #profile-summary {
   .avatar {
     float: left;

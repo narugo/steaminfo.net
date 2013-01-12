@@ -1,26 +1,11 @@
-<div class="container">
-
-    <ul class="breadcrumb">
-        <li><a href="/">Home</a> <span class="divider">/</span></li>
-        <li><a href="/users/">Users</a> <span class="divider">/</span></li>
-        <li><a href="/groups/">Groups</a> <span class="divider">/</span></li>
-        <li><a href="/stats/">Stats</a> <span class="divider">/</span></li>
-        <li><a href="/about/">About</a></li>
-    </ul>
-
-    <div class="alert">
-        <button type="button" class="close" data-dismiss="alert">×</button>
-        <strong>Warning!</strong> This website is in development. Most features aren't working properly or not
-        implemented yet. Website may be very slow, because it's hosted on my local PC and connection isn't the best.
-        Sorry.
-    </div>
-
-    <h1>Steam Info</h1>
-
-    <input type="text" id="search" autocomplete="off" autofocus="true" placeholder="Search"/>
-
-
+<div class="alert">
+    <button type="button" class="close" data-dismiss="alert">×</button>
+    <strong>Warning!</strong> This website is in development. Most features aren't working properly or not
+    implemented yet. Website may be very slow, because it's hosted on my local PC and connection isn't the best.
+    Sorry.
 </div>
+
+<input type="text" id="search" autocomplete="off" autofocus="true" placeholder="Search"/>
 
 <script type="text/javascript">
     $(function () {

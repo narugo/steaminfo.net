@@ -1,35 +1,27 @@
-<div id="submenu">
-    <h1 id="title">Groups</h1>
+<h2 id="title">Groups</h2>
 
-    <form id="search">
-        <input type="text" id="query" autocomplete="off" autofocus="true" placeholder="Group ID or Vanity URL"/>
-        <input type="submit" class="btn" value="Go"/>
-    </form>
+<div id="search" class="input-append">
+    <input id="query" class="span2" type="text" autocomplete="off" autofocus="true"
+           placeholder="Group ID or Vanity URL">
+    <button id="search-submit" class="btn btn-primary" type="button">Search</button>
 </div>
 
-<div id="content">
+<div id="help">
+    <h4>Examples</h4>
+    <strong>Group ID:</strong> 103582791429521412
+    <br/><strong>Vanity URL:</strong> Valve
+</div>
 
-    <div id="help">
-        <h2>Examples</h2>
+<div id="loading" style="display: none">
+    <i class="icon-spinner icon-spin"></i>
+    Searching. Please wait.
+</div>
 
-        <p>
-            <b>Group ID:</b> 103582791429521412
-            <br/><b>Vanity URL:</b> Valve
-        </p>
+<div id="result" style="display: none">
+    <div id="error">
+        Error!
     </div>
-
-    <div id="loading" style="display: none">
-        <i class="icon-spinner icon-spin"></i>
-        Searching. Please wait.
-    </div>
-
-    <div id="result" style="display: none">
-        <div id="error">
-            Error!
-        </div>
-        <div id="info" style="display: none"></div>
-    </div>
-
+    <div id="info" style="display: none"></div>
 </div>
 
 <script type="text/javascript">

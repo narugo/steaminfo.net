@@ -17,10 +17,14 @@
 <body>
 <div class="container">
 
-    <ul class="breadcrumb">
-        <li><a href="/">Home</a> <span class="divider">/</span></li>
-        <li><a href="/users/">Users</a> <span class="divider">/</span></li>
-        <li><a href="/groups/">Groups</a> <span class="divider">/</span></li>
-        <li><a href="/stats/">Stats</a> <span class="divider">/</span></li>
-        <li><a href="/about/">About</a></li>
-    </ul>
+    <div class="navbar">
+        <div class="navbar-inner">
+            <a class="brand" href="/">Steam Info</a>
+            <ul class="nav">
+                <li><a href="/users/">Users</a></li>
+                <li><a href="/groups/">Groups</a></li>
+                <li><a href="/stats/">Stats</a></li>
+                <li><a href="/about/">About</a></li>
+            </ul>
+        </div>
+    </div>

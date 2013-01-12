@@ -5,19 +5,13 @@ body {
   color: $text-main;
   font-size: 14px;
   line-height: 20px;
+  padding-top: 20px;
+  padding-bottom: 40px;
 }
 
 .container {
-  //width: $base-width;
+  width: 800px;
   margin: 0 auto;
-}
-
-.left {
-  float: left;
-}
-
-.right {
-  float: right;
 }
 
 img {

@@ -1,9 +1,10 @@
-</div>
-</body>
-
 <footer>
+    <hr/>
     <a href="http://steampowered.com/">Powered by Steam</a>
 </footer>
+
+</div>
+</body>
 
 <script type="text/javascript">
     var _gaq = _gaq || [];
