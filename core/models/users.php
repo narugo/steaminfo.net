@@ -58,6 +58,34 @@ class Users_Model extends Model
         return new User($statement->fetchObject());
     }
 
+    public function getFriends($community_id)
+    {
+        $status = self::updateFriendsList($community_id);
+
+        if ($status === STATUS_SUCCESS) {
+            $statement = $this->db->prepare('SELECT community_id, nickname, avatar_url, tag, since FROM friends
+                INNER JOIN user ON friends.user_community_id2 = user.community_id
+                WHERE user_community_id1 = :id');
+            $statement->execute(array(':id' => $community_id));
+            return array(
+                'status' => $status,
+                'result' => $statement->fetchAll(PDO::FETCH_OBJ)
+            );
+        } else {
+            return array('status' => $status);
+        }
+    }
+
+    public function setTag($community_id, $tag)
+    {
+        // TODO: Validate ID
+        // TODO: Modify function so it can get multiple IDs
+        $sql = "INSERT INTO user (community_id, tag) VALUES (:id, :tag)
+                ON DUPLICATE KEY UPDATE community_id = :id, tag = :tag";
+        $statement = $this->db->prepare($sql);
+        return $statement->execute(array(':id' => $community_id, ':tag' => $tag));
+    }
+
     private function updateSummary($community_id)
     {
         // Updating profile summary
@@ -149,34 +177,6 @@ class Users_Model extends Model
             ":economy_ban_state" => $bans->EconomyBan,
             ":id" => $bans->SteamId
         ));
-    }
-
-    public function getFriends($community_id)
-    {
-        $status = self::updateFriendsList($community_id);
-
-        if ($status === STATUS_SUCCESS) {
-            $statement = $this->db->prepare('SELECT community_id, nickname, avatar_url, tag, since FROM friends
-                INNER JOIN user ON friends.user_community_id2 = user.community_id
-                WHERE user_community_id1 = :id');
-            $statement->execute(array(':id' => $community_id));
-            return array(
-                'status' => $status,
-                'result' => $statement->fetchAll(PDO::FETCH_OBJ)
-            );
-        } else {
-            return array('status' => $status);
-        }
-    }
-
-    public function setTag($community_id, $tag)
-    {
-        // TODO: Validate ID
-        // TODO: Modify function so it can get multiple IDs
-        $sql = "INSERT INTO user (community_id, tag) VALUES (:id, :tag)
-                ON DUPLICATE KEY UPDATE community_id = :id, tag = :tag";
-        $statement = $this->db->prepare($sql);
-        return $statement->execute(array(':id' => $community_id, ':tag' => $tag));
     }
 
     private function updateFriendsList($community_id)
@@ -426,7 +426,9 @@ class User
 
     public function getCreationTime()
     {
-        return date(DATE_RFC850, $this->creation_time);
+        if (isset($this->creation_time))
+            return date(DATE_RFC850, $this->creation_time);
+        return NULL;
     }
 
 }
