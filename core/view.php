@@ -22,7 +22,7 @@ class View
         if (file_exists($view_path)) {
             self::includeView($view_path, $page_title);
         } else {
-            write_log_to_db('Error view not found: "' . $view_path . '"');
+            writeErrorLog('Error view not found: "' . $view_path . '"');
         }
     }
 

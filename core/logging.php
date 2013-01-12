@@ -2,21 +2,59 @@
 
 require_once PATH_TO_CORE . 'database.php';
 
-define('DEFAULT_LOG_FILE', '/home/roman/web/steaminfo.net/default.log');
+define('DEFAULT_LOG_FILE', '/home/roman/web/steaminfo.net/main.log');
 
-function write_log_to_db($message)
+function writeUserViewLog($user_id)
 {
     try {
         $db = new Database();
     } catch (PDOException $e) {
-        write_log_to_file('Database access error!');
+        writeLogToFile('Database access error! ' . $e);
+        return false;
+    }
+
+    $remote_address = $_SERVER['REMOTE_ADDR'];
+
+    $statement = $db->prepare('INSERT INTO user_view_log (remote_address, user_id)
+                               VALUES(:address, :user_id)');
+    $statement->execute(array(
+        ':address' => $remote_address,
+        ':user_id' => $user_id
+    ));
+}
+
+function writeGroupViewLog($group_id)
+{
+    try {
+        $db = new Database();
+    } catch (PDOException $e) {
+        writeLogToFile('Database access error! ' . $e);
+        return false;
+    }
+
+    $remote_address = $_SERVER['REMOTE_ADDR'];
+
+    $statement = $db->prepare('INSERT INTO group_view_log (remote_address, user_id)
+                               VALUES(:address, :user_id)');
+    $statement->execute(array(
+        ':address' => $remote_address,
+        ':user_id' => $group_id
+    ));
+}
+
+function writeErrorLog($message)
+{
+    try {
+        $db = new Database();
+    } catch (PDOException $e) {
+        writeLogToFile('Database access error! ' . $e);
         return false;
     }
 
     $remote_address = $_SERVER['REMOTE_ADDR'];
     $request_uri = $_SERVER['REQUEST_URI'];
 
-    $statement = $db->prepare('INSERT INTO error_logs (remote_address, request_uri, message)
+    $statement = $db->prepare('INSERT INTO error_log (remote_address, request_uri, message)
                                VALUES(:address, :uri, :message)');
     $statement->execute(array(
         ':address' => $remote_address,
@@ -25,7 +63,8 @@ function write_log_to_db($message)
     ));
 }
 
-function write_log_to_file($message)
+
+function writeLogToFile($message)
 {
     $time = $_SERVER['REQUEST_TIME'];
     $date = date("Y-m-d H:i:s", $time);

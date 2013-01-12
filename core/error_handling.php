@@ -4,7 +4,7 @@ require_once PATH_TO_CORE . 'logging.php';
 
 function error($code, $message = '')
 {
-    write_log_to_db('Error ' . $code . ' ' . $message);
+    writeErrorLog('Error ' . $code . ' ' . $message);
     $view = new View();
     switch ($code) {
         case 400:

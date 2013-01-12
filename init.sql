@@ -102,14 +102,61 @@ ALTER TABLE group_members ADD CONSTRAINT fk_group_members_user FOREIGN KEY (user
   ON DELETE CASCADE
   ON UPDATE CASCADE;
 
+--
+-- LOGS
+--
 
-CREATE TABLE error_logs (
+CREATE TABLE error_log (
   id             INT(11)      NOT NULL AUTO_INCREMENT,
   remote_address VARCHAR(255) NOT NULL DEFAULT '',
   request_uri    VARCHAR(255) NOT NULL DEFAULT '',
   message        TEXT         NOT NULL DEFAULT '',
-  log_date       TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  time           TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT pk_error PRIMARY KEY (id)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARACTER SET = utf8
+  COLLATE = utf8_general_ci;
+
+CREATE TABLE user_view_log (
+  id             INT(11)         NOT NULL AUTO_INCREMENT,
+  user_id        BIGINT UNSIGNED NOT NULL,
+  remote_address VARCHAR(255)    NOT NULL DEFAULT '',
+  time           TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT pk_user_log PRIMARY KEY (id)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARACTER SET = utf8
+  COLLATE = utf8_general_ci;
+
+CREATE TABLE group_view_log (
+  id             INT(11)         NOT NULL AUTO_INCREMENT,
+  group_id       BIGINT UNSIGNED NOT NULL,
+  remote_address VARCHAR(255)    NOT NULL DEFAULT '',
+  time           TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT pk_user_log PRIMARY KEY (id)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARACTER SET = utf8
+  COLLATE = utf8_general_ci;
+
+--
+-- STATISTICS
+--
+
+CREATE TABLE indexed_users (
+  time   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  amount INT(11)   NOT NULL AUTO_INCREMENT,
+  CONSTRAINT pk_user_log PRIMARY KEY (TIME)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARACTER SET = utf8
+  COLLATE = utf8_general_ci;
+
+CREATE TABLE indexed_groups (
+  time   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  amount INT(11)   NOT NULL AUTO_INCREMENT,
+  CONSTRAINT pk_user_log PRIMARY KEY (TIME)
 )
   ENGINE = InnoDB
   DEFAULT CHARACTER SET = utf8

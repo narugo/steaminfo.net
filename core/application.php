@@ -36,32 +36,28 @@ class Application
         $path = explode('/', $path);
         $path = array_splice($path, 1);
 
+        self::loadController($path);
+    }
+
+    private function loadController($path)
+    {
         if (!isset($path[0])) {
-            // Showing index page
-            require PATH_TO_CONTROLLERS . 'index.php';
-            $controller = new Index();
-            $controller->index();
+            self::showHomepage();
         } else {
-            // Trying to load controller
-            $controller_path = PATH_TO_CONTROLLERS . $path[0] . '.php';
+            $controller_name = $path[0];
+            $controller_path = PATH_TO_CONTROLLERS . $controller_name . '.php';
             if (file_exists($controller_path)) {
                 require $controller_path;
                 $controller = new $path[0];
 
                 // Checking if method has been requested
-                if (isset($path[1])) {
-                    $method = $path[1];
+                $method = $path[1];
+                if (isset($method)) {
                     // TODO: Check if method is public
                     if (method_exists($controller, $method)) {
-                        // Checking if additional parameters exist
-                        if (isset($path[2])) {
-                            // Removing controller and method names
-                            $params = array_splice($path, 2);
-                            // And passing parameters to method
-                            $controller->{$method}($params);
-                        } else {
-                            $controller->{$method}();
-                        }
+                        // Removing controller and method names
+                        $params = array_splice($path, 2);
+                        $controller->{$method}($params);
                     } else {
                         error(404, 'Method not found');
                     }
@@ -72,6 +68,13 @@ class Application
                 error(404, 'Controller not found');
             }
         }
+    }
+
+    private function showHomepage()
+    {
+        require PATH_TO_CONTROLLERS . 'index.php';
+        $controller = new Index();
+        $controller->index();
     }
 
 }

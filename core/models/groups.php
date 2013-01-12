@@ -36,17 +36,13 @@ class Groups_Model extends Model
                 // TODO: Search in DB for users with that (query) nickname
                 $result = array();
         }
-        var_dump($query_type);
         return $result;
     }
-    public function getGroups($community_id, $no_update = FALSE)
+
+    public function getUsersGroups($community_id)
     {
-        if (!$this->steam->tools->users->validateUserId($community_id, TYPE_COMMUNITY_ID)) {
-            throw new WrongIDException();
-        }
-        if ($no_update === FALSE) {
-            // TODO: Get groups from Steam
-        }
+        // TODO: Get groups from Steam
+
         $statement = $this->db->prepare('SELECT id, name, url, avatar_url FROM group_members
                 INNER JOIN group ON group_members.group_id = group.id
                 WHERE user_community_id = :id');
@@ -75,7 +71,7 @@ class Groups_Model extends Model
         return $statement->fetchObject();
     }
 
-    public function updateGroupInfo($group)
+    public function updateGroupInfo($group_id)
     {
         $sql = "INSERT INTO group (
                  id,
@@ -137,8 +133,9 @@ class Groups_Model extends Model
                 }*/
     }
 
-    public function getMembers($group_id)
+    public function getGroupMembers($group_id)
     {
+        // TODO: Implement
     }
 
     public function updateValveEmployeeTags()

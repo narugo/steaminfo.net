@@ -20,6 +20,7 @@ class Users extends Controller
         $users_model = getModel('users');
         $this->view->id = $params[0];
         $this->view->profile = $users_model->getProfileSummary($this->view->id);
+        writeUserViewLog($this->view->profile->getCommunityId());
         $this->view->renderPage(
             "users/profile",
             $this->view->profile->getNickname(),
