@@ -24,7 +24,7 @@ CREATE TABLE `group` (
 CREATE TABLE user (
   community_id           BIGINT UNSIGNED NOT NULL,
   nickname               VARCHAR(64)     NOT NULL,
-  tag                    VARCHAR(32),
+  tag                    VARCHAR(255),
   avatar_url             VARCHAR(255)    NOT NULL,
   status                 INT,
   last_login_time        INT,

@@ -31,34 +31,34 @@
         <li>
             <img
                 src="http://media.steampowered.com/steamcommunity/public/images/avatars/c5/c5d56249ee5d28a07db4ac9f7f60af961fab5426.jpg"/>
-            <a href="/users/profile/76561197960287930">Rabscuttle</a>
+            <a href="/users/76561197960287930">Rabscuttle</a>
             <span class="label label-important">Valve Employee</span>
         </li>
         <li>
             <img
                 src="http://media.steampowered.com/steamcommunity/public/images/avatars/8c/8c8143c2053ea204a999584979c86503c6bd8e14.jpg"/>
-            <a href="/users/profile/76561197981595364">Auren</a>
+            <a href="/users/76561197981595364">Auren</a>
         </li>
         <li>
             <img
                 src="http://media.steampowered.com/steamcommunity/public/images/avatars/22/222baca34903d5c313c09420e0fba2f0d29ddefd.jpg"/>
-            <a href="/users/profile/76561197960860649">Zoid</a>
+            <a href="/users/76561197960860649">Zoid</a>
             <span class="label label-important">Valve Employee</span>
         </li>
         <li>
             <img
                 src="http://media.steampowered.com/steamcommunity/public/images/avatars/77/77ce1bc8f9203269f327321b399812fb98719d5c.jpg"/>
-            <a href="/users/profile/76561197994938134">Dark Deer</a>
+            <a href="/users/76561197994938134">Dark Deer</a>
         </li>
         <li>
             <img
                 src="http://media.steampowered.com/steamcommunity/public/images/avatars/2f/2f511e5a6dde6e62f1548c80f64511b01bf394d6.jpg"/>
-            <a href="/users/profile/76561197960269668">Tim</a>
+            <a href="/users/76561197960269668">Tim</a>
         </li>
         <li>
             <img
                 src="http://media.steampowered.com/steamcommunity/public/images/avatars/b4/b424c95e4008b02074cb530b35a24256b7943af3.jpg"/>
-            <a href="/users/profile/76561198014254115">IceFrog</a>
+            <a href="/users/76561198014254115">IceFrog</a>
             <span class="label label-important">Valve Employee</span>
         </li>
     </ol>
@@ -156,7 +156,7 @@
                     }
                     jQuery('<br>').appendTo('#profile-summary');
                     jQuery('<a/>', {
-                        href: '/users/profile/' + data['community_id'],
+                        href: '/users/' + data['community_id'],
                         id: 'more-link'
                     }).appendTo('#profile-summary');
                     $('#more-link').append('View more info about this user...').show();

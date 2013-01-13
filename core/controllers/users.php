@@ -10,23 +10,21 @@ class Users extends Controller
         $this->required_css = array(CSS_BOOTSTRAP, CSS_FONT_AWESOME, CSS_MAIN, CSS_USERS);
     }
 
-    function index()
+    function index($params = NULL)
     {
-        $this->view->renderPage("users/index", 'Users', $this->required_js, $this->required_css);
-    }
-
-    function profile($params)
-    {
-        $users_model = getModel('users');
-        $this->view->id = $params[0];
-        $this->view->profile = $users_model->getProfileSummary($this->view->id);
-        writeUserViewLog($this->view->profile->getCommunityId());
-        $this->view->renderPage(
-            "users/profile",
-            $this->view->profile->getNickname(),
-            $this->required_js,
-            $this->required_css
-        );
+        if (empty($params)) {
+            $this->view->renderPage("users/index", 'Users', $this->required_js, $this->required_css);
+        } else {
+            $users_model = getModel('users');
+            $this->view->profile = $users_model->getProfileSummary($params[0]);
+            writeUserViewLog($this->view->profile->getCommunityId());
+            $this->view->renderPage(
+                "users/profile",
+                $this->view->profile->getNickname(),
+                $this->required_js,
+                $this->required_css
+            );
+        }
     }
 
     function apps($params)
@@ -68,12 +66,9 @@ class Users extends Controller
     function groups($params)
     {
         $groups_model = getModel('users');
-        $this->view->groups = $groups_model->getGroups($params[0]);
-        if (is_null($this->view->groups)) {
-
-        } else {
-            $this->view->renderPage("users/includes/groups", 'Groups', $this->required_js, $this->required_css, TRUE);
-        }
+        //$this->view->groups = $groups_model->getGroups($params[0]);
+        echo "Not implemented";
+        //$this->view->renderPage("users/includes/groups", 'Groups', $this->required_js, $this->required_css, TRUE);
     }
 
     function search()

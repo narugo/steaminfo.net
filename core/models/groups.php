@@ -42,7 +42,6 @@ class Groups_Model extends Model
     public function getUsersGroups($community_id)
     {
         // TODO: Get groups from Steam
-
         $statement = $this->db->prepare('SELECT id, name, url, avatar_url FROM group_members
                 INNER JOIN group ON group_members.group_id = group.id
                 WHERE user_community_id = :id');

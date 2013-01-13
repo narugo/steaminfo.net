@@ -44,22 +44,23 @@ class Application
         if (!isset($path[0])) {
             self::showHomepage();
         } else {
-            $controller_name = $path[0];
-            $controller_path = PATH_TO_CONTROLLERS . $controller_name . '.php';
+            $controller_path = PATH_TO_CONTROLLERS . $path[0] . '.php';
             if (file_exists($controller_path)) {
                 require $controller_path;
                 $controller = new $path[0];
 
                 // Checking if method has been requested
-                $method = $path[1];
-                if (isset($method)) {
+                if (isset($path[1])) {
                     // TODO: Check if method is public
-                    if (method_exists($controller, $method)) {
+                    if (method_exists($controller, $path[1])) {
+                        $method = $path[1];
                         // Removing controller and method names
                         $params = array_splice($path, 2);
                         $controller->{$method}($params);
                     } else {
-                        error(404, 'Method not found');
+                        // Removing controller name
+                        $params = array_splice($path, 1);
+                        $controller->index($params);
                     }
                 } else {
                     $controller->index();
