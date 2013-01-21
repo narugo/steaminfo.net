@@ -37,7 +37,7 @@
             },
             minLength: 2,
             select: function (event, ui) {
-                window.location = ("/users/profile/" + ui.item.value);
+                window.location = ("/users/" + ui.item.value);
             }
         });
     });
