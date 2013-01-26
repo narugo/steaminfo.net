@@ -185,7 +185,7 @@ class Users_Model extends Model
             $friends_list = $this->steam->webapi->GetFriendList($community_id);
         } catch (Exception $e) {
             writeErrorLog($e);
-            if ($e instanceof PrivateProfileException) return STATUS_PRIVATE;
+            if ($e instanceof UnauthorizedException) return STATUS_UNAUTHORIZED;
             else if ($e instanceof SteamAPIUnavailableException) return STATUS_API_UNAVAILABLE;
             else return STATUS_UNKNOWN;
         }

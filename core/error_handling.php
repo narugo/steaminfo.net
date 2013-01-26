@@ -11,6 +11,10 @@ function error($code, $message = '')
             header("HTTP/1.0 400 Bad Request");
             $view->renderErrorPage('400', 'Bad Request');
             break;
+        case 401:
+            header("HTTP/1.1 401 Unauthorized");
+            $view->renderErrorPage('401', 'Unauthorized');
+            break;
         case 403:
             header("HTTP/1.0 403 Forbidden");
             $view->renderErrorPage('403', 'Forbidden');

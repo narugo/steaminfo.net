@@ -24,6 +24,7 @@
                 <li><a href="/users/">Users</a></li>
                 <li><a href="/groups/">Groups</a></li>
                 <li><a href="/stats/">Stats</a></li>
+                <li><a href="/dota/"><span style="color:red">Dota</span></a></li>
                 <li><a href="/about/">About</a></li>
             </ul>
         </div>

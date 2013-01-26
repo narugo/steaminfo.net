@@ -7,7 +7,7 @@ define('PATH_TO_MODELS', PATH_TO_CORE . 'models/');
  */
 define('STATUS_OUTDATED', 'outdated');
 define('STATUS_SUCCESS', 'success');
-define('STATUS_PRIVATE', 'private');
+define('STATUS_UNAUTHORIZED', 'unauthorized');
 define('STATUS_API_UNAVAILABLE', 'private');
 define('STATUS_UNKNOWN', 'unknown');
 

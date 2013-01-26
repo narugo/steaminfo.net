@@ -38,7 +38,7 @@ class Users extends Controller
             } else {
                 echo "No apps!";
             }
-        } elseif ($response['status'] === STATUS_PRIVATE) {
+        } elseif ($response['status'] === STATUS_UNAUTHORIZED) {
             echo "Profile is private!";
         } else {
             echo "Unknown error.";
@@ -56,7 +56,7 @@ class Users extends Controller
             } else {
                 echo "No friends!";
             }
-        } elseif ($response['status'] === STATUS_PRIVATE) {
+        } elseif ($response['status'] === STATUS_UNAUTHORIZED) {
             echo "Profile is private!";
         } else {
             echo "Unknown error.";

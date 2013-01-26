@@ -1,5 +1,7 @@
 <h2 id="title">Groups</h2>
 
+<div class="alert alert-error">In development.</div>
+
 <div id="search" class="input-append">
     <input id="query" class="span2" type="text" autocomplete="off" autofocus="true"
            placeholder="Group ID or Vanity URL">

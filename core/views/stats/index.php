@@ -1,3 +1,3 @@
 <h2>Stats</h2>
 
-In development.
+<div class="alert alert-error">In development.</div>
