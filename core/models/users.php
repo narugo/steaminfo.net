@@ -41,7 +41,7 @@ class Users_Model extends Model
         $statement = $this->db->prepare('
                 SELECT community_id, nickname, avatar_url, tag
                 FROM user
-                WHERE SOUNDEX(nickname) = SOUNDEX(:input)
+                WHERE SOUNDEX(nickname) = SOUNDEX(:INPUT)
                 LIMIT 0, 5
             ');
         $statement->execute(array(":input" => $this->db->quote($input)));
@@ -51,7 +51,12 @@ class Users_Model extends Model
 
     public function getProfileSummary($community_id)
     {
-        self::updateSummary($community_id);
+        self::updateSummaries(array($community_id));
+
+        // Updating bans info
+        $ban_statuses = $this->steam->webapi->GetPlayerBans(array($community_id));
+        self::updateBanStatuses($ban_statuses[0]);
+
         $statement = $this->db->prepare('SELECT * FROM user WHERE community_id=:id');
         $statement->execute(array(':id' => $community_id));
         if ($statement->rowCount() == 0) return FALSE;
@@ -86,11 +91,10 @@ class Users_Model extends Model
         return $statement->execute(array(':id' => $community_id, ':tag' => $tag));
     }
 
-    private function updateSummary($community_id)
+    public function updateSummaries($community_ids)
     {
         // Updating profile summary
-        $responce = $this->steam->webapi->GetPlayerSummaries(array($community_id));
-        $summary = $responce[0];
+        $summaries = $this->steam->webapi->GetPlayerSummaries($community_ids);
         // TODO: Add primary group to "groups" table
         $sql = "INSERT INTO user (
                 community_id,
@@ -141,26 +145,25 @@ class Users_Model extends Model
                 primary_group_id = :primary_group_id,
                 last_updated = CURRENT_TIMESTAMP";
         $statement = $this->db->prepare($sql);
-        $statement->execute(array(
-            ":community_id" => $summary->steamid,
-            ":nickname" => $summary->personaname,
-            ":avatar_url" => $summary->avatar,
-            ":creation_time" => $summary->timecreated,
-            ":real_name" => $summary->realname,
-            ":location_country_code" => $summary->loccountrycode,
-            ":location_state_code" => $summary->locstatecode,
-            ":location_city_id" => $summary->loccityid,
-            ":last_login_time" => $summary->lastlogoff,
-            ":status" => $summary->personastate,
-            ":current_game_server_ip" => $summary->gameserverip,
-            ":current_game_name" => $summary->gameextrainfo,
-            ":current_game_id" => $summary->gameid,
-            ":primary_group_id" => $summary->primaryclanid
-        ));
-
-        // Updating bans info
-        $ban_statuses = $this->steam->webapi->GetPlayerBans(array($community_id));
-        self::updateBanStatuses($ban_statuses[0]);
+        foreach ($summaries as $summary) {
+            $statement->execute(array(
+                ":community_id" => $summary->steamid,
+                ":nickname" => $summary->personaname,
+                ":avatar_url" => $summary->avatar,
+                ":creation_time" => $summary->timecreated,
+                ":real_name" => $summary->realname,
+                ":location_country_code" => $summary->loccountrycode,
+                ":location_state_code" => $summary->locstatecode,
+                ":location_city_id" => $summary->loccityid,
+                ":last_login_time" => $summary->lastlogoff,
+                ":status" => $summary->personastate,
+                ":current_game_server_ip" => $summary->gameserverip,
+                ":current_game_name" => $summary->gameextrainfo,
+                ":current_game_id" => $summary->gameid,
+                ":primary_group_id" => $summary->primaryclanid
+            ));
+            $statement->closeCursor();
+        }
     }
 
     private function updateBanStatuses($bans)

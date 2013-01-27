@@ -91,6 +91,19 @@ class Dota_Model extends Model
         $statement->execute(array(":match_id" => $match_id));
         $statement->closeCursor();
 
+        $ids = array();
+        foreach ($players as $player) {
+            if ($player->account_id == 4294967295) {
+                $player->account_id = NULL;
+            } else {
+                $steam_id = '0:0:' . ($player->account_id / 2);
+                $player->account_id = $this->steam->tools->users->steamIdToCommunityId($steam_id);
+                array_push($ids, $player->account_id);
+            }
+        }
+        $users_model = getModel('users');
+        $users_model->updateSummaries($ids);
+
         $sql = 'INSERT INTO dota_match_player (account_id, match_id, player_slot, hero_id,
                                                item_0, item_1, item_2, item_3, item_4, item_5,
                                                kills, deaths, assists, leaver_status, gold, last_hits, denies,
@@ -103,8 +116,6 @@ class Dota_Model extends Model
                         :hero_healing, :LEVEL);';
         $statement = $this->db->prepare($sql);
         foreach ($players as $player) {
-            if ($player->account_id == 4294967295)
-                $player->account_id = NULL;
             $statement->execute(array(
                 ":account_id" => $player->account_id,
                 ":match_id" => $match_id,
@@ -147,7 +158,12 @@ class Dota_Model extends Model
 
     private function getPlayers($match_id)
     {
-        $statement = $this->db->prepare('SELECT * FROM dota_match_player WHERE match_id = :match_id');
+        $sql = 'select dota_match_player.*, nickname, dota_hero.name as hero_name, dota_hero.display_name as hero_display_name
+from dota_match_player
+left join user on user.community_id = dota_match_player.account_id
+left join dota_hero on dota_hero.id = dota_match_player.hero_id
+where match_id = :match_id';
+        $statement = $this->db->prepare($sql);
         $statement->execute(array(':match_id' => $match_id));
         if ($statement->rowCount() < 1) return FALSE;
         return $statement->fetchAll(PDO::FETCH_OBJ);

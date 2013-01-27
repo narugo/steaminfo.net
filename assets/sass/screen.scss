@@ -1,16 +1,17 @@
 @import "base";
 
+
 body {
   font-family: tahoma, arial, helvetica, sans-serif;
   color: $text-main;
-  font-size: 14px;
+  font-size: $font-size-default;
   line-height: 20px;
   padding-top: 20px;
   padding-bottom: 40px;
 }
 
 .container {
-  width: 800px;
+  width: 1000px;
   margin: 0 auto;
 }
 

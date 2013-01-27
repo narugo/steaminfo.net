@@ -1,7 +1,5 @@
 <h2 id="title">Dota 2</h2>
 
-<div class="alert alert-error">In development.</div>
-
 <div id="search" class="input-append">
     <label>Search matches</label>
     <input id="query" class="span2" type="text" autocomplete="off" autofocus="true"

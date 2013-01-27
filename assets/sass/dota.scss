@@ -10,14 +10,23 @@
   text-align: center;
 }
 
-.match-table {
-  margin-top: 20px;
-  caption {
-    text-align: left;
-  }
-  .side-icon {
+.side {
+  font-size: $font-size-default;
+  font-weight: bold;
+  img {
     width: 16px;
     height: 16px;
     margin-right: 4px;
+  }
+}
+
+.match-table {
+  font-size: 12px;
+  margin-top: 20px;
+  .hero {
+    img {
+      width: 38px;
+      height: 21px;
+    }
   }
 }

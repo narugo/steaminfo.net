@@ -1,6 +1,13 @@
 <footer>
     <hr/>
-    <a href="http://steampowered.com/">Powered by Steam</a>
+
+    <div class="pull-left">
+        <a href="http://steampowered.com/">Powered by Steam</a>
+    </div>
+
+    <div class="pull-right">
+        <a href="/auth/"><img src="/assets/img/steam_login.png"/></a>
+    </div>
 </footer>
 
 </div>
