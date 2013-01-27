@@ -9,8 +9,38 @@ CREATE TABLE app (
 
 CREATE TABLE dota_hero ( 
 	id                   INT NOT NULL,
-	name                 VARCHAR( 100 ),
+	name                 VARCHAR( 100 ) NOT NULL,
+	display_name         VARCHAR( 100 ),
 	CONSTRAINT pk_dota_heroes PRIMARY KEY ( id )
+ );
+
+CREATE TABLE dota_match ( 
+	id                   INT NOT NULL,
+	start_time           INT,
+	season               INT,
+	radiant_win          BIT,
+	duration             INT,
+	tower_status_radiant INT,
+	tower_status_dire    INT,
+	barracks_status_radiant INT,
+	barracks_status_dire INT,
+	cluster              INT,
+	first_blood_time     INT,
+	lobby_type           INT,
+	human_players        INT,
+	league_id            INT,
+	positive_votes       INT,
+	negative_votes       INT,
+	game_mode            INT,
+	CONSTRAINT pk_dota_match PRIMARY KEY ( id )
+ );
+
+CREATE TABLE dota_match_view_log ( 
+	id                   INT NOT NULL AUTO_INCREMENT,
+	remote_address       VARCHAR( 100 ) NOT NULL,
+	match_id             INT NOT NULL,
+	time                 TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	CONSTRAINT pk_dota_match_view_log PRIMARY KEY ( id )
  );
 
 CREATE TABLE error_log ( 
@@ -30,6 +60,14 @@ CREATE TABLE `group` (
 	summary              VARCHAR( 45 ),
 	url                  VARCHAR( 255 ),
 	CONSTRAINT pk_group PRIMARY KEY ( id )
+ );
+
+CREATE TABLE group_view_log ( 
+	id                   INT NOT NULL AUTO_INCREMENT,
+	group_id             BIGINT UNSIGNED NOT NULL,
+	remote_address       VARCHAR( 255 ) NOT NULL DEFAULT '',
+	time                 TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	CONSTRAINT pk_user_view_log PRIMARY KEY ( id )
  );
 
 CREATE TABLE user ( 
@@ -63,37 +101,19 @@ CREATE TABLE user_profile_view_log (
 	CONSTRAINT pk_user_profile_view_log PRIMARY KEY ( id )
  );
 
-CREATE TABLE user_view_log ( 
-	id                   INT NOT NULL AUTO_INCREMENT,
-	user_id              BIGINT UNSIGNED NOT NULL,
-	remote_address       VARCHAR( 255 ) NOT NULL DEFAULT '',
-	time                 TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	CONSTRAINT pk_user_view_log PRIMARY KEY ( id )
+CREATE TABLE app_owners ( 
+	app_id               BIGINT UNSIGNED NOT NULL,
+	user_community_id    BIGINT UNSIGNED NOT NULL,
+	used_last_2_weeks    INT NOT NULL DEFAULT 0,
+	used_total           INT NOT NULL DEFAULT 0
  );
 
-CREATE TABLE dota_match ( 
-	id                   INT NOT NULL,
-	start_time           INT,
-	season               INT,
-	radiant_win          BIT,
-	duration             INT,
-	tower_status_radiant INT,
-	tower_status_dire    INT,
-	barracks_status_radiant INT,
-	barracks_status_dire INT,
-	cluster              INT,
-	first_blood_time     INT,
-	lobby_type           INT,
-	human_players        INT,
-	league_id            INT,
-	positive_votes       INT,
-	negative_votes       INT,
-	game_mode            INT,
-	CONSTRAINT pk_dota_match PRIMARY KEY ( id )
- );
+CREATE INDEX idx_app_owners ON app_owners ( app_id );
+
+CREATE INDEX idx_app_owners_0 ON app_owners ( user_community_id );
 
 CREATE TABLE dota_match_player ( 
-	account_id           INT,
+	account_id           BIGINT UNSIGNED,
 	match_id             INT NOT NULL,
 	hero_id              INT NOT NULL,
 	player_slot          INT,
@@ -123,16 +143,7 @@ CREATE INDEX idx_dota_match_player ON dota_match_player ( match_id );
 
 CREATE INDEX idx_dota_match_player_0 ON dota_match_player ( hero_id );
 
-CREATE TABLE app_owners ( 
-	app_id               BIGINT UNSIGNED NOT NULL,
-	user_community_id    BIGINT UNSIGNED NOT NULL,
-	used_last_2_weeks    INT NOT NULL DEFAULT 0,
-	used_total           INT NOT NULL DEFAULT 0
- );
-
-CREATE INDEX idx_app_owners ON app_owners ( app_id );
-
-CREATE INDEX idx_app_owners_0 ON app_owners ( user_community_id );
+CREATE INDEX idx_dota_match_player_1 ON dota_match_player ( account_id );
 
 CREATE TABLE friends ( 
 	since                INT,
@@ -157,6 +168,12 @@ ALTER TABLE app_owners ADD CONSTRAINT fk_app_owners_app FOREIGN KEY ( app_id ) R
 
 ALTER TABLE app_owners ADD CONSTRAINT fk_app_owners_user FOREIGN KEY ( user_community_id ) REFERENCES user( community_id ) ON DELETE CASCADE ON UPDATE CASCADE;
 
+ALTER TABLE dota_match_player ADD CONSTRAINT fk_dota_match_player FOREIGN KEY ( match_id ) REFERENCES dota_match( id ) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE dota_match_player ADD CONSTRAINT fk_dota_match_player_0 FOREIGN KEY ( hero_id ) REFERENCES dota_hero( id ) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE dota_match_player ADD CONSTRAINT fk_dota_match_player_1 FOREIGN KEY ( account_id ) REFERENCES user( community_id ) ON DELETE NO ACTION ON UPDATE CASCADE;
+
 ALTER TABLE friends ADD CONSTRAINT fk_friends1 FOREIGN KEY ( user_community_id1 ) REFERENCES user( community_id ) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE friends ADD CONSTRAINT fk_friends2 FOREIGN KEY ( user_community_id2 ) REFERENCES user( community_id ) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -164,8 +181,4 @@ ALTER TABLE friends ADD CONSTRAINT fk_friends2 FOREIGN KEY ( user_community_id2 
 ALTER TABLE group_members ADD CONSTRAINT fk_group_members_group FOREIGN KEY ( group_id ) REFERENCES `group`( id ) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE group_members ADD CONSTRAINT fk_group_members_user FOREIGN KEY ( user_community_id ) REFERENCES user( community_id ) ON DELETE CASCADE ON UPDATE CASCADE;
-
-ALTER TABLE dota_match_player ADD CONSTRAINT fk_dota_match_player FOREIGN KEY ( match_id ) REFERENCES dota_match( id ) ON DELETE CASCADE ON UPDATE CASCADE;
-
-ALTER TABLE dota_match_player ADD CONSTRAINT fk_dota_match_player_0 FOREIGN KEY ( hero_id ) REFERENCES dota_hero( id ) ON DELETE CASCADE ON UPDATE CASCADE;
 

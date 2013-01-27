@@ -15,7 +15,7 @@ function writeUserViewLog($user_id)
 
     $remote_address = $_SERVER['REMOTE_ADDR'];
 
-    $statement = $db->prepare('INSERT INTO user_view_log (remote_address, user_id)
+    $statement = $db->prepare('INSERT INTO user_profile_view_log (remote_address, user_id)
                                VALUES(:address, :user_id)');
     $statement->execute(array(
         ':address' => $remote_address,
@@ -34,11 +34,30 @@ function writeGroupViewLog($group_id)
 
     $remote_address = $_SERVER['REMOTE_ADDR'];
 
-    $statement = $db->prepare('INSERT INTO group_view_log (remote_address, user_id)
-                               VALUES(:address, :user_id)');
+    $statement = $db->prepare('INSERT INTO group_view_log (remote_address, group_id)
+                               VALUES(:address, :group_id)');
     $statement->execute(array(
         ':address' => $remote_address,
-        ':user_id' => $group_id
+        ':group_id' => $group_id
+    ));
+}
+
+function writeMatchViewLog($match_id)
+{
+    try {
+        $db = new Database();
+    } catch (PDOException $e) {
+        writeLogToFile('Database access error! ' . $e);
+        return false;
+    }
+
+    $remote_address = $_SERVER['REMOTE_ADDR'];
+
+    $statement = $db->prepare('INSERT INTO dota_match_view_log (remote_address, match_id)
+                               VALUES(:address, :match_id)');
+    $statement->execute(array(
+        ':address' => $remote_address,
+        ':match_id' => $match_id
     ));
 }
 

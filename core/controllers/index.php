@@ -37,9 +37,4 @@ class Index extends Controller
         echo json_encode($result);
     }
 
-    function test() {
-        $steam = new Locomotive();
-        var_dump($steam->webapi->GetPlayerBans(array(76561197968575517, 76561197960265741)));
-    }
-
 }

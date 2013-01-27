@@ -19,14 +19,12 @@ class Auth extends Controller
             } elseif ($openid->mode == 'cancel') {
                 $this->view->renderPage("auth/cancelled", 'Auth',
                     array(JS_JQUERY),
-                    array(CSS_BOOTSTRAP, CSS_MAIN, CSS_DOTA));
+                    array(CSS_BOOTSTRAP));
             } else {
-                $this->view->openid =$openid;
+                $this->view->openid = $openid;
                 $this->view->renderPage("auth/result", 'Auth',
-                    array(JS_JQUERY),
-                    array(CSS_BOOTSTRAP, CSS_MAIN, CSS_DOTA));
-
-                //echo 'User ' . ($openid->validate() ? $openid->identity . ' has ' : 'has not ') . 'logged in.';
+                    array(),
+                    array(CSS_BOOTSTRAP, CSS_MAIN));
             }
         } catch (ErrorException $e) {
             echo $e->getMessage();

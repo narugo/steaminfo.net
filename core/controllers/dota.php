@@ -24,6 +24,7 @@ class Dota extends Controller
         $dota_model = getModel('dota');
         $response = $dota_model->getMatchDetails($match_id);
         if ($response['status'] === STATUS_SUCCESS) {
+            writeMatchViewLog($match_id);
             $this->view->match = $response['match'];
             $this->view->players = $response['players'];
             $this->view->renderPage("dota/match", 'Dota 2',
