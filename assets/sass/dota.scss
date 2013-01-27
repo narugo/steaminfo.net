@@ -1,0 +1,23 @@
+@import "base";
+
+#search {
+  input {
+    width: 150px;
+  }
+}
+
+#winner {
+  text-align: center;
+}
+
+.match-table {
+  margin-top: 20px;
+  caption {
+    text-align: left;
+  }
+  .side-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+  }
+}

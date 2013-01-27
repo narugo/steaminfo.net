@@ -13,7 +13,7 @@ class Dota extends Controller
     {
         $this->view->renderPage("dota/index", 'Dota 2',
             array(JS_JQUERY),
-            array(CSS_BOOTSTRAP, CSS_MAIN));
+            array(CSS_BOOTSTRAP, CSS_MAIN, CSS_DOTA));
 
     }
 
@@ -24,10 +24,11 @@ class Dota extends Controller
         $dota_model = getModel('dota');
         $response = $dota_model->getMatchDetails($match_id);
         if ($response['status'] === STATUS_SUCCESS) {
-            $this->view->match = $response['result'];
+            $this->view->match = $response['match'];
+            $this->view->players = $response['players'];
             $this->view->renderPage("dota/match", 'Dota 2',
                 array(JS_JQUERY, JS_BOOTSTRAP),
-                array(CSS_BOOTSTRAP, CSS_MAIN));
+                array(CSS_BOOTSTRAP, CSS_MAIN, CSS_DOTA));
         } else if ($response['status'] === STATUS_UNAUTHORIZED) {
             error(401, 'Can\'t view info about this match');
         } else if ($response['status'] === STATUS_API_UNAVAILABLE) {

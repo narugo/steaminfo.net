@@ -1,8 +1,11 @@
 <div class="alert alert-error">In development.</div>
 
-<?php $match = $this->match; ?>
+<?php
+$match = $this->match;
+$players = $this->players;
+?>
 
-<h3>Match #<?php echo $match->match_id; ?></h3>
+<h3>Match #<?php echo $match->id; ?></h3>
 
 Game mode: <?php echo $match->game_mode; ?>
 
@@ -17,7 +20,7 @@ Game mode: <?php echo $match->game_mode; ?>
     <br/>Season: <?php echo $match->season; ?>
 </p>
 
-<h4>
+<h4 id="winner">
     <?php
     if ($match->radiant_win)
         echo "Radiant victory!";
@@ -26,8 +29,8 @@ Game mode: <?php echo $match->game_mode; ?>
     ?>
 </h4>
 
-<table id="match-table" class="table table-condensed">
-    <thead>
+<?php
+$table_header = '<thead>
     <tr>
         <th class="player">Player</th>
         <th class="level">Level</th>
@@ -46,38 +49,84 @@ Game mode: <?php echo $match->game_mode; ?>
         <th class="tower_damage">Tower damage</th>
         <th class="hero_healing">Hero healing</th>
     </tr>
-    </thead>
+    </thead>';
+?>
+
+<table class="match-table table table-condensed table-hover">
+    <caption><img class="side-icon" src="/assets/img/dota/pip_radiant.png"/>The Radiant</caption>
+    <?php echo $table_header; ?>
     <tbody>
-    <?php foreach ($match->players as $player) : ?>
-        <tr>
-            <th class="player">
-                <?php
-                if ($player->account_id == 4294967295) echo "<em>Private</em>";
-                else echo $player->account_id;
-                ?>
-            </th>
-            <th class="level"><?php echo $player->kills; ?></th>
-            <th class="hero"><?php echo $player->hero_id; ?></th>
-            <th class="kills"><?php echo $player->kills; ?></th>
-            <th class="deaths"><?php echo $player->deaths; ?></th>
-            <th class="assists"><?php echo $player->assists; ?></th>
-            <th class="item_0"><?php echo $player->item_0; ?></th>
-            <th class="item_1"><?php echo $player->item_1; ?></th>
-            <th class="item_2"><?php echo $player->item_2; ?></th>
-            <th class="item_3"><?php echo $player->item_3; ?></th>
-            <th class="item_4"><?php echo $player->item_4; ?></th>
-            <th class="item_5"><?php echo $player->item_5; ?></th>
-            <th class="gold"><?php echo $player->gold; ?></th>
-            <th class="last_hits"><?php echo $player->last_hits; ?></th>
-            <th class="denies"><?php echo $player->denies; ?></th>
-            <th class="gold_per_min"><?php echo $player->gold_per_min; ?></th>
-            <th class="xp_per_min"><?php echo $player->xp_per_min; ?></th>
-            <th class="gold_spent"><?php echo $player->gold_spent; ?></th>
-            <th class="hero_damage"><?php echo $player->hero_damage; ?></th>
-            <th class="tower_damage"><?php echo $player->tower_damage; ?></th>
-            <th class="hero_healing"><?php echo $player->hero_healing; ?></th>
-        </tr>
-    <?php endforeach; ?>
+    <?php foreach ($players as $player) :
+        if ($player->player_slot < 100) {
+            ?>
+            <tr>
+                <th class="player">
+                    <?php
+                    if (empty($player->account_id)) echo "<em>Private</em>";
+                    else echo $player->account_id;
+                    ?>
+                </th>
+                <th class="level"><?php echo $player->kills; ?></th>
+                <th class="hero"><?php echo $player->hero_id; ?></th>
+                <th class="kills"><?php echo $player->kills; ?></th>
+                <th class="deaths"><?php echo $player->deaths; ?></th>
+                <th class="assists"><?php echo $player->assists; ?></th>
+                <th class="item_0"><?php echo $player->item_0; ?></th>
+                <th class="item_1"><?php echo $player->item_1; ?></th>
+                <th class="item_2"><?php echo $player->item_2; ?></th>
+                <th class="item_3"><?php echo $player->item_3; ?></th>
+                <th class="item_4"><?php echo $player->item_4; ?></th>
+                <th class="item_5"><?php echo $player->item_5; ?></th>
+                <th class="gold"><?php echo $player->gold; ?></th>
+                <th class="last_hits"><?php echo $player->last_hits; ?></th>
+                <th class="denies"><?php echo $player->denies; ?></th>
+                <th class="gold_per_min"><?php echo $player->gold_per_min; ?></th>
+                <th class="xp_per_min"><?php echo $player->xp_per_min; ?></th>
+                <th class="gold_spent"><?php echo $player->gold_spent; ?></th>
+                <th class="hero_damage"><?php echo $player->hero_damage; ?></th>
+                <th class="tower_damage"><?php echo $player->tower_damage; ?></th>
+                <th class="hero_healing"><?php echo $player->hero_healing; ?></th>
+            </tr>
+        <?php } endforeach; ?>
+    </tbody>
+</table>
+
+<table class="match-table table table-condensed table-hover">
+    <caption><img class="side-icon" src="/assets/img/dota/pip_dire.png"/>The Dire</caption>
+    <?php echo $table_header; ?>
+    <tbody>
+    <?php foreach ($players as $player) :
+        if ($player->player_slot > 100) {
+            ?>
+            <tr>
+                <th class="player">
+                    <?php
+                    if (empty($player->account_id)) echo "<em>Private</em>";
+                    else echo $player->account_id;
+                    ?>
+                </th>
+                <th class="level"><?php echo $player->kills; ?></th>
+                <th class="hero"><?php echo $player->hero_id; ?></th>
+                <th class="kills"><?php echo $player->kills; ?></th>
+                <th class="deaths"><?php echo $player->deaths; ?></th>
+                <th class="assists"><?php echo $player->assists; ?></th>
+                <th class="item_0"><?php echo $player->item_0; ?></th>
+                <th class="item_1"><?php echo $player->item_1; ?></th>
+                <th class="item_2"><?php echo $player->item_2; ?></th>
+                <th class="item_3"><?php echo $player->item_3; ?></th>
+                <th class="item_4"><?php echo $player->item_4; ?></th>
+                <th class="item_5"><?php echo $player->item_5; ?></th>
+                <th class="gold"><?php echo $player->gold; ?></th>
+                <th class="last_hits"><?php echo $player->last_hits; ?></th>
+                <th class="denies"><?php echo $player->denies; ?></th>
+                <th class="gold_per_min"><?php echo $player->gold_per_min; ?></th>
+                <th class="xp_per_min"><?php echo $player->xp_per_min; ?></th>
+                <th class="gold_spent"><?php echo $player->gold_spent; ?></th>
+                <th class="hero_damage"><?php echo $player->hero_damage; ?></th>
+                <th class="tower_damage"><?php echo $player->tower_damage; ?></th>
+                <th class="hero_healing"><?php echo $player->hero_healing; ?></th>
+            </tr>
+        <?php } endforeach; ?>
     </tbody>
 </table>
 

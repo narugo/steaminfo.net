@@ -73,8 +73,55 @@ CREATE TABLE user_view_log (
 
 CREATE TABLE dota_match ( 
 	id                   INT NOT NULL,
+	start_time           INT,
+	season               INT,
+	radiant_win          BIT,
+	duration             INT,
+	tower_status_radiant INT,
+	tower_status_dire    INT,
+	barracks_status_radiant INT,
+	barracks_status_dire INT,
+	cluster              INT,
+	first_blood_time     INT,
+	lobby_type           INT,
+	human_players        INT,
+	league_id            INT,
+	positive_votes       INT,
+	negative_votes       INT,
+	game_mode            INT,
 	CONSTRAINT pk_dota_match PRIMARY KEY ( id )
  );
+
+CREATE TABLE dota_match_player ( 
+	account_id           INT,
+	match_id             INT NOT NULL,
+	hero_id              INT NOT NULL,
+	player_slot          INT,
+	item_0               INT,
+	item_1               INT,
+	item_2               INT,
+	item_3               INT,
+	item_4               INT,
+	item_5               INT,
+	kills                INT,
+	deaths               INT,
+	assists              INT,
+	leaver_status        INT,
+	gold                 INT,
+	last_hits            INT,
+	denies               INT,
+	gold_per_min         INT,
+	xp_per_min           INT,
+	gold_spent           INT,
+	hero_damage          INT,
+	tower_damage         INT,
+	hero_healing         INT,
+	level                INT
+ );
+
+CREATE INDEX idx_dota_match_player ON dota_match_player ( match_id );
+
+CREATE INDEX idx_dota_match_player_0 ON dota_match_player ( hero_id );
 
 CREATE TABLE app_owners ( 
 	app_id               BIGINT UNSIGNED NOT NULL,
@@ -117,4 +164,8 @@ ALTER TABLE friends ADD CONSTRAINT fk_friends2 FOREIGN KEY ( user_community_id2 
 ALTER TABLE group_members ADD CONSTRAINT fk_group_members_group FOREIGN KEY ( group_id ) REFERENCES `group`( id ) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE group_members ADD CONSTRAINT fk_group_members_user FOREIGN KEY ( user_community_id ) REFERENCES user( community_id ) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE dota_match_player ADD CONSTRAINT fk_dota_match_player FOREIGN KEY ( match_id ) REFERENCES dota_match( id ) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE dota_match_player ADD CONSTRAINT fk_dota_match_player_0 FOREIGN KEY ( hero_id ) REFERENCES dota_hero( id ) ON DELETE CASCADE ON UPDATE CASCADE;
 
