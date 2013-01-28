@@ -96,7 +96,9 @@ class Dota_Model extends Model
             if ($player->account_id == 4294967295) {
                 $player->account_id = NULL;
             } else {
-                $steam_id = '0:0:' . ($player->account_id / 2);
+                $odd_id = $player->account_id % 2;
+                $temp = floor($player->account_id / 2);
+                $steam_id = '0:'.$odd_id . ':' . $temp;
                 $player->account_id = $this->steam->tools->users->steamIdToCommunityId($steam_id);
                 array_push($ids, $player->account_id);
             }
