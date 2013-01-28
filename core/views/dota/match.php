@@ -44,7 +44,7 @@ function printPlayer($player)
     echo '</th>';
     echo '<th class="level">' . $player->level . '</th>';
     echo '<th class="hero">';
-    echo '<img src="/assets/img/dota/heroes/' . substr($player->hero_name, 14) . '.png"/> ';
+    echo '<img src="http://media.steampowered.com/apps/dota2/images/heroes/' . substr($player->hero_name, 14) . '_sb.png"/> ';
     if (empty($player->hero_display_name)) {
         echo $player->hero_name;
     } else {

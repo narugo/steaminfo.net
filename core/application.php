@@ -36,6 +36,7 @@ class Application
         $path = explode('/', $path);
         $path = array_splice($path, 1);
 
+        session_start();
         self::loadController($path);
     }
 

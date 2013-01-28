@@ -10,7 +10,6 @@ class Control extends Controller
 
     function index()
     {
-        session_start();
         if (empty($_SESSION['id'])) {
             $this->view->renderPage("control/no_login", 'Control panel',
                 array(JS_JQUERY, JS_BOOTSTRAP),

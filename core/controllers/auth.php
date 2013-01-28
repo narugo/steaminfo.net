@@ -11,7 +11,6 @@ class Auth extends Controller
 
     function index()
     {
-        session_start();
         if (!empty($_SESSION['id'])) {
             header('Location: https://steaminfo.net/control/');
         } else {
@@ -38,14 +37,12 @@ class Auth extends Controller
 
     function logout()
     {
-        session_start();
         unset($_SESSION['id']);
         header('Location: https://steaminfo.net/');
     }
 
     function id()
     {
-        session_start();
         var_dump($_SESSION['id']);
     }
 

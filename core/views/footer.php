@@ -7,7 +7,6 @@
 
     <div class="pull-right" style="font-size: 12px;">
         <?php
-        session_start();
         if (empty($_SESSION['id'])) {
             ?>
             <a href="/auth/"><img src="/assets/img/steam_login.png"/></a>
