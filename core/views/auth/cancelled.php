@@ -1,1 +1,0 @@
-User has canceled authentication!

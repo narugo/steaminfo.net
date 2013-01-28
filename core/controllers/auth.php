@@ -11,24 +11,42 @@ class Auth extends Controller
 
     function index()
     {
-        try {
-            $openid = new LightOpenID('steaminfo.net');
-            if (!$openid->mode) {
-                $openid->identity = 'https://steamcommunity.com/openid/';
-                header('Location: ' . $openid->authUrl());
-            } elseif ($openid->mode == 'cancel') {
-                $this->view->renderPage("auth/cancelled", 'Auth',
-                    array(JS_JQUERY),
-                    array(CSS_BOOTSTRAP));
-            } else {
-                $this->view->openid = $openid;
-                $this->view->renderPage("auth/result", 'Auth',
-                    array(),
-                    array(CSS_BOOTSTRAP, CSS_MAIN));
+        session_start();
+        if (!empty($_SESSION['id'])) {
+            header('Location: https://steaminfo.net/control/');
+        } else {
+            try {
+                $openid = new LightOpenID('steaminfo.net');
+                if (!$openid->mode) {
+                    $openid->identity = 'https://steamcommunity.com/openid/';
+                    header('Location: ' . $openid->authUrl());
+                } elseif ($openid->mode == 'cancel') {
+                    echo "Auth cancelled!";
+                } else {
+                    if ($openid->validate()) {
+                        $_SESSION['id'] = $openid->identity;
+                        header('Location: https://steaminfo.net/auth/');
+                    } else {
+                        echo "You are NOT logged in!";
+                    }
+                }
+            } catch (ErrorException $e) {
+                error(500, $e);
             }
-        } catch (ErrorException $e) {
-            echo $e->getMessage();
         }
+    }
+
+    function logout()
+    {
+        session_start();
+        unset($_SESSION['id']);
+        header('Location: https://steaminfo.net/');
+    }
+
+    function id()
+    {
+        session_start();
+        var_dump($_SESSION['id']);
     }
 
 }

@@ -1,0 +1,1 @@
+You aren't welcome here, <?php echo str_replace('http://steamcommunity.com/openid/id/', '',$_SESSION['id']); ?>.

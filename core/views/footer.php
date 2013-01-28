@@ -5,8 +5,16 @@
         <a href="http://steampowered.com/">Powered by Steam</a>
     </div>
 
-    <div class="pull-right">
-        <a href="/auth/"><img src="/assets/img/steam_login.png"/></a>
+    <div class="pull-right" style="font-size: 12px;">
+        <?php
+        session_start();
+        if (empty($_SESSION['id'])) {
+            ?>
+            <a href="/auth/"><img src="/assets/img/steam_login.png"/></a>
+        <?php } else { ?>
+            <em><?php echo str_replace('http://steamcommunity.com/openid/id/', '', $_SESSION['id']); ?></em>
+            | <a href="/control/">Control</a> | <a href="/auth/logout/">Logout</a>
+        <?php } ?>
     </div>
 </footer>
 
