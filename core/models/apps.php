@@ -11,8 +11,8 @@ class Apps_Model extends Model
 
     public function updateAppsInfo($apps)
     {
-        $sql = 'INSERT INTO app (id, name, logo_url) VALUES (:id, :name, :logo_url)
-                ON DUPLICATE KEY UPDATE id = :id, name = :name, logo_url = :logo_url;';
+        $sql = 'INSERT INTO app (id, NAME, logo_url) VALUES (:id, :NAME, :logo_url)
+                ON DUPLICATE KEY UPDATE id = :id, NAME = :NAME, logo_url = :logo_url;';
         $statement = $this->db->prepare($sql);
         foreach ($apps as $app) {
             $statement->execute(array(
@@ -28,7 +28,7 @@ class Apps_Model extends Model
         $status = self::updateUserApps($community_id);
 
         if ($status === STATUS_SUCCESS) {
-            $statement = $this->db->prepare('SELECT id, name, logo_url, used_total, used_last_2_weeks FROM app_owners
+            $statement = $this->db->prepare('SELECT id, NAME, logo_url, used_total, used_last_2_weeks FROM app_owners
             INNER JOIN app ON app_owners.app_id = app.id WHERE user_community_id = :id');
             $statement->execute(array(':id' => $community_id));
             return array(
@@ -62,8 +62,16 @@ class Apps_Model extends Model
         // Adding new
         $sql = "INSERT INTO app_owners (app_id, user_community_id, used_total, used_last_2_weeks) VALUES";
         foreach ($apps as $app) {
-            if (empty($app->hoursOnRecord)) $app->hoursOnRecord = 0;
-            if (empty($app->hoursLast2Weeks)) $app->hoursLast2Weeks = 0;
+            if (empty($app->hoursOnRecord)) {
+                $app->hoursOnRecord = 0;
+            } else {
+                $app->hoursOnRecord = str_replace(',', '', $app->hoursOnRecord);
+            }
+            if (empty($app->hoursLast2Weeks)) {
+                $app->hoursLast2Weeks = 0;
+            } else {
+                $app->hoursOnRecord = str_replace(',', '', $app->hoursLast2Weeks);
+            }
             $sql = $sql . "($app->appID, $community_id, $app->hoursOnRecord, $app->hoursLast2Weeks),";
         }
         $sql = substr($sql, 0, -1) . ";";

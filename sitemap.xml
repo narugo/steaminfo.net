@@ -14,7 +14,13 @@
         <loc>http://steaminfo.net/groups/</loc>
     </url>
     <url>
+        <loc>http://steaminfo.net/dota/</loc>
+    </url>
+    <url>
         <loc>http://steaminfo.net/stats/</loc>
+    </url>
+    <url>
+        <loc>http://steaminfo.net/api/</loc>
     </url>
     <url>
         <loc>http://steaminfo.net/about/</loc>

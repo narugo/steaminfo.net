@@ -10,19 +10,24 @@
   text-align: center;
 }
 
-.side {
+.team {
   font-size: $font-size-default;
   font-weight: bold;
-  img {
-    width: 16px;
-    height: 16px;
+  .team-icon {
+    width: 30px;
+    height: 30px;
+    margin-right: 8px;
+  }
+  .team-logo {
+    width: 50px;
+    height: 30px;
     margin-right: 4px;
   }
 }
 
 .match-table {
+  margin-bottom: 30px;
   font-size: 12px;
-  margin-top: 20px;
   .hero {
     img {
       width: 38px;

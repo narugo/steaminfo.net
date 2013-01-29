@@ -1,19 +1,19 @@
 <?php
 
-define(PATH_TO_LIBS, PATH_TO_CORE . 'libs/');
+define(PATH_TO_LIBS, CORE_DIR . 'libs/');
 
 /**
  * Main modules
  */
-require_once PATH_TO_CORE . 'logging.php';
-require_once PATH_TO_CORE . 'error_handling.php';
-require_once PATH_TO_CORE . 'controller.php';
-require_once PATH_TO_CORE . 'view.php';
-require_once PATH_TO_CORE . 'database.php';
-require_once PATH_TO_CORE . 'model.php';
+require_once CORE_DIR . 'logging.php';
+require_once CORE_DIR . 'error_handling.php';
+require_once CORE_DIR . 'controller.php';
+require_once CORE_DIR . 'view.php';
+require_once CORE_DIR . 'database.php';
+require_once CORE_DIR . 'model.php';
 
 // Assets
-require_once PATH_TO_CORE . 'assets.php';
+require_once CORE_DIR . 'assets.php';
 
 // Libraries
 require_once PATH_TO_LIBS . 'libs.php';

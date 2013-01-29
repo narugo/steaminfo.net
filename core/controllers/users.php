@@ -13,7 +13,7 @@ class Users extends Controller
     function index($params = NULL)
     {
         if (empty($params)) {
-            $this->view->renderPage("users/index", 'Users', $this->required_js, $this->required_css);
+            $this->view->renderPage("users/index", 'Steam Info - Users', $this->required_js, $this->required_css);
         } else {
             $users_model = getModel('users');
             $this->view->profile = $users_model->getProfileSummary($params[0]);
@@ -34,12 +34,14 @@ class Users extends Controller
         if ($response['status'] === STATUS_SUCCESS) {
             $this->view->apps = $response['result'];
             if (!empty($this->view->apps)) {
-                $this->view->renderPage("users/includes/apps", 'Apps', $this->required_js, $this->required_css, TRUE);
+                $this->view->renderPage("users/includes/apps", 'Steam Info - Users - Apps', $this->required_js, $this->required_css, TRUE);
             } else {
                 echo "No apps!";
             }
         } elseif ($response['status'] === STATUS_UNAUTHORIZED) {
             echo "Profile is private!";
+        } elseif ($response['status'] === STATUS_API_UNAVAILABLE) {
+            echo "Steam API is unavailable!";
         } else {
             echo "Unknown error.";
         }
@@ -52,7 +54,7 @@ class Users extends Controller
         if ($response['status'] === STATUS_SUCCESS) {
             $this->view->friends = $response['result'];
             if (!empty($this->view->friends)) {
-                $this->view->renderPage("users/includes/friends", 'Friends', $this->required_js, $this->required_css, TRUE);
+                $this->view->renderPage("users/includes/friends", 'Steam Info - Users - Friends', $this->required_js, $this->required_css, TRUE);
             } else {
                 echo "No friends!";
             }
@@ -68,7 +70,7 @@ class Users extends Controller
         $groups_model = getModel('users');
         //$this->view->groups = $groups_model->getGroups($params[0]);
         echo "Not implemented";
-        //$this->view->renderPage("users/includes/groups", 'Groups', $this->required_js, $this->required_css, TRUE);
+        //$this->view->renderPage("users/includes/groups", 'Steam Info - Users - Groups', $this->required_js, $this->required_css, TRUE);
     }
 
     function search()

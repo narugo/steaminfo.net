@@ -11,7 +11,7 @@ class Dota extends Controller
 
     function index()
     {
-        $this->view->renderPage("dota/index", 'Dota 2',
+        $this->view->renderPage("dota/index", 'Dota 2 - Match Info',
             array(JS_JQUERY),
             array(CSS_BOOTSTRAP, CSS_MAIN, CSS_DOTA));
 

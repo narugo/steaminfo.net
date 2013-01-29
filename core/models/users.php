@@ -25,7 +25,7 @@ class Users_Model extends Model
                 break;
             case TYPE_VANITY:
                 // TODO: Search in DB for other users (maybe nickname has been requested, not Vanity URL)
-                $community_id = $this->steam->webapi->ResolveVanityURL($query);
+                $community_id = $this->steam->ISteamUser->ResolveVanityURL($query);
                 $result = self::getProfileSummary($community_id);
                 break;
             default:
@@ -54,8 +54,8 @@ class Users_Model extends Model
         self::updateSummaries(array($community_id));
 
         // Updating bans info
-        $ban_statuses = $this->steam->webapi->GetPlayerBans(array($community_id));
-        self::updateBanStatuses($ban_statuses[0]);
+        $ban_status = $this->steam->ISteamUser->GetPlayerBans(array($community_id));
+        self::updateBanStatuses($ban_status->players[0]);
 
         $statement = $this->db->prepare('SELECT * FROM user WHERE community_id=:id');
         $statement->execute(array(':id' => $community_id));
@@ -94,7 +94,12 @@ class Users_Model extends Model
     public function updateSummaries($community_ids)
     {
         // Updating profile summary
-        $summaries = $this->steam->webapi->GetPlayerSummaries($community_ids);
+        $summaries = array();
+        foreach (array_chunk($community_ids, 100) as $chunk) {
+           $result = $this->steam->ISteamUser->GetPlayerSummaries($chunk);
+            $summaries = array_merge($summaries, $result->response->players);
+        }
+
         // TODO: Add primary group to "groups" table
         $sql = "INSERT INTO user (
                 community_id,
@@ -185,7 +190,7 @@ class Users_Model extends Model
     private function updateFriendsList($community_id)
     {
         try {
-            $friends_list = $this->steam->webapi->GetFriendList($community_id);
+            $friends_list = $this->steam->ISteamUser->GetFriendList($community_id);
         } catch (Exception $e) {
             writeErrorLog($e);
             if ($e instanceof UnauthorizedException) return STATUS_UNAUTHORIZED;

@@ -7,7 +7,7 @@
     <button id="search-submit" class="btn btn-primary" type="button">Search</button>
 </div>
 
-Try <strong>67100756</strong>.
+Try <strong><a href="/dota/match/37623177">37623177</a></strong>.
 
 <script type="text/javascript">
     $(document).ready(function () {

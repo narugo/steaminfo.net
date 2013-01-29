@@ -13,9 +13,10 @@ class Dota_Model extends Model
     {
         $match = self::getMatch($match_id);
         $players = self::getPlayers($match->id);
+
         if (!$match OR !$players) {
             try {
-                $response = $this->steam->webapi->GetMatchDetails($match_id);
+                $response = $this->steam->IDOTA2Match_570->GetMatchDetails($match_id);
             } catch (Exception $e) {
                 if ($e instanceof SteamAPIUnavailableException) {
                     return array('status' => STATUS_API_UNAVAILABLE);
@@ -37,7 +38,7 @@ class Dota_Model extends Model
 
     public function updateHeroes()
     {
-        $heroes = $this->steam->webapi->GetHeroes();
+        $heroes = $this->steam->IEconDOTA2_570->GetHeroes();
         $sql = 'INSERT INTO dota_hero (id, NAME) VALUES (:id, :NAME)
                 ON DUPLICATE KEY UPDATE id = :id, NAME = :NAME;';
         $statement = $this->db->prepare($sql);
@@ -51,14 +52,21 @@ class Dota_Model extends Model
 
     private function addMatch($match)
     {
+        if (!empty($match->radiant_logo)) $match->radiant_logo =  self::getTeamLogo($match->radiant_logo);
+        if (!empty($match->dire_logo)) $match->dire_logo =  self::getTeamLogo($match->dire_logo);
+
         $sql = 'INSERT INTO dota_match (id, start_time, season, radiant_win, duration, tower_status_radiant,
                                         tower_status_dire, barracks_status_radiant, barracks_status_dire, cluster,
                                         first_blood_time, lobby_type, human_players, league_id, positive_votes,
-                                        negative_votes, game_mode)
+                                        negative_votes, game_mode,
+                                        radiant_name, radiant_logo, radiant_team_complete,
+                                        dire_name, dire_logo, dire_team_complete)
                 VALUES (:id, :start_time, :season, :radiant_win, :duration, :tower_status_radiant,
                         :tower_status_dire, :barracks_status_radiant, :barracks_status_dire, :cluster,
                         :first_blood_time, :lobby_type, :human_players, :league_id, :positive_votes,
-                        :negative_votes, :game_mode);';
+                        :negative_votes, :game_mode,
+                        :radiant_name, :radiant_logo, :radiant_team_complete,
+                        :dire_name, :dire_logo, :dire_team_complete);';
         $statement = $this->db->prepare($sql);
         $statement->execute(array(
             ":id" => $match->match_id,
@@ -77,7 +85,13 @@ class Dota_Model extends Model
             ":league_id" => $match->leagueid,
             ":positive_votes" => $match->positive_votes,
             ":negative_votes" => $match->negative_votes,
-            ":game_mode" => $match->game_mode));
+            ":game_mode" => $match->game_mode,
+            ":radiant_name" => $match->radiant_name,
+            ":radiant_logo" => $match->radiant_logo,
+            ":radiant_team_complete" => $match->radiant_team_complete,
+            ":dire_name" => $match->dire_name,
+            ":dire_logo" => $match->dire_logo,
+            ":dire_team_complete" => $match->dire_team_complete));
         $statement->closeCursor();
 
         self::addPlayers($match->players, $match->match_id);
@@ -98,7 +112,7 @@ class Dota_Model extends Model
             } else {
                 $odd_id = $player->account_id % 2;
                 $temp = floor($player->account_id / 2);
-                $steam_id = '0:'.$odd_id . ':' . $temp;
+                $steam_id = '0:' . $odd_id . ':' . $temp;
                 $player->account_id = $this->steam->tools->users->steamIdToCommunityId($steam_id);
                 array_push($ids, $player->account_id);
             }
@@ -160,15 +174,27 @@ class Dota_Model extends Model
 
     private function getPlayers($match_id)
     {
-        $sql = 'select dota_match_player.*, nickname, dota_hero.name as hero_name, dota_hero.display_name as hero_display_name
-from dota_match_player
-left join user on user.community_id = dota_match_player.account_id
-left join dota_hero on dota_hero.id = dota_match_player.hero_id
-where match_id = :match_id';
+        $sql = 'SELECT dota_match_player.*, nickname, dota_hero.name AS hero_name, dota_hero.display_name AS hero_display_name
+                FROM dota_match_player
+                LEFT JOIN user ON user.community_id = dota_match_player.account_id
+                LEFT JOIN dota_hero ON dota_hero.id = dota_match_player.hero_id
+                WHERE match_id = :match_id';
         $statement = $this->db->prepare($sql);
         $statement->execute(array(':match_id' => $match_id));
         if ($statement->rowCount() < 1) return FALSE;
         return $statement->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    private function getTeamLogo($logo_id){
+       $response= $this->steam->ISteamRemoteStorage->GetUGCFileDetails($logo_id, 570);
+        $path = PATH_TO_ASSETS.'img/dota/'.$response->data->filename.'.png';
+        $fp = fopen($path, 'w');
+        $ch = curl_init($response->data->url);
+        curl_setopt($ch, CURLOPT_FILE, $fp);
+        curl_exec($ch);
+        curl_close($ch);
+        fclose($fp);
+        return $response->data->filename.'.png';
     }
 
 }

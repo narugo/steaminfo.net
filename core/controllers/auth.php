@@ -12,10 +12,10 @@ class Auth extends Controller
     function index()
     {
         if (!empty($_SESSION['id'])) {
-            header('Location: https://steaminfo.net/control/');
+            header('Location: ' . WEBSITE_URL . 'control/');
         } else {
             try {
-                $openid = new LightOpenID('steaminfo.net');
+                $openid = new LightOpenID(HOSTNAME);
                 if (!$openid->mode) {
                     $openid->identity = 'https://steamcommunity.com/openid/';
                     header('Location: ' . $openid->authUrl());
@@ -23,8 +23,8 @@ class Auth extends Controller
                     echo "Auth cancelled!";
                 } else {
                     if ($openid->validate()) {
-                        $_SESSION['id'] = $openid->identity;
-                        header('Location: https://steaminfo.net/auth/');
+                        $_SESSION['id'] = str_replace('http://steamcommunity.com/openid/id/', '', $openid->identity);
+                        header('Location: ' . WEBSITE_URL . 'auth/');
                     } else {
                         echo "You are NOT logged in!";
                     }
@@ -38,7 +38,7 @@ class Auth extends Controller
     function logout()
     {
         unset($_SESSION['id']);
-        header('Location: https://steaminfo.net/');
+        header('Location: ' . WEBSITE_URL);
     }
 
     function id()

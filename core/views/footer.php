@@ -2,7 +2,8 @@
     <hr/>
 
     <div class="pull-left">
-        <a href="http://steampowered.com/">Powered by Steam</a>
+        <a href="http://steampowered.com/">Powered by Steam</a>,
+        created by <a href="http://tsukanov.me">me</a>.
     </div>
 
     <div class="pull-right" style="font-size: 12px;">

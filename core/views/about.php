@@ -2,7 +2,7 @@
 
 <p>
     This website is an interface to different Steam APIs. <b>Most features are
-        not implemented yet.</b> Source code is hosted <a href="https://github.com/Tsukanov/steam-info">on
+        not implemented yet.</b> Source code is hosted <a href="https://github.com/Tsukanov/steaminfo.net">on
         GitHub</a>.
 </p>
 

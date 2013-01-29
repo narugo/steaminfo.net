@@ -13,7 +13,7 @@ class Groups extends Controller
     {
         $this->required_js = array(JS_JQUERY, JS_BOOTSTRAP);
         $this->required_css = array(CSS_BOOTSTRAP, CSS_FONT_AWESOME, CSS_MAIN);
-        $this->view->renderPage("groups/index", 'Groups', $this->required_js, $this->required_css);
+        $this->view->renderPage("groups/index", 'Steam Info - Groups', $this->required_js, $this->required_css);
     }
 
     function search()

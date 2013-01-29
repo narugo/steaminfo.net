@@ -1,7 +1,7 @@
 <?php
 
-define('PATH_TO_JS', PATH_TO_ASSETS . 'js/');
-define('PATH_TO_CSS', PATH_TO_ASSETS . 'css/');
+define('PATH_TO_JS', ASSETS_DIR_URL . 'js/');
+define('PATH_TO_CSS', ASSETS_DIR_URL . 'css/');
 
 /**
  * JS

@@ -1,6 +1,6 @@
 <?php
 
-define('PATH_TO_CONTROLLERS', PATH_TO_CORE . 'controllers/');
+define('PATH_TO_CONTROLLERS', CORE_DIR . 'controllers/');
 
 class Controller
 {

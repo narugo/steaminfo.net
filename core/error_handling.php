@@ -1,12 +1,12 @@
 <?php
 
-require_once PATH_TO_CORE . 'logging.php';
+require_once CORE_DIR . 'logging.php';
 
-function error($code, $message = '')
+function error($http_status, $message = '')
 {
-    writeErrorLog('Error ' . $code . ' ' . $message);
+    writeErrorLog('Error ' . $http_status . ' ' . $message);
     $view = new View();
-    switch ($code) {
+    switch ($http_status) {
         case 400:
             header("HTTP/1.0 400 Bad Request");
             $view->renderErrorPage('400', 'Bad Request');

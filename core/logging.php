@@ -1,6 +1,6 @@
 <?php
 
-require_once PATH_TO_CORE . 'database.php';
+require_once CORE_DIR . 'database.php';
 
 define('DEFAULT_LOG_FILE', '/home/roman/web/steaminfo.net/main.log');
 

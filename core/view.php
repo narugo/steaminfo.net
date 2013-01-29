@@ -1,6 +1,6 @@
 <?php
 
-define('PATH_TO_VIEWS', PATH_TO_CORE . 'views/');
+define('PATH_TO_VIEWS', CORE_DIR . 'views/');
 
 class View
 {
