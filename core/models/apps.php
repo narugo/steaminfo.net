@@ -26,7 +26,7 @@ class Apps_Model extends Model
     {
         $cache_key = 'apps_owned_by_' . $community_id;
         $apps = $this->memcached->get($cache_key);
-        if ($apps == FALSE) {
+        if ($apps === FALSE) {
             self::updateOwnedApps($community_id);
             $statement = $this->db->prepare('SELECT id, `name`, logo_url, used_total, used_last_2_weeks FROM app_owners
             INNER JOIN app ON app_owners.app_id = app.id WHERE user_community_id = :id');

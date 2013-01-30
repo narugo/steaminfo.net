@@ -9,6 +9,30 @@
 
 Try <strong><a href="/dota/match/37623177">37623177</a></strong>.
 
+<hr/>
+
+<?php if (!empty($this->live_matches)) : ?>
+<strong>Live league matches:</strong>
+<div class="well well-small">
+    <?php var_dump($this->live_matches); ?>
+</div>
+<?php endif; ?>
+
+<strong>Leagues:</strong>
+<div class="well well-small">
+    <?php
+    if (empty($this->league)) {
+        echo 'No leagues.';
+    } else {
+        echo '<ol>';
+        foreach ($this->league as $league) {
+            echo '<li><a href="' . $league->tournament_url . '">' . $league->name . '</a></li>';
+        }
+        echo '</ol>';
+    }
+    ?>
+</div>
+
 <script type="text/javascript">
     $(document).ready(function () {
         $('#search-submit').click(function () {

@@ -42,7 +42,7 @@ class Groups_Model extends Model
     {
         $cache_key = 'user_group_' . $community_id;
         $groups = $this->memcached->get($cache_key);
-        if ($groups == FALSE) {
+        if ($groups === FALSE) {
             $response = $this->steam->ISteamUser->GetUserGroupList($community_id);
             self::addGroupMember($response->response->groups, $community_id);
 
@@ -72,7 +72,7 @@ class Groups_Model extends Model
     {
         $cache_key = 'group_' . $name;
         $group = $this->memcached->get($cache_key);
-        if ($group == FALSE) {
+        if ($group === FALSE) {
             $id = self::updateGroupInfo($name);
 
             $statement = $this->db->prepare('

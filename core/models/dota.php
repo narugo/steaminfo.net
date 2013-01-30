@@ -172,6 +172,30 @@ class Dota_Model extends Model
         return $result[0];
     }
 
+    public function getLiveLeagueMatches()
+    {
+        $cache_key = 'dota_live';
+        $games = $this->memcached->get($cache_key);
+        if ($games === FALSE) {
+            $response = $this->steam->IDOTA2Match_570->GetLiveLeagueGames();
+            $games = $response->games;
+            $this->memcached->set($cache_key, $games, 240);
+        }
+        return $games;
+    }
+
+    public function getLeagueListing()
+    {
+        $cache_key = 'dota_league_listing';
+        $leagues = $this->memcached->get($cache_key);
+        if ($leagues === FALSE) {
+            $response = $this->steam->IDOTA2Match_570->GetLeagueListing();
+            $leagues = $response->leagues;
+            $this->memcached->set($cache_key, $leagues, 3600);
+        }
+        return $leagues;
+    }
+
     private function getPlayers($match_id)
     {
         $sql = 'SELECT dota_match_player.*, nickname, dota_hero.name AS hero_name, dota_hero.display_name AS hero_display_name

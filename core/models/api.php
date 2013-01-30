@@ -12,7 +12,7 @@ class API_Model extends Model
     {
         $cache_key = 'available_apis';
         $apis = $this->memcached->get($cache_key);
-        if ($apis == FALSE) {
+        if ($apis === FALSE) {
             $apis = $this->steam->ISteamWebAPIUtil->GetSupportedAPIList();
             $this->memcached->add($cache_key, $apis, 3000);
         }

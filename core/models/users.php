@@ -38,7 +38,7 @@ class Users_Model extends Model
     {
         $cache_key = 'suggestions_for_' . $input;
         $suggestions = $this->memcached->get($cache_key);
-        if ($suggestions == FALSE) {
+        if ($suggestions === FALSE) {
             // TODO: Find a way to get better suggestions
             $statement = $this->db->prepare('
                 SELECT community_id, nickname, avatar_url, tag
@@ -58,7 +58,7 @@ class Users_Model extends Model
     {
         $cache_key = 'profile_summary_of_' . $community_id;
         $profile = $this->memcached->get($cache_key);
-        if ($profile == FALSE) {
+        if ($profile === FALSE) {
             self::updateSummaries(array($community_id));
             // Updating bans info
             self::updateBanStatuses(array($community_id));
@@ -74,7 +74,7 @@ class Users_Model extends Model
     {
         $cache_key = 'friends_of_' . $community_id;
         $friends = $this->memcached->get($cache_key);
-        if ($friends == FALSE) {
+        if ($friends === FALSE) {
             self::updateFriendsList($community_id);
 
             $statement = $this->db->prepare('SELECT community_id, nickname, avatar_url, tag, since FROM friends
