@@ -30,47 +30,31 @@ class Users extends Controller
     function apps($params)
     {
         $apps_model = getModel('apps');
-        $response = $apps_model->getUserApps($params[0]);
-        if ($response['status'] === STATUS_SUCCESS) {
-            $this->view->apps = $response['result'];
-            if (!empty($this->view->apps)) {
-                $this->view->renderPage("users/includes/apps", 'Steam Info - Users - Apps', $this->required_js, $this->required_css, TRUE);
-            } else {
-                echo "No apps!";
-            }
-        } elseif ($response['status'] === STATUS_UNAUTHORIZED) {
-            echo "Profile is private!";
-        } elseif ($response['status'] === STATUS_API_UNAVAILABLE) {
-            echo "Steam API is unavailable!";
+        $this->view->apps = $apps_model->getOwnedApps($params[0]);
+        if (!empty($this->view->apps)) {
+            $this->view->renderPage("users/includes/apps", 'Steam Info - Users - Apps', $this->required_js, $this->required_css, TRUE);
         } else {
-            echo "Unknown error.";
+            echo "No apps!";
         }
     }
 
     function friends($params)
     {
         $users_model = getModel('users');
-        $response = $users_model->getFriends($params[0]);
-        if ($response['status'] === STATUS_SUCCESS) {
-            $this->view->friends = $response['result'];
-            if (!empty($this->view->friends)) {
-                $this->view->renderPage("users/includes/friends", 'Steam Info - Users - Friends', $this->required_js, $this->required_css, TRUE);
-            } else {
-                echo "No friends!";
-            }
-        } elseif ($response['status'] === STATUS_UNAUTHORIZED) {
-            echo "Profile is private!";
+        $this->view->friends = $users_model->getFriends($params[0]);
+        if (!empty($this->view->friends)) {
+            $this->view->renderPage("users/includes/friends", 'Steam Info - Users - Friends', $this->required_js, $this->required_css, TRUE);
         } else {
-            echo "Unknown error.";
+            echo "No friends!";
         }
     }
 
     function groups($params)
     {
-        $groups_model = getModel('users');
-        //$this->view->groups = $groups_model->getGroups($params[0]);
-        echo "Not implemented";
-        //$this->view->renderPage("users/includes/groups", 'Steam Info - Users - Groups', $this->required_js, $this->required_css, TRUE);
+        $groups_model = getModel('groups');
+        $this->view->groups = $groups_model->getUserGroups($params[0]);
+        $this->view->renderPage("users/includes/groups", 'Steam Info - Users - Groups',
+            $this->required_js, $this->required_css, TRUE);
     }
 
     function search()

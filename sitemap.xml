@@ -20,6 +20,9 @@
         <loc>http://steaminfo.net/stats/</loc>
     </url>
     <url>
+        <loc>http://steaminfo.net/apps/</loc>
+    </url>
+    <url>
         <loc>http://steaminfo.net/api/</loc>
     </url>
     <url>

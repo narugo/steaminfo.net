@@ -20,10 +20,6 @@ CREATE TABLE dota_match (
 	season               INT,
 	radiant_win          BIT,
 	duration             INT,
-	tower_status_radiant INT,
-	tower_status_dire    INT,
-	barracks_status_radiant INT,
-	barracks_status_dire INT,
 	cluster              INT,
 	first_blood_time     INT,
 	lobby_type           INT,
@@ -32,6 +28,16 @@ CREATE TABLE dota_match (
 	positive_votes       INT,
 	negative_votes       INT,
 	game_mode            INT,
+	radiant_name         VARCHAR( 100 ),
+	radiant_logo         BIGINT,
+	radiant_team_complete BIT,
+	tower_status_radiant INT,
+	barracks_status_radiant INT,
+	dire_name            VARCHAR( 100 ),
+	dire_logo            BIGINT,
+	dire_team_complete   BIT,
+	tower_status_dire    INT,
+	barracks_status_dire INT,
 	CONSTRAINT pk_dota_match PRIMARY KEY ( id )
  );
 
@@ -99,6 +105,29 @@ CREATE TABLE user_profile_view_log (
 	remote_address       VARCHAR( 255 ) NOT NULL DEFAULT '',
 	time                 TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT pk_user_profile_view_log PRIMARY KEY ( id )
+ );
+
+CREATE TABLE active_app_users_history ( 
+	record_time          TIMESTAMP NOT NULL,
+	active_users         INT NOT NULL,
+	app_id               BIGINT UNSIGNED NOT NULL
+ );
+
+CREATE INDEX idx_active_app_users_history ON active_app_users_history ( app_id );
+
+CREATE TABLE indexed_users_history ( 
+	record_date          DATE,
+	indexed_users        INT NOT NULL
+ );
+
+CREATE TABLE indexed_apps_history ( 
+	record_date          DATE NOT NULL,
+	indexed_apps         INT NOT NULL
+ );
+
+CREATE TABLE indexed_dota_matches_history ( 
+	record_date          DATE NOT NULL,
+	indexed_matches      INT NOT NULL
  );
 
 CREATE TABLE app_owners ( 
@@ -181,4 +210,6 @@ ALTER TABLE friends ADD CONSTRAINT fk_friends2 FOREIGN KEY ( user_community_id2 
 ALTER TABLE group_members ADD CONSTRAINT fk_group_members_group FOREIGN KEY ( group_id ) REFERENCES `group`( id ) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE group_members ADD CONSTRAINT fk_group_members_user FOREIGN KEY ( user_community_id ) REFERENCES user( community_id ) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE active_app_users_history ADD CONSTRAINT fk_active_app_users_history FOREIGN KEY ( app_id ) REFERENCES app( id ) ON DELETE CASCADE ON UPDATE CASCADE;
 

@@ -10,7 +10,7 @@
     <tr>
         <th class="id">#</th>
         <th class="avatar"></th>
-        <th class="name">Name</th>
+        <th class="name">Group</th>
     </tr>
     </thead>
     <tbody>
@@ -26,7 +26,7 @@
                 else echo $group->avatar_url;
                 ?>" />
         </td>
-        <td class="name"><a href="<?php echo $group->url; ?>">
+        <td class="name"><a href="/groups/<?php echo $group->id; ?>">
             <?php
             if (is_null($group->name)) echo $group->id;
             else echo $group->name;

@@ -39,21 +39,21 @@ class Dota_Model extends Model
     public function updateHeroes()
     {
         $heroes = $this->steam->IEconDOTA2_570->GetHeroes();
-        $sql = 'INSERT INTO dota_hero (id, NAME) VALUES (:id, :NAME)
-                ON DUPLICATE KEY UPDATE id = :id, NAME = :NAME;';
+        $sql = 'INSERT INTO dota_hero (id, `name`) VALUES (:id, :name)
+                ON DUPLICATE KEY UPDATE id = :id, `name` = :name;';
         $statement = $this->db->prepare($sql);
         foreach ($heroes as $hero) {
             $statement->execute(array(
                 ":id" => $hero->id,
-                ":NAME" => $hero->name));
+                ":name" => $hero->name));
             $statement->closeCursor();
         }
     }
 
     private function addMatch($match)
     {
-        if (!empty($match->radiant_logo)) $match->radiant_logo =  self::getTeamLogo($match->radiant_logo);
-        if (!empty($match->dire_logo)) $match->dire_logo =  self::getTeamLogo($match->dire_logo);
+        if (!empty($match->radiant_logo)) $match->radiant_logo = self::getTeamLogo($match->radiant_logo);
+        if (!empty($match->dire_logo)) $match->dire_logo = self::getTeamLogo($match->dire_logo);
 
         $sql = 'INSERT INTO dota_match (id, start_time, season, radiant_win, duration, tower_status_radiant,
                                         tower_status_dire, barracks_status_radiant, barracks_status_dire, cluster,
@@ -124,12 +124,12 @@ class Dota_Model extends Model
                                                item_0, item_1, item_2, item_3, item_4, item_5,
                                                kills, deaths, assists, leaver_status, gold, last_hits, denies,
                                                gold_per_min, xp_per_min, gold_spent, hero_damage, tower_damage,
-                                               hero_healing, LEVEL)
+                                               hero_healing, `level`)
                 VALUES (:account_id, :match_id, :player_slot, :hero_id,
                         :item_0, :item_1, :item_2, :item_3, :item_4, :item_5,
                         :kills, :deaths, :assists, :leaver_status, :gold, :last_hits, :denies,
                         :gold_per_min, :xp_per_min, :gold_spent, :hero_damage, :tower_damage,
-                        :hero_healing, :LEVEL);';
+                        :hero_healing, :level);';
         $statement = $this->db->prepare($sql);
         foreach ($players as $player) {
             $statement->execute(array(
@@ -158,7 +158,7 @@ class Dota_Model extends Model
                 ":hero_damage" => $player->hero_damage,
                 ":tower_damage" => $player->tower_damage,
                 ":hero_healing" => $player->hero_healing,
-                ":LEVEL" => $player->level));
+                ":level" => $player->level));
             $statement->closeCursor();
         }
     }
@@ -176,7 +176,7 @@ class Dota_Model extends Model
     {
         $sql = 'SELECT dota_match_player.*, nickname, dota_hero.name AS hero_name, dota_hero.display_name AS hero_display_name
                 FROM dota_match_player
-                LEFT JOIN user ON user.community_id = dota_match_player.account_id
+                LEFT JOIN `user` ON `user`.community_id = dota_match_player.account_id
                 LEFT JOIN dota_hero ON dota_hero.id = dota_match_player.hero_id
                 WHERE match_id = :match_id';
         $statement = $this->db->prepare($sql);
@@ -185,16 +185,17 @@ class Dota_Model extends Model
         return $statement->fetchAll(PDO::FETCH_OBJ);
     }
 
-    private function getTeamLogo($logo_id){
-       $response= $this->steam->ISteamRemoteStorage->GetUGCFileDetails($logo_id, 570);
-        $path = PATH_TO_ASSETS.'img/dota/'.$response->data->filename.'.png';
+    private function getTeamLogo($logo_id)
+    {
+        $response = $this->steam->ISteamRemoteStorage->GetUGCFileDetails($logo_id, 570);
+        $path = PATH_TO_ASSETS . 'img/dota/' . $response->data->filename . '.png';
         $fp = fopen($path, 'w');
         $ch = curl_init($response->data->url);
         curl_setopt($ch, CURLOPT_FILE, $fp);
         curl_exec($ch);
         curl_close($ch);
         fclose($fp);
-        return $response->data->filename.'.png';
+        return $response->data->filename . '.png';
     }
 
 }

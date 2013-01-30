@@ -6,14 +6,13 @@ class Groups_Model extends Model
     function __construct()
     {
         parent::__construct();
-        $this->steam = new Locomotive();
     }
 
     public function search($query)
     {
         $query_type = $this->steam->tools->groups->getTypeOfId($query);
         switch ($query_type) {
-            case TYPE_COMMUNITY_ID:
+            case ID_TYPE_COMMUNITY:
                 try {
                     $info = $this->steam->communityapi->getGroupInfoById($query);
                     self::updateGroupInfo($info);
@@ -22,7 +21,7 @@ class Groups_Model extends Model
                     $result = array(); // TODO: Return error message
                 }
                 break;
-            case TYPE_VANITY:
+            case ID_TYPE_VANITY:
                 // TODO: Search in DB for other groups (maybe name has been requested, not Vanity URL)
                 try {
                     $info = $this->steam->communityapi->getGroupInfoByName($query);
@@ -39,46 +38,72 @@ class Groups_Model extends Model
         return $result;
     }
 
-    public function getUsersGroups($community_id)
+    public function getUserGroups($community_id)
     {
-        // TODO: Get groups from Steam
-        $statement = $this->db->prepare('SELECT id, name, url, avatar_url FROM group_members
-                INNER JOIN group ON group_members.group_id = group.id
+        $cache_key = 'user_group_' . $community_id;
+        $groups = $this->memcached->get($cache_key);
+        if ($groups == FALSE) {
+            $response = $this->steam->ISteamUser->GetUserGroupList($community_id);
+            self::addGroupMember($response->response->groups, $community_id);
+
+            $statement = $this->db->prepare('SELECT id, `name`, url, avatar_url FROM group_members
+                INNER JOIN `group` ON group_members.group_id = `group`.id
                 WHERE user_community_id = :id');
-        $statement->execute(array(':id' => $community_id));
-        $groups = $statement->fetchAll(PDO::FETCH_OBJ);
-        if (empty($groups)) return NULL;
+            $statement->execute(array(':id' => $community_id));
+            $groups = $statement->fetchAll(PDO::FETCH_OBJ);
+            $this->memcached->add($cache_key, $groups, 60);
+        }
         return $groups;
     }
 
-    public function getGroupInfo($group_id)
+    public function addGroupMember($groups, $community_id)
     {
-        $statement = $this->db->prepare('
+        $sql = 'INSERT INTO `group` (id) VALUES (:gid);
+            INSERT INTO group_members (user_community_id, group_id) VALUES (:user_id, :gid)';
+        $statement = $this->db->prepare($sql);
+        foreach ($groups as $group) {
+            $statement->execute(array(':user_id' => $community_id,
+                ':gid' => $group->gid));
+            $statement->closeCursor();
+        }
+    }
+
+    public function getGroup($name)
+    {
+        $cache_key = 'group_' . $name;
+        $group = $this->memcached->get($cache_key);
+        if ($group == FALSE) {
+            $id = self::updateGroupInfo($name);
+
+            $statement = $this->db->prepare('
                 SELECT id,
                  avatar_icon_url,
                  avatar_medium_url,
                  avatar_full_url,
                  headline,
-                 name,
+                 `name`,
                  summary,
                  url
-                FROM group
+                FROM `group`
                 WHERE id = :id
              ');
-        $statement->execute(array(':id' => $group_id));
-        // TODO: Check if found
-        return $statement->fetchObject();
+            $statement->execute(array(':id' => $id));
+            $group = new Group($statement->fetchObject());
+            $this->memcached->add($cache_key, $group);
+        }
+        return $group;
     }
 
-    public function updateGroupInfo($group_id)
+    public function updateGroupInfo($group_name)
     {
-        $sql = "INSERT INTO group (
+        $group = $this->steam->communityapi->getGroupInfoByName($group_name);
+        $sql = "INSERT INTO `group` (
                  id,
                  avatar_icon_url,
                  avatar_medium_url,
                  avatar_full_url,
                  headline,
-                 name,
+                 `name`,
                  summary,
                  url)
             VALUES (
@@ -96,7 +121,7 @@ class Groups_Model extends Model
                 avatar_medium_url = :avatar_medium_url,
                 avatar_full_url = :avatar_full_url,
                 headline = :headline,
-                name = :name,
+                `name` = :name,
                 summary = :summary,
                 url = :url";
         $statement = $this->db->prepare($sql);
@@ -109,6 +134,7 @@ class Groups_Model extends Model
             ":name" => $group->groupDetails->groupName,
             ":summary" => $group->groupDetails->summary,
             ":url" => $group->groupDetails->groupURL));
+        return $group->groupID64;
 
         // TODO: Update group members in database
         /*
@@ -151,6 +177,79 @@ class Groups_Model extends Model
         } catch (Exception $e) {
             echo 'Error!';
         }
+    }
+
+}
+
+class Group
+{
+
+    public $id;
+    public $name;
+    public $avatar_icon_url;
+    public $avatar_medium_url;
+    public $avatar_full_url;
+    public $headline;
+    public $summary;
+    public $url;
+    public $last_updated;
+
+    function __construct($group)
+    {
+        $this->id = $group->id;
+        $this->name = $group->name;
+        $this->avatar_icon_url = $group->avatar_icon_url;
+        $this->avatar_medium_url = $group->avatar_medium_url;
+        $this->avatar_full_url = $group->avatar_full_url;
+        $this->headline = $group->headline;
+        $this->summary = $group->summary;
+        $this->url = $group->url;
+        $this->last_updated = $group->last_updated;
+    }
+
+    public function getAvatarFullUrl()
+    {
+        return $this->avatar_full_url;
+    }
+
+    public function getAvatarIconUrl()
+    {
+        return $this->avatar_icon_url;
+    }
+
+    public function getAvatarMediumUrl()
+    {
+        return $this->avatar_medium_url;
+    }
+
+    public function getHeadline()
+    {
+        return $this->headline;
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getLastUpdated()
+    {
+        return $this->last_updated;
+    }
+
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function getSummary()
+    {
+        return $this->summary;
+    }
+
+    public function getUrl()
+    {
+        return $this->url;
     }
 
 }

@@ -6,14 +6,25 @@ class Groups extends Controller
     function __construct()
     {
         parent::__construct();
-
-    }
-
-    function index()
-    {
         $this->required_js = array(JS_JQUERY, JS_BOOTSTRAP);
         $this->required_css = array(CSS_BOOTSTRAP, CSS_FONT_AWESOME, CSS_MAIN);
-        $this->view->renderPage("groups/index", 'Steam Info - Groups', $this->required_js, $this->required_css);
+    }
+
+    function index($params = NULL)
+    {
+        if (empty($params)) {
+            $this->view->renderPage("groups/index", 'Steam Info - Groups', $this->required_js, $this->required_css);
+        } else {
+            $users_model = getModel('groups');
+            $this->view->group = $users_model->getGroup($params[0]);
+            writeGroupViewLog($this->view->group->getId());
+            $this->view->renderPage(
+                "groups/info",
+                $this->view->group->getName(),
+                $this->required_js,
+                $this->required_css
+            );
+        }
     }
 
     function search()

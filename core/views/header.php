@@ -22,6 +22,7 @@
             <a class="brand" href="/">Steam Info</a>
             <ul class="nav">
                 <li><a href="/users/">Users</a></li>
+                <li><a href="/apps/">Apps</a></li>
                 <li><a href="/groups/">Groups</a></li>
                 <li><a href="/dota/">Dota</a></li>
                 <li><a href="/stats/">Stats</a></li>

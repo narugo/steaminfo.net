@@ -33,6 +33,11 @@ class Model
     function __construct()
     {
         $this->db = new Database();
+
+        $this->memcached = new Memcached();
+        $this->memcached->addServer(MEMCACHED_SERVER, MEMCACHED_PORT);
+
+        $this->steam = new Locomotive();
     }
 
 }

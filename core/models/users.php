@@ -9,21 +9,20 @@ class Users_Model extends Model
     function __construct()
     {
         parent::__construct();
-        $this->steam = new Locomotive();
     }
 
     public function search($query)
     {
         $query_type = $this->steam->tools->users->getTypeOfId($query);
         switch ($query_type) {
-            case TYPE_COMMUNITY_ID:
+            case ID_TYPE_COMMUNITY:
                 $result = self::getProfileSummary($query);
                 break;
-            case TYPE_STEAM_ID:
+            case ID_TYPE_STEAM:
                 $community_id = $this->steam->tools->users->steamIdToCommunityId($query);
                 $result = self::getProfileSummary($community_id);
                 break;
-            case TYPE_VANITY:
+            case ID_TYPE_VANITY:
                 // TODO: Search in DB for other users (maybe nickname has been requested, not Vanity URL)
                 $community_id = $this->steam->ISteamUser->ResolveVanityURL($query);
                 $result = self::getProfileSummary($community_id);
@@ -37,55 +36,62 @@ class Users_Model extends Model
 
     public function getSearchSuggestions($input)
     {
-        // TODO: Find a way to get better suggestions
-        $statement = $this->db->prepare('
+        $cache_key = 'suggestions_for_' . $input;
+        $suggestions = $this->memcached->get($cache_key);
+        if ($suggestions == FALSE) {
+            // TODO: Find a way to get better suggestions
+            $statement = $this->db->prepare('
                 SELECT community_id, nickname, avatar_url, tag
                 FROM user
-                WHERE SOUNDEX(nickname) = SOUNDEX(:INPUT)
+                WHERE SOUNDEX(nickname) = SOUNDEX(:input)
                 LIMIT 0, 5
             ');
-        $statement->execute(array(":input" => $this->db->quote($input)));
-        return $statement->fetchAll();
+            $statement->execute(array(":input" => $this->db->quote($input)));
+            $suggestions = $statement->fetchAll();
+            $this->memcached->add($cache_key, $suggestions, 3600);
+        }
+        return $suggestions;
     }
 
 
     public function getProfileSummary($community_id)
     {
-        self::updateSummaries(array($community_id));
-
-        // Updating bans info
-        $ban_status = $this->steam->ISteamUser->GetPlayerBans(array($community_id));
-        self::updateBanStatuses($ban_status->players[0]);
-
-        $statement = $this->db->prepare('SELECT * FROM user WHERE community_id=:id');
-        $statement->execute(array(':id' => $community_id));
-        if ($statement->rowCount() == 0) return FALSE;
-        return new User($statement->fetchObject());
+        $cache_key = 'profile_summary_of_' . $community_id;
+        $profile = $this->memcached->get($cache_key);
+        if ($profile == FALSE) {
+            self::updateSummaries(array($community_id));
+            // Updating bans info
+            self::updateBanStatuses(array($community_id));
+            $statement = $this->db->prepare('SELECT * FROM `user` WHERE community_id=:id');
+            $statement->execute(array(':id' => $community_id));
+            $profile = new User($statement->fetchObject());
+            $this->memcached->add($cache_key, $profile, 3600);
+        }
+        return $profile;
     }
 
     public function getFriends($community_id)
     {
-        $status = self::updateFriendsList($community_id);
+        $cache_key = 'friends_of_' . $community_id;
+        $friends = $this->memcached->get($cache_key);
+        if ($friends == FALSE) {
+            self::updateFriendsList($community_id);
 
-        if ($status === STATUS_SUCCESS) {
             $statement = $this->db->prepare('SELECT community_id, nickname, avatar_url, tag, since FROM friends
-                INNER JOIN user ON friends.user_community_id2 = user.community_id
+                INNER JOIN `user` ON friends.user_community_id2 = `user`.community_id
                 WHERE user_community_id1 = :id');
             $statement->execute(array(':id' => $community_id));
-            return array(
-                'status' => $status,
-                'result' => $statement->fetchAll(PDO::FETCH_OBJ)
-            );
-        } else {
-            return array('status' => $status);
+            $friends = $statement->fetchAll(PDO::FETCH_OBJ);
+            $this->memcached->add($cache_key, $friends, 3600);
         }
+        return $friends;
     }
 
     public function setTag($community_id, $tag)
     {
         // TODO: Validate ID
         // TODO: Modify function so it can get multiple IDs
-        $sql = "INSERT INTO user (community_id, tag) VALUES (:id, :tag)
+        $sql = "INSERT INTO `user` (community_id, tag) VALUES (:id, :tag)
                 ON DUPLICATE KEY UPDATE community_id = :id, tag = :tag";
         $statement = $this->db->prepare($sql);
         return $statement->execute(array(':id' => $community_id, ':tag' => $tag));
@@ -96,12 +102,12 @@ class Users_Model extends Model
         // Updating profile summary
         $summaries = array();
         foreach (array_chunk($community_ids, 100) as $chunk) {
-           $result = $this->steam->ISteamUser->GetPlayerSummaries($chunk);
+            $result = $this->steam->ISteamUser->GetPlayerSummaries($chunk);
             $summaries = array_merge($summaries, $result->response->players);
         }
 
         // TODO: Add primary group to "groups" table
-        $sql = "INSERT INTO user (
+        $sql = "INSERT INTO `user` (
                 community_id,
                 nickname,
                 avatar_url,
@@ -111,7 +117,7 @@ class Users_Model extends Model
                 location_state_code,
                 location_city_id,
                 last_login_time,
-                status,
+                `status`,
                 current_game_server_ip,
                 current_game_name,
                 current_game_id,
@@ -143,7 +149,7 @@ class Users_Model extends Model
                 location_state_code = :location_state_code,
                 location_city_id = :location_city_id,
                 last_login_time = :last_login_time,
-                status = :status,
+                `status` = :status,
                 current_game_server_ip = :current_game_server_ip,
                 current_game_name = :current_game_name,
                 current_game_id = :current_game_id,
@@ -171,32 +177,29 @@ class Users_Model extends Model
         }
     }
 
-    private function updateBanStatuses($bans)
+    private function updateBanStatuses($ids)
     {
-        $sql = 'UPDATE user
+        $response = $this->steam->ISteamUser->GetPlayerBans($ids);
+        $sql = 'UPDATE `user`
                 SET is_community_banned = :is_community_banned,
                     is_vac_banned = :is_vac_banned,
                     economy_ban_state = :economy_ban_state
                 WHERE community_id = :id';
         $statement = $this->db->prepare($sql);
-        $statement->execute(array(
-            ":is_community_banned" => $bans->CommunityBanned,
-            ":is_vac_banned" => $bans->VACBanned,
-            ":economy_ban_state" => $bans->EconomyBan,
-            ":id" => $bans->SteamId
-        ));
+        foreach ($response->players as $bans) {
+            $statement->execute(array(
+                ":is_community_banned" => $bans->CommunityBanned,
+                ":is_vac_banned" => $bans->VACBanned,
+                ":economy_ban_state" => $bans->EconomyBan,
+                ":id" => $bans->SteamId
+            ));
+        }
     }
 
     private function updateFriendsList($community_id)
     {
-        try {
-            $friends_list = $this->steam->ISteamUser->GetFriendList($community_id);
-        } catch (Exception $e) {
-            writeErrorLog($e);
-            if ($e instanceof UnauthorizedException) return STATUS_UNAUTHORIZED;
-            else if ($e instanceof SteamAPIUnavailableException) return STATUS_API_UNAVAILABLE;
-            else return STATUS_UNKNOWN;
-        }
+        $response = $this->steam->ISteamUser->GetFriendList($community_id);
+        $friends_list = $response->friendslist->friends;
 
         // Removing old friends
         $remove_old = 'DELETE FROM friends WHERE user_community_id1 = :user_id;';
@@ -205,7 +208,7 @@ class Users_Model extends Model
         $statement->closeCursor();
 
         // Adding unknown users
-        $insert_users = 'INSERT IGNORE INTO user (community_id) VALUES ';
+        $insert_users = 'INSERT IGNORE INTO `user` (community_id) VALUES ';
         foreach ($friends_list as $friend) {
             $insert_users = $insert_users . "($friend->steamid),";
         }
@@ -220,7 +223,6 @@ class Users_Model extends Model
         }
         $insert_profiles = substr($insert_profiles, 0, -1) . ";";
         $this->db->query($insert_profiles);
-        return STATUS_SUCCESS;
     }
 
 }
