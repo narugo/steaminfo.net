@@ -14,26 +14,29 @@ Try <strong><a href="/dota/match/37623177">37623177</a></strong>.
 <?php if (!empty($this->live_matches)) : ?>
 <strong>Live league matches:</strong>
 <div class="well well-small">
-    <?php var_dump($this->live_matches); ?>
+    <?php
+        echo '<ol>';
+        foreach ($this->live_matches as $match) {
+            echo '<li>' . $match->radiant_team->team_name
+                .' vs '. $match->dire_team->team_name . '</li>';
+        }
+        echo '</ol>';
+    ?>
 </div>
 <?php endif; ?>
 
+<?php if (!empty($this->league)) : ?>
 <strong>Leagues:</strong>
 <div class="well well-small">
     <?php
-    if (empty($this->league)) {
-        echo 'No leagues.';
-    } else {
         echo '<ol>';
         foreach ($this->league as $league) {
-            $parsed_url = parse_url($league->tournament_url);
-            if (empty($parsed_url['scheme'])) $league->tournament_url = "http://$league->tournament_url";
             echo '<li><a href="' . $league->tournament_url . '">' . $league->name . '</a></li>';
         }
         echo '</ol>';
-    }
     ?>
 </div>
+<?php endif; ?>
 
 <script type="text/javascript">
     $(document).ready(function () {

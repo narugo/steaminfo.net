@@ -186,14 +186,39 @@ class Dota_Model extends Model
 
     public function getLeagueListing()
     {
-        $cache_key = 'dota_league_listing';
+        $cache_key = 'dota_leagues';
         $leagues = $this->memcached->get($cache_key);
         if ($leagues === FALSE) {
-            $response = $this->steam->IDOTA2Match_570->GetLeagueListing();
-            $leagues = $response->leagues;
+            self::updateLeagues();
+            $statement = $this->db->query('SELECT * FROM dota_league');
+            if ($statement->rowCount() < 1) return FALSE;
+            $leagues = $statement->fetchAll(PDO::FETCH_OBJ);
             $this->memcached->set($cache_key, $leagues, 3600);
         }
         return $leagues;
+    }
+
+    private function updateLeagues()
+    {
+        $response = $this->steam->IDOTA2Match_570->GetLeagueListing();
+        $statement = $this->db->prepare('INSERT INTO dota_league (id, `name`, description, tournament_url)
+                                         VALUES (:id, :name, :description, :tournament_url)
+                                         ON DUPLICATE KEY UPDATE id = :id,
+                                                                 `name` = :name,
+                                                                 description = :description,
+                                                                 tournament_url = :tournament_url');
+        foreach ($response->leagues as $league) {
+            if (!empty($league->tournament_url)) {
+                $parsed_url = parse_url($league->tournament_url);
+                if (empty($parsed_url['scheme'])) $league->tournament_url = "http://$league->tournament_url";
+            }
+            $statement->execute(array(
+                ':id' => $league->leagueid,
+                ':name' => $league->name,
+                ':description' => $league->description,
+                ':tournament_url' => $league->tournament_url
+            ));
+        }
     }
 
     private function getPlayers($match_id)

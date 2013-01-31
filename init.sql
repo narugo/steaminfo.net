@@ -14,33 +14,6 @@ CREATE TABLE dota_hero (
 	CONSTRAINT pk_dota_heroes PRIMARY KEY ( id )
  );
 
-CREATE TABLE dota_match ( 
-	id                   INT NOT NULL,
-	start_time           INT,
-	season               INT,
-	radiant_win          BIT,
-	duration             INT,
-	cluster              INT,
-	first_blood_time     INT,
-	lobby_type           INT,
-	human_players        INT,
-	league_id            INT,
-	positive_votes       INT,
-	negative_votes       INT,
-	game_mode            INT,
-	radiant_name         VARCHAR( 100 ),
-	radiant_logo         BIGINT,
-	radiant_team_complete BIT,
-	tower_status_radiant INT,
-	barracks_status_radiant INT,
-	dire_name            VARCHAR( 100 ),
-	dire_logo            BIGINT,
-	dire_team_complete   BIT,
-	tower_status_dire    INT,
-	barracks_status_dire INT,
-	CONSTRAINT pk_dota_match PRIMARY KEY ( id )
- );
-
 CREATE TABLE dota_match_view_log ( 
 	id                   INT NOT NULL AUTO_INCREMENT,
 	remote_address       VARCHAR( 100 ) NOT NULL,
@@ -130,6 +103,14 @@ CREATE TABLE indexed_dota_matches_history (
 	indexed_matches      INT NOT NULL
  );
 
+CREATE TABLE dota_league ( 
+	id                   INT NOT NULL,
+	name                 VARCHAR( 100 ),
+	description          VARCHAR( 200 ),
+	tournament_url       VARCHAR( 200 ),
+	CONSTRAINT pk_dota_league PRIMARY KEY ( id )
+ );
+
 CREATE TABLE app_owners ( 
 	app_id               BIGINT UNSIGNED NOT NULL,
 	user_community_id    BIGINT UNSIGNED NOT NULL,
@@ -140,6 +121,35 @@ CREATE TABLE app_owners (
 CREATE INDEX idx_app_owners ON app_owners ( app_id );
 
 CREATE INDEX idx_app_owners_0 ON app_owners ( user_community_id );
+
+CREATE TABLE dota_match ( 
+	id                   INT NOT NULL,
+	start_time           INT,
+	season               INT,
+	radiant_win          BIT,
+	duration             INT,
+	cluster              INT,
+	first_blood_time     INT,
+	lobby_type           INT,
+	human_players        INT,
+	league_id            INT,
+	positive_votes       INT,
+	negative_votes       INT,
+	game_mode            INT,
+	radiant_name         VARCHAR( 100 ),
+	radiant_logo         BIGINT,
+	radiant_team_complete BIT,
+	tower_status_radiant INT,
+	barracks_status_radiant INT,
+	dire_name            VARCHAR( 100 ),
+	dire_logo            BIGINT,
+	dire_team_complete   BIT,
+	tower_status_dire    INT,
+	barracks_status_dire INT,
+	CONSTRAINT pk_dota_match PRIMARY KEY ( id )
+ );
+
+CREATE INDEX idx_dota_match ON dota_match ( league_id );
 
 CREATE TABLE dota_match_player ( 
 	account_id           BIGINT UNSIGNED,
@@ -196,6 +206,8 @@ CREATE INDEX idx_group_members_0 ON group_members ( user_community_id );
 ALTER TABLE app_owners ADD CONSTRAINT fk_app_owners_app FOREIGN KEY ( app_id ) REFERENCES app( id ) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE app_owners ADD CONSTRAINT fk_app_owners_user FOREIGN KEY ( user_community_id ) REFERENCES user( community_id ) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE dota_match ADD CONSTRAINT fk_dota_match FOREIGN KEY ( league_id ) REFERENCES dota_league( id ) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE dota_match_player ADD CONSTRAINT fk_dota_match_player FOREIGN KEY ( match_id ) REFERENCES dota_match( id ) ON DELETE CASCADE ON UPDATE CASCADE;
 
