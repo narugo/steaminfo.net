@@ -26,6 +26,8 @@ Try <strong><a href="/dota/match/37623177">37623177</a></strong>.
     } else {
         echo '<ol>';
         foreach ($this->league as $league) {
+            $parsed_url = parse_url($league->tournament_url);
+            if (empty($parsed_url['scheme'])) $league->tournament_url = "http://$league->tournament_url";
             echo '<li><a href="' . $league->tournament_url . '">' . $league->name . '</a></li>';
         }
         echo '</ol>';
