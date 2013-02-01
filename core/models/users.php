@@ -23,9 +23,8 @@ class Users_Model extends Model
                 $result = self::getProfileSummary($community_id);
                 break;
             case ID_TYPE_VANITY:
-                // TODO: Search in DB for other users (maybe nickname has been requested, not Vanity URL)
-                $community_id = $this->steam->ISteamUser->ResolveVanityURL($query);
-                $result = self::getProfileSummary($community_id);
+                $response = $this->steam->ISteamUser->ResolveVanityURL($query);
+                $result = self::getProfileSummary($response->response->steamid);
                 break;
             default:
                 // TODO: Search in DB for users with that (query) nickname
@@ -36,7 +35,7 @@ class Users_Model extends Model
 
     public function getSearchSuggestions($input)
     {
-        $cache_key = 'suggestions_for_' . $input;
+        $cache_key = 'users_suggestions_for_' . $input;
         $suggestions = $this->memcached->get($cache_key);
         if ($suggestions === FALSE) {
             // TODO: Find a way to get better suggestions
@@ -52,7 +51,6 @@ class Users_Model extends Model
         }
         return $suggestions;
     }
-
 
     public function getProfileSummary($community_id)
     {

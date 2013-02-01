@@ -1,1 +1,0 @@
-You aren't welcome here, <?php echo $_SESSION['id']; ?>.

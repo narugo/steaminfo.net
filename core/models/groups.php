@@ -38,6 +38,25 @@ class Groups_Model extends Model
         return $result;
     }
 
+    public function getSearchSuggestions($input)
+    {
+        $cache_key = 'groups_suggestions_for_' . $input;
+        $suggestions = $this->memcached->get($cache_key);
+        if ($suggestions === FALSE) {
+            // TODO: Find a way to get better suggestions
+            $statement = $this->db->prepare('
+                SELECT *
+                FROM `group`
+                WHERE SOUNDEX(`name`) = SOUNDEX(:input)
+                LIMIT 0, 5
+            ');
+            $statement->execute(array(":input" => $this->db->quote($input)));
+            $suggestions = $statement->fetchAll();
+            $this->memcached->add($cache_key, $suggestions, 3600);
+        }
+        return $suggestions;
+    }
+
     public function getUserGroups($community_id)
     {
         $cache_key = 'user_group_' . $community_id;

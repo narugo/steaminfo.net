@@ -10,8 +10,7 @@ class Apps extends Controller
 
     public function index()
     {
-        $this->required_css = array(CSS_BOOTSTRAP, CSS_MAIN);
-        $this->view->renderPage("apps/index", 'Steam Info - Apps', array(), $this->required_css);
+        $this->view->renderPage('apps/index', 'Apps', array(), array(CSS_BOOTSTRAP, CSS_MAIN));
     }
 
 }

@@ -12,30 +12,37 @@ Try <strong><a href="/dota/match/37623177">37623177</a></strong>.
 <hr/>
 
 <?php if (!empty($this->live_matches)) : ?>
-<strong>Live league matches:</strong>
-<div class="well well-small">
-    <?php
+    <strong>Live league matches:</strong>
+    <div class="well well-small">
+        <?php
         echo '<ol>';
         foreach ($this->live_matches as $match) {
-            echo '<li>' . $match->radiant_team->team_name
-                .' vs '. $match->dire_team->team_name . '</li>';
+            echo '<li>';
+            echo $match->radiant_team->team_name . ' vs ' . $match->dire_team->team_name;
+            echo '</li>';
         }
         echo '</ol>';
-    ?>
-</div>
+        ?>
+    </div>
 <?php endif; ?>
 
 <?php if (!empty($this->league)) : ?>
-<strong>Leagues:</strong>
-<div class="well well-small">
-    <?php
+    <strong>Leagues:</strong>
+    <div class="well well-small">
+        <?php
         echo '<ol>';
         foreach ($this->league as $league) {
-            echo '<li><a href="' . $league->tournament_url . '">' . $league->name . '</a></li>';
+            echo '<li>';
+            if (!empty($league->tournament_url)) {
+                echo '<a href="' . $league->tournament_url . '">' . $league->name . '</a>';
+            } else {
+                echo $league->name;
+            }
+            echo '</li>';
         }
         echo '</ol>';
-    ?>
-</div>
+        ?>
+    </div>
 <?php endif; ?>
 
 <script type="text/javascript">

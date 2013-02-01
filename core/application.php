@@ -5,18 +5,16 @@ define(PATH_TO_LIBS, CORE_DIR . 'libs/');
 /**
  * Main modules
  */
-require_once CORE_DIR . 'logging.php';
-require_once CORE_DIR . 'error_handling.php';
-require_once CORE_DIR . 'controller.php';
-require_once CORE_DIR . 'view.php';
-require_once CORE_DIR . 'database.php';
-require_once CORE_DIR . 'model.php';
 
-// Assets
-require_once CORE_DIR . 'assets.php';
+require CORE_DIR . 'database.php';
+require CORE_DIR . 'logging.php';
+require CORE_DIR . 'error_handling.php';
+require CORE_DIR . 'controller.php';
+require CORE_DIR . 'view.php';
+require CORE_DIR . 'model.php';
 
-// Libraries
-require_once PATH_TO_LIBS . 'libs.php';
+require CORE_DIR . 'assets.php'; // Assets
+                                     require PATH_TO_LIBS . 'libs.php'; // Libraries
 
 /**
  * Main application class

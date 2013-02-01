@@ -10,9 +10,7 @@ class About extends Controller
 
     public function index()
     {
-        $this->required_js = array(JS_BOOTSTRAP);
-        $this->required_css = array(CSS_BOOTSTRAP, CSS_MAIN);
-        $this->view->renderPage("about", 'Steam Info - About', $this->required_js, $this->required_css);
+        $this->view->renderPage('about/index', 'About', array(JS_BOOTSTRAP), array(CSS_BOOTSTRAP, CSS_MAIN));
     }
 
 }

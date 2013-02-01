@@ -6,33 +6,45 @@ class Index extends Controller
     function __construct()
     {
         parent::__construct();
-        $this->required_js = array(JS_JQUERY, JS_JQUERY_UI, JS_JQUERY_UI_AUTOCOMPLETE_HTML, JS_BOOTSTRAP);
-        $this->required_css = array(CSS_JQUERY_UI, CSS_BOOTSTRAP, CSS_MAIN, CSS_INDEX);
     }
 
     public function index()
     {
-        $this->view->renderPage("index", 'Steam Info', $this->required_js, $this->required_css);
-    }
-
-    function search()
-    {
-        // TODO: Get search results from users and groups
-        $result = NULL;
-        header('Content-type: application/json');
-        echo json_encode($result);
+        $this->view->renderPage("index", NULL,
+            array(JS_JQUERY, JS_JQUERY_UI, JS_JQUERY_UI_AUTOCOMPLETE_HTML, JS_BOOTSTRAP),
+            array(CSS_JQUERY_UI, CSS_BOOTSTRAP, CSS_MAIN, CSS_INDEX));
     }
 
     function searchSuggest()
     {
+        $query = $_GET['query'];
+
         $result = array();
-        // Getting search suggestions from users
-        $users_model = getModel("users");
-        $users_suggestions = $users_model->getSearchSuggestions($_GET['query']);
+
+        require_once PATH_TO_MODELS . 'users.php';
+        $users_model = new Users_Model();
+        $users_suggestions = $users_model->getSearchSuggestions($query);
         foreach ($users_suggestions as $user_suggestion) {
             $user_suggestion["type"] = 'user';
             array_push($result, $user_suggestion);
         }
+
+        require_once PATH_TO_MODELS . 'groups.php';
+        $groups_model = new Groups_Model();
+        $groups_suggestions = $groups_model->getSearchSuggestions($query);
+        foreach ($groups_suggestions as $group_suggestion) {
+            $group_suggestion["type"] = 'group';
+            array_push($result, $group_suggestion);
+        }
+
+        require_once PATH_TO_MODELS . 'apps.php';
+        $apps_model = new Apps_Model();
+        $apps_suggestions = $apps_model->getSearchSuggestions($query);
+        foreach ($apps_suggestions as $app_suggestion) {
+            $app_suggestion["type"] = 'app';
+            array_push($result, $app_suggestion);
+        }
+
         header('Content-type: application/json');
         echo json_encode($result);
     }

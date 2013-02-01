@@ -5,7 +5,7 @@ define('PATH_TO_VIEWS', CORE_DIR . 'views/');
 class View
 {
 
-    public function renderPage($name, $page_title, $js = array(), $css = array(), $no_header_footer = FALSE)
+    public function renderPage($name, $page_title = NULL, $js = array(), $css = array(), $no_header_footer = FALSE)
     {
         $view_path = PATH_TO_VIEWS . $name . '.php';
         if (file_exists($view_path)) {
@@ -26,8 +26,13 @@ class View
         }
     }
 
-    private function includeView($view_path, $page_title, $no_header_footer = TRUE, $js = array(), $css = array())
+    private function includeView($view_path, $page_title = NULL, $no_header_footer = TRUE, $js = array(), $css = array())
     {
+        if (empty($page_title)) {
+            $page_title = 'Steam Info';
+        } else {
+            $page_title .= ' - Steam Info';
+        }
         if (!$no_header_footer) require PATH_TO_VIEWS . 'header.php';
         require $view_path;
         if (!$no_header_footer) require PATH_TO_VIEWS . 'footer.php';

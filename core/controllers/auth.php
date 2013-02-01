@@ -20,13 +20,13 @@ class Auth extends Controller
                     $openid->identity = 'https://steamcommunity.com/openid/';
                     header('Location: ' . $openid->authUrl());
                 } elseif ($openid->mode == 'cancel') {
-                    echo "Auth cancelled!";
+                    echo 'Auth cancelled!';
                 } else {
                     if ($openid->validate()) {
                         $_SESSION['id'] = str_replace('http://steamcommunity.com/openid/id/', '', $openid->identity);
                         header('Location: ' . WEBSITE_URL . 'auth/');
                     } else {
-                        echo "You are NOT logged in!";
+                        echo 'You are NOT logged in!';
                     }
                 }
             } catch (ErrorException $e) {
@@ -39,11 +39,6 @@ class Auth extends Controller
     {
         unset($_SESSION['id']);
         header('Location: ' . WEBSITE_URL);
-    }
-
-    function id()
-    {
-        var_dump($_SESSION['id']);
     }
 
 }

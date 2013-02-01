@@ -10,11 +10,10 @@ class API extends Controller
 
     public function index()
     {
-        $api_model = getModel('api');
+        require_once PATH_TO_MODELS . 'api.php';
+        $api_model = new API_Model();
         $this->view->api = $api_model->getAPI();
-        $this->view->renderPage("api/index", 'Steam Info - API',
-            array(),
-            array(CSS_BOOTSTRAP, CSS_MAIN));
+        $this->view->renderPage('api/index', 'API', array(), array(CSS_BOOTSTRAP, CSS_MAIN));
     }
 
 }

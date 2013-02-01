@@ -26,10 +26,23 @@
                     success: function (data) {
                         console.log(data);
                         response($.map(data, function (item) {
-                            return {
-                                label: "<img src=\"" + item.avatar_url + "\" /> " + item.nickname
-                                    + " <span class=\"label label-info\">" + item.type + "</span>",
-                                value: item.community_id
+                            if (item.type == "user") {
+                                return {
+                                    label: "<img src=\"" + item.avatar_url + "\" /> " + item.nickname
+                                        + " <span class=\"label label-success\">" + item.type + "</span>",
+                                    value: "/users/" + item.community_id
+                                }
+                            } else if (item.type == "group") {
+                                return {
+                                    label: "<img src=\"" + item.avatar_icon_url + "\" /> " + item.name
+                                        + " <span class=\"label label-info\">" + item.type + "</span>",
+                                    value: "/groups/" + item.id
+                                }
+                            } else if (item.type == "app") {
+                                return {
+                                    label: item.name + " <span class=\"label label-inverse\">" + item.type + "</span>",
+                                    value: "/apps/" + item.id
+                                }
                             }
                         }));
                     }
@@ -37,7 +50,7 @@
             },
             minLength: 2,
             select: function (event, ui) {
-                window.location = ("/users/" + ui.item.value);
+                window.location = (ui.item.value);
             }
         });
     });

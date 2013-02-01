@@ -6,44 +6,39 @@ class Groups extends Controller
     function __construct()
     {
         parent::__construct();
-        $this->required_js = array(JS_JQUERY, JS_BOOTSTRAP);
-        $this->required_css = array(CSS_BOOTSTRAP, CSS_FONT_AWESOME, CSS_MAIN);
+        require_once PATH_TO_MODELS . 'groups.php';
+        $this->groups_model = new Groups_Model();
     }
 
     function index($params = NULL)
     {
+        $required_js = array(JS_JQUERY, JS_BOOTSTRAP);
+        $required_css = array(CSS_BOOTSTRAP, CSS_FONT_AWESOME, CSS_MAIN);
         if (empty($params)) {
-            $this->view->renderPage("groups/index", 'Steam Info - Groups', $this->required_js, $this->required_css);
+            $this->view->renderPage("groups/index", 'Groups', $required_js, $required_css);
         } else {
-            $users_model = getModel('groups');
-            $this->view->group = $users_model->getGroup($params[0]);
+            $this->view->group = $this->groups_model->getGroup($params[0]);
             writeGroupViewLog($this->view->group->getId());
             $this->view->renderPage(
                 "groups/info",
-                $this->view->group->getName(),
-                $this->required_js,
-                $this->required_css
+                $this->view->group->getName() . 'Groups',
+                $required_js,
+                $required_css
             );
         }
     }
 
     function search()
     {
-        $groups_model = getModel('groups');
-        $result = $groups_model->search(trim($_GET['q']));
+        $result = $this->groups_model->search(trim($_GET['q']));
         header('Content-type: application/json');
         echo json_encode($result);
-    }
-
-    function searchSuggest()
-    {
     }
 
     function valve()
     {
         echo "Updating tags of Valve employees...<br />";
-        $groups_model = getModel('groups');
-        return $groups_model->updateValveEmployeeTags();
+        return $this->groups_model->updateValveEmployeeTags();
     }
 
 }

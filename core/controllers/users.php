@@ -6,60 +6,70 @@ class Users extends Controller
     function __construct()
     {
         parent::__construct();
-        $this->required_js = array(JS_JQUERY, JS_BOOTSTRAP, JS_TABLESORTER);
-        $this->required_css = array(CSS_BOOTSTRAP, CSS_FONT_AWESOME, CSS_MAIN, CSS_USERS);
     }
 
     function index($params = NULL)
     {
         if (empty($params)) {
-            $this->view->renderPage("users/index", 'Steam Info - Users', $this->required_js, $this->required_css);
+            $this->view->renderPage('users/index', 'Users',
+                array(JS_JQUERY, JS_BOOTSTRAP),
+                array(CSS_BOOTSTRAP, CSS_FONT_AWESOME, CSS_MAIN, CSS_USERS));
         } else {
-            $users_model = getModel('users');
+            require_once PATH_TO_MODELS . 'users.php';
+            $users_model = new Users_Model();
             $this->view->profile = $users_model->getProfileSummary($params[0]);
             writeUserViewLog($this->view->profile->getCommunityId());
-            $this->view->renderPage(
-                "users/profile",
-                $this->view->profile->getNickname(),
-                $this->required_js,
-                $this->required_css
-            );
+            $this->view->renderPage('users/profile', $this->view->profile->getNickname(),
+                array(JS_JQUERY, JS_BOOTSTRAP, JS_TABLESORTER),
+                array(CSS_BOOTSTRAP, CSS_FONT_AWESOME, CSS_MAIN, CSS_USERS));
         }
     }
 
     function apps($params)
     {
-        $apps_model = getModel('apps');
+        require_once PATH_TO_MODELS . 'apps.php';
+        $apps_model = new Apps_Model();
         $this->view->apps = $apps_model->getOwnedApps($params[0]);
         if (!empty($this->view->apps)) {
-            $this->view->renderPage("users/includes/apps", 'Steam Info - Users - Apps', $this->required_js, $this->required_css, TRUE);
+            $this->view->renderPage('users/includes/apps', 'Apps - Users',
+                array(JS_JQUERY, JS_BOOTSTRAP, JS_TABLESORTER),
+                array(CSS_BOOTSTRAP, CSS_FONT_AWESOME, CSS_MAIN, CSS_USERS),
+                TRUE);
         } else {
-            echo "No apps!";
+            echo 'No apps!';
         }
     }
 
     function friends($params)
     {
-        $users_model = getModel('users');
+        require_once PATH_TO_MODELS . 'users.php';
+        $users_model = new Users_Model();
         $this->view->friends = $users_model->getFriends($params[0]);
         if (!empty($this->view->friends)) {
-            $this->view->renderPage("users/includes/friends", 'Steam Info - Users - Friends', $this->required_js, $this->required_css, TRUE);
+            $this->view->renderPage('users/includes/friends', 'Friends - Users',
+                array(JS_JQUERY, JS_BOOTSTRAP, JS_TABLESORTER),
+                array(CSS_BOOTSTRAP, CSS_FONT_AWESOME, CSS_MAIN, CSS_USERS),
+                TRUE);
         } else {
-            echo "No friends!";
+            echo 'No friends!';
         }
     }
 
     function groups($params)
     {
-        $groups_model = getModel('groups');
+        require_once PATH_TO_MODELS . 'groups.php';
+        $groups_model = new Groups_Model();
         $this->view->groups = $groups_model->getUserGroups($params[0]);
-        $this->view->renderPage("users/includes/groups", 'Steam Info - Users - Groups',
-            $this->required_js, $this->required_css, TRUE);
+        $this->view->renderPage('users/includes/groups', 'Groups - Users',
+            array(JS_JQUERY, JS_BOOTSTRAP, JS_TABLESORTER),
+            array(CSS_BOOTSTRAP, CSS_FONT_AWESOME, CSS_MAIN, CSS_USERS),
+            TRUE);
     }
 
     function search()
     {
-        $users_model = getModel('users');
+        require_once PATH_TO_MODELS . 'users.php';
+        $users_model = new Users_Model();
         $result = $users_model->search(trim($_GET['q']));
         header('Content-type: application/json');
         echo json_encode($result);
@@ -67,7 +77,8 @@ class Users extends Controller
 
     function searchSuggest()
     {
-        $users_model = getModel('users');
+        require_once PATH_TO_MODELS . 'users.php';
+        $users_model = new Users_Model();
         $result = $users_model->getSearchSuggestions(trim($_GET['q']));
         header('Content-type: application/json');
         echo json_encode($result);

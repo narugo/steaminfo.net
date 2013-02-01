@@ -10,7 +10,8 @@ Desktop.ini
 *.iws
 .idea/
 
-core/config.php
-
 # SASS
 *.sass-cache
+
+# Config file
+config.php

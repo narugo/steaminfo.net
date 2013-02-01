@@ -1,7 +1,5 @@
 <?php
 
-require_once CORE_DIR . 'database.php';
-
 define('DEFAULT_LOG_FILE', '/home/roman/web/steaminfo.net/main.log');
 
 function writeUserViewLog($user_id)

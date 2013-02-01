@@ -8,6 +8,25 @@ class Apps_Model extends Model
         parent::__construct();
     }
 
+    public function getSearchSuggestions($input)
+    {
+        $cache_key = 'apps_suggestions_for_' . $input;
+        $suggestions = $this->memcached->get($cache_key);
+        if ($suggestions === FALSE) {
+            // TODO: Find a way to get better suggestions
+            $statement = $this->db->prepare('
+                SELECT *
+                FROM app
+                WHERE SOUNDEX(`name`) = SOUNDEX(:input)
+                LIMIT 0, 5
+            ');
+            $statement->execute(array(":input" => $this->db->quote($input)));
+            $suggestions = $statement->fetchAll();
+            $this->memcached->add($cache_key, $suggestions, 3600);
+        }
+        return $suggestions;
+    }
+
     public function updateAppsInfo($apps)
     {
         $sql = 'INSERT INTO app (id, `name`, logo_url) VALUES (:id, :name, :logo_url)
