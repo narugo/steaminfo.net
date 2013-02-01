@@ -172,8 +172,6 @@ Game mode: <?php echo $match->game_mode; ?>
     <br/>barracks_status_dire: <?php echo $match->barracks_status_dire; ?>
 </p>
 <p>
-    <br/>radiant_logo: <?php echo $match->radiant_logo; ?>
-    <br/>dire_logo: <?php echo $match->dire_logo; ?>
     <br/>radiant_team_complete: <?php echo $match->radiant_team_complete; ?>
     <br/>dire_team_complete: <?php echo $match->dire_team_complete; ?>
 </p>

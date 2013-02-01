@@ -14,21 +14,11 @@ CREATE TABLE dota_hero (
 	CONSTRAINT pk_dota_heroes PRIMARY KEY ( id )
  );
 
-CREATE TABLE dota_match_view_log ( 
-	id                   INT NOT NULL AUTO_INCREMENT,
-	remote_address       VARCHAR( 100 ) NOT NULL,
-	match_id             INT NOT NULL,
-	time                 TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	CONSTRAINT pk_dota_match_view_log PRIMARY KEY ( id )
- );
-
 CREATE TABLE error_log ( 
-	id                   INT NOT NULL AUTO_INCREMENT,
 	remote_address       VARCHAR( 255 ) NOT NULL DEFAULT '',
 	request_uri          VARCHAR( 255 ) NOT NULL DEFAULT '',
 	message              TEXT NOT NULL,
-	time                 TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	CONSTRAINT pk_error_log PRIMARY KEY ( id )
+	time                 TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
  );
 
 CREATE TABLE `group` ( 
@@ -42,12 +32,12 @@ CREATE TABLE `group` (
  );
 
 CREATE TABLE group_view_log ( 
-	id                   INT NOT NULL AUTO_INCREMENT,
 	group_id             BIGINT UNSIGNED NOT NULL,
 	remote_address       VARCHAR( 255 ) NOT NULL DEFAULT '',
-	time                 TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	CONSTRAINT pk_user_view_log PRIMARY KEY ( id )
+	time                 TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
  );
+
+CREATE INDEX idx_group_view_log ON group_view_log ( group_id );
 
 CREATE TABLE user ( 
 	community_id         BIGINT UNSIGNED NOT NULL,
@@ -73,12 +63,12 @@ CREATE TABLE user (
  );
 
 CREATE TABLE user_profile_view_log ( 
-	id                   INT NOT NULL AUTO_INCREMENT,
 	user_id              BIGINT UNSIGNED NOT NULL,
 	remote_address       VARCHAR( 255 ) NOT NULL DEFAULT '',
-	time                 TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	CONSTRAINT pk_user_profile_view_log PRIMARY KEY ( id )
+	time                 TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
  );
+
+CREATE INDEX idx_user_profile_view_log ON user_profile_view_log ( user_id );
 
 CREATE TABLE active_app_users_history ( 
 	record_time          TIMESTAMP NOT NULL,
@@ -184,6 +174,14 @@ CREATE INDEX idx_dota_match_player_0 ON dota_match_player ( hero_id );
 
 CREATE INDEX idx_dota_match_player_1 ON dota_match_player ( account_id );
 
+CREATE TABLE dota_match_view_log ( 
+	remote_address       VARCHAR( 100 ) NOT NULL,
+	match_id             INT NOT NULL,
+	time                 TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+ );
+
+CREATE INDEX idx_dota_match_view_log ON dota_match_view_log ( match_id );
+
 CREATE TABLE friends ( 
 	since                INT,
 	user_community_id1   BIGINT UNSIGNED NOT NULL,
@@ -215,6 +213,8 @@ ALTER TABLE dota_match_player ADD CONSTRAINT fk_dota_match_player_0 FOREIGN KEY 
 
 ALTER TABLE dota_match_player ADD CONSTRAINT fk_dota_match_player_1 FOREIGN KEY ( account_id ) REFERENCES user( community_id ) ON DELETE NO ACTION ON UPDATE CASCADE;
 
+ALTER TABLE dota_match_view_log ADD CONSTRAINT fk_dota_match_view_log FOREIGN KEY ( match_id ) REFERENCES dota_match( id ) ON DELETE CASCADE ON UPDATE CASCADE;
+
 ALTER TABLE friends ADD CONSTRAINT fk_friends1 FOREIGN KEY ( user_community_id1 ) REFERENCES user( community_id ) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE friends ADD CONSTRAINT fk_friends2 FOREIGN KEY ( user_community_id2 ) REFERENCES user( community_id ) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -222,6 +222,10 @@ ALTER TABLE friends ADD CONSTRAINT fk_friends2 FOREIGN KEY ( user_community_id2 
 ALTER TABLE group_members ADD CONSTRAINT fk_group_members_group FOREIGN KEY ( group_id ) REFERENCES `group`( id ) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE group_members ADD CONSTRAINT fk_group_members_user FOREIGN KEY ( user_community_id ) REFERENCES user( community_id ) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE group_view_log ADD CONSTRAINT fk_group_view_log FOREIGN KEY ( group_id ) REFERENCES `group`( id ) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE user_profile_view_log ADD CONSTRAINT fk_user_profile_view_log FOREIGN KEY ( user_id ) REFERENCES user( community_id ) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE active_app_users_history ADD CONSTRAINT fk_active_app_users_history FOREIGN KEY ( app_id ) REFERENCES app( id ) ON DELETE CASCADE ON UPDATE CASCADE;
 

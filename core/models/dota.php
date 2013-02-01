@@ -117,7 +117,8 @@ class Dota_Model extends Model
                 array_push($ids, $player->account_id);
             }
         }
-        $users_model = getModel('users');
+        require_once PATH_TO_MODELS .'users.php';
+        $users_model = new Users_Model();
         $users_model->updateSummaries($ids);
 
         $sql = 'INSERT INTO dota_match_player (account_id, match_id, player_slot, hero_id,
