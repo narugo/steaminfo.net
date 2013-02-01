@@ -85,6 +85,30 @@ class Users_Model extends Model
         return $friends;
     }
 
+    public function getTop10()
+    {
+        $cache_key = 'top_10_users';
+        $top = $this->memcached->get($cache_key);
+        if ($top === FALSE) {
+            $yesterday = time() - 86400;
+            $sql = 'SELECT community_id, nickname, tag, avatar_url, unique_requests
+                    FROM (
+                        SELECT user_id, count(user_id) as unique_requests
+                        FROM user_profile_view_log
+                        WHERE `time` > FROM_UNIXTIME(' . $yesterday . ')
+                        GROUP BY remote_address, user_id
+                        ORDER BY unique_requests DESC
+                        LIMIT 10
+                    ) top
+                    INNER JOIN `user` ON `user`.community_id = user_id';
+            $statement = $this->db->query($sql);
+            $top = $statement->fetchAll(PDO::FETCH_OBJ);
+            $this->memcached->add($cache_key, $top, 1800);
+        }
+        return $top;
+
+    }
+
     public function setTag($community_id, $tag)
     {
         // TODO: Validate ID

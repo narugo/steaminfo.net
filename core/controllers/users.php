@@ -10,13 +10,14 @@ class Users extends Controller
 
     function index($params = NULL)
     {
+        require_once PATH_TO_MODELS . 'users.php';
+        $users_model = new Users_Model();
         if (empty($params)) {
+            $this->view->top = $users_model->getTop10();
             $this->view->renderPage('users/index', 'Users',
                 array(JS_JQUERY, JS_BOOTSTRAP),
                 array(CSS_BOOTSTRAP, CSS_FONT_AWESOME, CSS_MAIN, CSS_USERS));
         } else {
-            require_once PATH_TO_MODELS . 'users.php';
-            $users_model = new Users_Model();
             $this->view->profile = $users_model->getProfileSummary($params[0]);
             writeUserViewLog($this->view->profile->getCommunityId());
             $this->view->renderPage('users/profile', $this->view->profile->getNickname(),
