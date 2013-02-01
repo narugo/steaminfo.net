@@ -14,7 +14,7 @@ require CORE_DIR . 'view.php';
 require CORE_DIR . 'model.php';
 
 require CORE_DIR . 'assets.php'; // Assets
-                                     require PATH_TO_LIBS . 'libs.php'; // Libraries
+require PATH_TO_LIBS . 'libs.php'; // Libraries
 
 /**
  * Main application class
@@ -50,8 +50,7 @@ class Application
 
                 // Checking if method has been requested
                 if (isset($path[1])) {
-                    // TODO: Check if method is public
-                    if (method_exists($controller, $path[1])) {
+                    if (is_callable(array($controller, $path[1]))) {
                         $method = $path[1];
                         // Removing controller and method names
                         $params = array_splice($path, 2);
