@@ -4,7 +4,6 @@
 <div class="alert alert-info">
     Click on the names of columns to sort this table.
 </div>
-<?php $friends = $this->friends; ?>
 <table id="friends-table" class="table table-condensed tablesorter">
     <thead>
     <tr>
@@ -18,7 +17,7 @@
     <?php
     $index = 1; // Friend index
     date_default_timezone_set('UTC');
-    foreach ($friends as $friend) :
+    foreach ($this->friends as $friend) :
         ?>
         <tr>
             <td class="id"><?php echo $index; ?></td>

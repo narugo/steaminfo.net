@@ -59,13 +59,14 @@ class Groups_Model extends Model
 
     public function getUserGroups($community_id)
     {
-        $cache_key = 'user_group_' . $community_id;
+        $cache_key = 'user_groups_' . $community_id;
         $groups = $this->memcached->get($cache_key);
         if ($groups === FALSE) {
             $response = $this->steam->ISteamUser->GetUserGroupList($community_id);
             self::addGroupMember($response->response->groups, $community_id);
 
-            $statement = $this->db->prepare('SELECT id, `name`, url, avatar_url FROM group_members
+            $statement = $this->db->prepare('SELECT `group`.*
+                FROM group_members
                 INNER JOIN `group` ON group_members.group_id = `group`.id
                 WHERE user_community_id = :id');
             $statement->execute(array(':id' => $community_id));
@@ -77,12 +78,20 @@ class Groups_Model extends Model
 
     public function addGroupMember($groups, $community_id)
     {
-        $sql = 'INSERT INTO `group` (id) VALUES (:gid);
+        // Removing old records
+        $sql = 'DELETE FROM group_members WHERE user_community_id= :user_id;';
+        $statement = $this->db->prepare($sql);
+        $statement->execute(array(":user_id" => $community_id));
+        $statement->closeCursor();
+
+        $sql = 'INSERT IGNORE INTO `group` (id) VALUES (:gid);
             INSERT INTO group_members (user_community_id, group_id) VALUES (:user_id, :gid)';
         $statement = $this->db->prepare($sql);
         foreach ($groups as $group) {
-            $statement->execute(array(':user_id' => $community_id,
-                ':gid' => $group->gid));
+            $statement->execute(array(
+                ':user_id' => $community_id,
+                ':gid' => ($group->gid + 103582791429521408)
+            ));
             $statement->closeCursor();
         }
     }
@@ -113,9 +122,10 @@ class Groups_Model extends Model
         return $group;
     }
 
-    public function updateGroupInfo($group_name)
+    public
+    function updateGroupInfo($group_id)
     {
-        $group = $this->steam->communityapi->getGroupInfoByName($group_name);
+        $group = $this->steam->communityapi->getGroupInfoById($group_id);
         $sql = "INSERT INTO `group` (
                  id,
                  avatar_icon_url,
@@ -177,12 +187,14 @@ class Groups_Model extends Model
                 }*/
     }
 
-    public function getGroupMembers($group_id)
+    public
+    function getGroupMembers($group_id)
     {
         // TODO: Implement
     }
 
-    public function updateValveEmployeeTags()
+    public
+    function updateValveEmployeeTags()
     {
         try {
             $valve_group_info = $this->steam->communityapi->getGroupInfoByName("Valve");

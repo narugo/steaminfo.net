@@ -1,7 +1,5 @@
 <?php
 
-define('DEFAULT_LOG_FILE', '/home/roman/web/steaminfo.net/main.log');
-
 function writeUserViewLog($user_id)
 {
     try {
@@ -92,10 +90,10 @@ function writeLogToFile($message)
         $result = fputcsv($fd, array($date, $remote_addr, $request_uri, $message));
         fclose($fd);
         if ($result > 0)
-            return array(status => true);
+            return array('status' => true);
         else
-            return array(status => false, message => 'Unable to write to ' . DEFAULT_LOG_FILE . '!');
+            return array('status' => false, 'message' => 'Unable to write to ' . DEFAULT_LOG_FILE . '!');
     } else {
-        return array(status => false, message => 'Unable to open log ' . DEFAULT_LOG_FILE . '!');
+        return array('status' => false, 'message' => 'Unable to open log ' . DEFAULT_LOG_FILE . '!');
     }
 }

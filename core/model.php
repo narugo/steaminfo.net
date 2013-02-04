@@ -11,10 +11,6 @@ define('STATUS_UNAUTHORIZED', 'unauthorized');
 define('STATUS_API_UNAVAILABLE', 'private');
 define('STATUS_UNKNOWN', 'unknown');
 
-class ModelNotFoundException extends Exception
-{
-}
-
 class Model
 {
 

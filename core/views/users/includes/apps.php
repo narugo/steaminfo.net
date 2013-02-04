@@ -4,7 +4,6 @@
 <div class="alert alert-info">
     Click on the names of columns to sort this table.
 </div>
-<?php $apps = $this->apps; ?>
 <table id="apps-table" class="table table-condensed tablesorter">
     <thead>
     <tr>
@@ -16,7 +15,7 @@
     </tr>
     </thead>
     <tbody>
-    <?php foreach ($apps as $app) : ?>
+    <?php foreach ($this->apps as $app) : ?>
         <tr>
             <td class="id"><?php echo $app->id; ?></td>
             <td class="logo"><img src="<?php echo $app->logo_url; ?>"/></td>
