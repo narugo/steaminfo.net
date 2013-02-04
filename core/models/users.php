@@ -96,7 +96,7 @@ class Users_Model extends Model
                         SELECT user_id, count(user_id) as unique_requests
                         FROM user_profile_view_log
                         WHERE `time` > FROM_UNIXTIME(' . $yesterday . ')
-                        GROUP BY remote_address, user_id
+                        GROUP BY user_id
                         ORDER BY unique_requests DESC
                         LIMIT 10
                     ) top

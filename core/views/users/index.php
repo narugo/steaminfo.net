@@ -33,7 +33,13 @@
         <?php foreach ($this->top as $user) {
             echo '<li>';
             echo '<img src="' . $user->avatar_url . '"/>';
-            echo '<a href="/users/' . $user->community_id . '">' . $user->nickname . '</a>';
+            echo '<a href="/users/' . $user->community_id . '">';
+            if (empty($user->nickname)) {
+                echo $user->community_id;
+            } else {
+                echo $user->nickname;
+            }
+            echo '</a>';
             if (!empty($user->tag)) {
                 echo ' <span class="label label-important">' . $user->tag . '</span>';
             }
