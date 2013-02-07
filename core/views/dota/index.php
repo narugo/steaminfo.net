@@ -1,4 +1,6 @@
-<h2 id="title">Dota 2</h2>
+<div class="page-header">
+    <h1>Dota 2</h1>
+</div>
 
 <div id="search" class="input-append">
     <label>Search matches</label>

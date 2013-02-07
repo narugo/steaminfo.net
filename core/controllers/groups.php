@@ -12,8 +12,8 @@ class Groups extends Controller
 
     function index($params = NULL)
     {
-        $required_js = array(JS_JQUERY, JS_BOOTSTRAP);
-        $required_css = array(CSS_BOOTSTRAP, CSS_FONT_AWESOME, CSS_MAIN);
+        $required_js = array();
+        $required_css = array(CSS_FONT_AWESOME);
         if (empty($params)) {
             $this->view->renderPage("groups/index", 'Groups', $required_js, $required_css);
         } else {

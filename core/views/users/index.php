@@ -1,6 +1,6 @@
-<h2>Users</h2>
-
-<div class="alert alert-error">In development.</div>
+<div class="page-header">
+    <h1>Users</h1>
+</div>
 
 <div id="search" class="input-append">
     <input id="query" class="span2" type="text" autocomplete="off" autofocus="true"
@@ -27,60 +27,26 @@
     <div id="profile-summary" style="display: none"></div>
 </div>
 
-<div id="top-10" class="well well-small pull-left">
-    <strong>Most popular users today:</strong>
-    <ol>
-        <?php foreach ($this->top as $user) {
-            echo '<li>';
-            echo '<img src="' . $user->avatar_url . '"/>';
-            echo '<a href="/users/' . $user->community_id . '">';
-            if (empty($user->nickname)) {
-                echo $user->community_id;
-            } else {
-                echo $user->nickname;
-            }
-            echo '</a>';
-            if (!empty($user->tag)) {
-                echo ' <span class="label label-important">' . $user->tag . '</span>';
-            }
-            echo '</li>';
+<br />
+<strong>Most popular users today:</strong>
+<ol>
+    <?php foreach ($this->top as $user) {
+        echo '<li>';
+        echo '<img src="' . $user->avatar_url . '"/>';
+        echo '<a href="/users/' . $user->community_id . '">';
+        if (empty($user->nickname)) {
+            echo $user->community_id;
+        } else {
+            echo $user->nickname;
         }
-        ?>
-    </ol>
-</div>
-
-
-<div class="well well-small pull-right">
-    <strong>Number of indexed users:</strong>
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    <script type="text/javascript">
-        google.load("visualization", "1", {packages: ["corechart"]});
-        google.setOnLoadCallback(drawChart);
-        function drawChart() {
-            var data = google.visualization.arrayToDataTable([
-                ['Year', 'Indexed users'],
-                ['2008', 1976],
-                ['2009', 2681],
-                ['2010', 4124],
-                ['2011', 6292],
-                ['2012', 8374],
-                ['2013', 10000]
-            ]);
-
-            var options = {
-                isHtml: true,
-                backgroundColor: '#f5f5f5',
-                legend: 'none'
-            };
-
-            var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-            chart.draw(data, options);
+        echo '</a>';
+        if (!empty($user->tag)) {
+            echo ' <span class="label label-important">' . $user->tag . '</span>';
         }
-    </script>
-    <div id="chart_div"></div>
-</div>
-
-<div class="clearfix"></div>
+        echo '</li>';
+    }
+    ?>
+</ol>
 
 <script type="text/javascript">
     $(document).ready(function () {

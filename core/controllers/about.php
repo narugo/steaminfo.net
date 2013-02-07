@@ -10,7 +10,7 @@ class About extends Controller
 
     public function index()
     {
-        $this->view->renderPage('about/index', 'About', array(JS_BOOTSTRAP), array(CSS_BOOTSTRAP, CSS_MAIN));
+        $this->view->renderPage('about/index', 'About', array(), array());
     }
 
 }

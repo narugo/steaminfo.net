@@ -1,18 +1,25 @@
 @import "base";
 
-
 body {
   font-family: tahoma, arial, helvetica, sans-serif;
   color: $text-main;
   font-size: $font-size-default;
   line-height: 20px;
-  padding-top: 20px;
-  padding-bottom: 40px;
+  padding-top: 60px;
+  padding-bottom: 60px;
+}
+
+.navbar {
+  img {
+    height: 18px;
+  }
+  .container {
+    width: $base-width;
+  }
 }
 
 .container {
-  width: 1000px;
-  margin: 0 auto;
+  width: $base-width;
 }
 
 img {

@@ -10,7 +10,7 @@ class Apps extends Controller
 
     public function index()
     {
-        $this->view->renderPage('apps/index', 'Apps', array(), array(CSS_BOOTSTRAP, CSS_MAIN));
+        $this->view->renderPage('apps/index', 'Apps', array(), array());
     }
 
 }

@@ -1,4 +1,8 @@
-<h2>About</h2>
+<div class="page-header">
+    <h1>About
+        <small>Steam Info</small>
+    </h1>
+</div>
 
 <p>
     This website is an interface to different Steam APIs. <b>Most features are

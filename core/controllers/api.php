@@ -13,7 +13,7 @@ class API extends Controller
         require_once PATH_TO_MODELS . 'api.php';
         $api_model = new API_Model();
         $this->view->api = $api_model->getAPI();
-        $this->view->renderPage('api/index', 'API', array(), array(CSS_BOOTSTRAP, CSS_MAIN));
+        $this->view->renderPage('api/index', 'API', array(), array());
     }
 
 }

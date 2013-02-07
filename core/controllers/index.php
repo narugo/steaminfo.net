@@ -10,9 +10,7 @@ class Index extends Controller
 
     public function index()
     {
-        $this->view->renderPage("index", NULL,
-            array(JS_JQUERY, JS_JQUERY_UI, JS_JQUERY_UI_AUTOCOMPLETE_HTML, JS_BOOTSTRAP),
-            array(CSS_JQUERY_UI, CSS_BOOTSTRAP, CSS_MAIN, CSS_INDEX));
+        $this->view->renderPage("index/index", NULL, array(), array(CSS_INDEX));
     }
 
     function searchSuggest()

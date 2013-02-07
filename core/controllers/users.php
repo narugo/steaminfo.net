@@ -14,15 +14,13 @@ class Users extends Controller
         $users_model = new Users_Model();
         if (empty($params)) {
             $this->view->top = $users_model->getTop10();
-            $this->view->renderPage('users/index', 'Users',
-                array(JS_JQUERY, JS_BOOTSTRAP),
-                array(CSS_BOOTSTRAP, CSS_FONT_AWESOME, CSS_MAIN, CSS_USERS));
+            $this->view->renderPage('users/index', 'Users', array(), array(CSS_FONT_AWESOME, CSS_USERS));
         } else {
             $this->view->profile = $users_model->getProfileSummary($params[0]);
             writeUserViewLog($this->view->profile->getCommunityId());
             $this->view->renderPage('users/profile', $this->view->profile->getNickname(),
-                array(JS_JQUERY, JS_BOOTSTRAP, JS_TABLESORTER),
-                array(CSS_BOOTSTRAP, CSS_FONT_AWESOME, CSS_MAIN, CSS_USERS));
+                array(JS_TABLESORTER),
+                array(CSS_FONT_AWESOME, CSS_USERS));
         }
     }
 
@@ -33,8 +31,8 @@ class Users extends Controller
         $this->view->apps = $apps_model->getOwnedApps($params[0]);
         if (!empty($this->view->apps)) {
             $this->view->renderPage('users/includes/apps', 'Apps - Users',
-                array(JS_JQUERY, JS_BOOTSTRAP, JS_TABLESORTER),
-                array(CSS_BOOTSTRAP, CSS_FONT_AWESOME, CSS_MAIN, CSS_USERS),
+                array(JS_TABLESORTER),
+                array(CSS_FONT_AWESOME, CSS_USERS),
                 TRUE);
         } else {
             echo 'No apps!';
@@ -48,8 +46,8 @@ class Users extends Controller
         $this->view->friends = $users_model->getFriends($params[0]);
         if (!empty($this->view->friends)) {
             $this->view->renderPage('users/includes/friends', 'Friends - Users',
-                array(JS_JQUERY, JS_BOOTSTRAP, JS_TABLESORTER),
-                array(CSS_BOOTSTRAP, CSS_FONT_AWESOME, CSS_MAIN, CSS_USERS),
+                array(JS_TABLESORTER),
+                array(CSS_FONT_AWESOME, CSS_USERS),
                 TRUE);
         } else {
             echo 'No friends!';
@@ -62,8 +60,8 @@ class Users extends Controller
         $groups_model = new Groups_Model();
         $this->view->groups = $groups_model->getUserGroups($params[0]);
         $this->view->renderPage('users/includes/groups', 'Groups - Users',
-            array(JS_JQUERY, JS_BOOTSTRAP, JS_TABLESORTER),
-            array(CSS_BOOTSTRAP, CSS_FONT_AWESOME, CSS_MAIN, CSS_USERS),
+            array(JS_TABLESORTER),
+            array(CSS_FONT_AWESOME, CSS_USERS),
             TRUE);
     }
 

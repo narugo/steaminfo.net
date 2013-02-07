@@ -16,9 +16,7 @@ class Dota extends Controller
         $this->view->live_matches = $dota_model->getLiveLeagueMatches();
         $this->view->league = $dota_model->getLeagueListing();
 
-        $this->view->renderPage('dota/index', 'Dota 2',
-            array(JS_JQUERY),
-            array(CSS_BOOTSTRAP, CSS_MAIN, CSS_DOTA));
+        $this->view->renderPage('dota/index', 'Dota 2', array(), array(CSS_DOTA));
     }
 
     function match($params)
@@ -33,8 +31,7 @@ class Dota extends Controller
             $this->view->match = $response['match'];
             $this->view->players = $response['players'];
             $this->view->renderPage("dota/match", 'Match ' . $this->view->match->id . ' - Dota 2',
-                array(JS_JQUERY, JS_BOOTSTRAP),
-                array(CSS_BOOTSTRAP, CSS_MAIN, CSS_DOTA));
+                array(), array(CSS_DOTA));
         } else if ($response['status'] === STATUS_UNAUTHORIZED) {
             error(401, 'Can\'t view info about this match');
         } else if ($response['status'] === STATUS_API_UNAVAILABLE) {

@@ -76,7 +76,11 @@ function printTime($seconds)
 }
 ?>
 
-<h3>Match #<?php echo $match->id; ?></h3>
+<div class="page-header">
+    <h1>Dota 2
+        <small>Match #<?php echo $match->id; ?></small>
+    </h1>
+</div>
 
 Game mode: <?php echo $match->game_mode; ?>
 

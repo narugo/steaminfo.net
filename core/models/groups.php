@@ -71,7 +71,7 @@ class Groups_Model extends Model
                 WHERE user_community_id = :id');
             $statement->execute(array(':id' => $community_id));
             $groups = $statement->fetchAll(PDO::FETCH_OBJ);
-            $this->memcached->add($cache_key, $groups, 60);
+            $this->memcached->add($cache_key, $groups, 1600);
         }
         return $groups;
     }

@@ -10,7 +10,7 @@ class Stats extends Controller
 
     public function index()
     {
-        $this->view->renderPage('stats/index', 'Stats', array(), array(CSS_BOOTSTRAP, CSS_MAIN));
+        $this->view->renderPage('stats/index', 'Stats', array(), array());
     }
 
 }

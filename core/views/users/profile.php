@@ -1,16 +1,18 @@
 <?php
 $profile = $this->profile;
 ?>
-<h2 id="name">
-    <img class="avatar" src="<?php echo $profile->getAvatarUrl(); ?>"/>
-    <?php echo $profile->getNickname(); ?>
-</h2>
+<div class="page-header">
+    <h1>Users
+        <small><?php echo $profile->getNickname(); ?></small>
+        <img class="avatar" src="<?php echo $profile->getAvatarUrl(); ?>"/>
+    </h1>
+</div>
 
-<ul class="nav nav-tabs" id="navigation">
+<ul id="navigation" class="nav nav-tabs">
+    <li><a href="#info-tab" data-toggle="tab">Info</a></li>
+    <li><a href="#apps-tab" data-toggle="tab">Apps</a></li>
     <li><a href="#groups-tab" data-toggle="tab">Groups</a></li>
     <li><a href="#friends-tab" data-toggle="tab">Friends</a></li>
-    <li><a href="#apps-tab" data-toggle="tab">Apps</a></li>
-    <li><a href="#info-tab" data-toggle="tab">Info</a></li>
 </ul>
 
 <div class="tab-content">
@@ -132,6 +134,7 @@ $profile = $this->profile;
     var appsTabLoaded = false;
     var friendsTabLoaded = false;
     var groupsTabLoaded = false;
+
     $('a[data-toggle="tab"]').on('shown', function (e) {
         switch (e.target.hash) {
             case "#apps-tab":
@@ -155,8 +158,8 @@ $profile = $this->profile;
         }
     });
 
-    // Activating last (actually first) tab
-    $(function () {
-        $('#navigation a:last').tab('show');
+    $(document).ready(function () {
+        // Activating first tab
+            $('#navigation a:first').tab('show');
     });
 </script>

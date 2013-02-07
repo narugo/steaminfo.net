@@ -17,32 +17,9 @@
   }
 }
 
-#profile-summary {
-  .avatar {
-    float: left;
-    margin-right: 4px;
-    margin-top: 2px;
-  }
-}
-
 .avatar {
   width: 32px;
   height: 32px;
-}
-
-#name {
-  width: 420px;
-  float: left;
-  margin: 0;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-  position: relative;
-  top: 5px;
-  line-height: 0;
-  img {
-    max-width: none;
-  }
 }
 
 #info-tab {
@@ -110,8 +87,4 @@
       text-align: left;
     }
   }
-}
-
-.nav-tabs > li, .nav-pills > li {
-  float: right;
 }

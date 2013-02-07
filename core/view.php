@@ -7,6 +7,8 @@ class View
 
     public function renderPage($name, $page_title = NULL, $js = array(), $css = array(), $no_header_footer = FALSE)
     {
+        array_unshift($js, JS_JQUERY, JS_JQUERY_UI, JS_JQUERY_UI_AUTOCOMPLETE_HTML, JS_BOOTSTRAP);
+        array_unshift($css, CSS_JQUERY_UI, CSS_BOOTSTRAP, CSS_MAIN);
         $view_path = PATH_TO_VIEWS . $name . '.php';
         if (file_exists($view_path)) {
             self::includeView($view_path, $page_title, $no_header_footer, $js, $css);
