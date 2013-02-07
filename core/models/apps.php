@@ -8,6 +8,11 @@ class Apps_Model extends Model
         parent::__construct();
     }
 
+    public function search($query)
+    {
+        return self::getApp($query);
+    }
+
     public function getSearchSuggestions($input)
     {
         $cache_key = 'apps_suggestions_for_' . $input;
@@ -85,6 +90,72 @@ class Apps_Model extends Model
         }
         $sql = substr($sql, 0, -1) . ";";
         $this->db->query($sql);
+    }
+
+    public function getApp($id)
+    {
+        $cache_key = 'app_' . $id;
+        $group = $this->memcached->get($cache_key);
+        if ($group === FALSE) {
+            $statement = $this->db->prepare('
+                SELECT id,
+                 logo_url,
+                 `name`
+                FROM `app`
+                WHERE id = :id
+             ');
+            $statement->execute(array(':id' => $id));
+            $group = new App($statement->fetchObject());
+            $this->memcached->add($cache_key, $group);
+        }
+        return $group;
+    }
+
+}
+
+
+class App
+{
+
+    public $id;
+    public $name;
+    public $logo_url;
+
+    function __construct($app)
+    {
+        $this->id = $app->id;
+        $this->name = $app->name;
+        $this->logo_url = $app->logo_url;
+    }
+
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function setLogoUrl($logo_url)
+    {
+        $this->logo_url = $logo_url;
+    }
+
+    public function getLogoUrl()
+    {
+        return $this->logo_url;
+    }
+
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    public function getName()
+    {
+        return $this->name;
     }
 
 }

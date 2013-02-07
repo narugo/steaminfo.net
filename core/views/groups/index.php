@@ -2,7 +2,7 @@
     <h1>Groups</h1>
 </div>
 
-<form class="form-inline input-append">
+<form class="search form-inline input-append">
     <input id="query" class="span2" type="text" autocomplete="off" autofocus="true"
            placeholder="Group ID or Vanity URL">
     <button id="search-submit" class="btn btn-primary" type="button">Search</button>
@@ -25,6 +25,26 @@
     </div>
     <div id="info" style="display: none"></div>
 </div>
+
+<?php if (!empty($this->top)) : ?>
+    <br/>
+    <strong>Most popular groups today:</strong>
+    <ol id="top-10">
+        <?php foreach ($this->top as $group) {
+            echo '<li>';
+            echo '<img src="' . $group->avatar_icon_url . '"/>';
+            echo '<a href="/groups/' . $group->id . '">';
+            if (empty($group->name)) {
+                echo $group->id;
+            } else {
+                echo $group->name;
+            }
+            echo '</a>';
+            echo '</li>';
+        }
+        ?>
+    </ol>
+<?php endif; ?>
 
 <script type="text/javascript">
     $(document).ready(function () {

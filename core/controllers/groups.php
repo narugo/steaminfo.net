@@ -6,31 +6,30 @@ class Groups extends Controller
     function __construct()
     {
         parent::__construct();
-        require_once PATH_TO_MODELS . 'groups.php';
-        $this->groups_model = new Groups_Model();
     }
 
     function index($params = NULL)
     {
-        $required_js = array();
-        $required_css = array(CSS_FONT_AWESOME);
+        require_once PATH_TO_MODELS . 'groups.php';
+        $groups_model = new Groups_Model();
         if (empty($params)) {
-            $this->view->renderPage("groups/index", 'Groups', $required_js, $required_css);
+            $this->view->top = $groups_model->getTop10();
+            $this->view->renderPage("groups/index", 'Groups',
+                array(), array(CSS_FONT_AWESOME, CSS_GROUPS));
         } else {
-            $this->view->group = $this->groups_model->getGroup($params[0]);
+            $this->view->group = $groups_model->getGroup($params[0]);
             writeGroupViewLog($this->view->group->getId());
-            $this->view->renderPage(
-                "groups/info",
-                $this->view->group->getName() . 'Groups',
-                $required_js,
-                $required_css
+            $this->view->renderPage("groups/info", $this->view->group->getName() . 'Groups',
+                array(), array(CSS_FONT_AWESOME, CSS_GROUPS)
             );
         }
     }
 
     function search()
     {
-        $result = $this->groups_model->search(trim($_GET['q']));
+        require_once PATH_TO_MODELS . 'groups.php';
+        $groups_model = new Groups_Model();
+        $result = $groups_model->search(trim($_GET['q']));
         header('Content-type: application/json');
         echo json_encode($result);
     }
@@ -38,7 +37,10 @@ class Groups extends Controller
     function valve()
     {
         echo "Updating tags of Valve employees...<br />";
-        return $this->groups_model->updateValveEmployeeTags();
+        require_once PATH_TO_MODELS . 'groups.php';
+        $groups_model = new Groups_Model();
+        $groups_model->updateValveEmployeeTags();
+        echo "Done!";
     }
 
 }

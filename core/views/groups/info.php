@@ -11,3 +11,7 @@
 <div class="well well-small">
     <?php echo $group->summary; ?>
 </div>
+
+<p>
+    <a href="http://steamcommunity.com/gid/<?php echo $group->id; ?>/">View group in Steam Community</a>
+</p>

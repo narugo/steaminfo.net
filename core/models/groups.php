@@ -53,6 +53,29 @@ class Groups_Model extends Model
         return $suggestions;
     }
 
+    public function getTop10()
+    {
+        $cache_key = 'top_10_groups';
+        $top = $this->memcached->get($cache_key);
+        if ($top === FALSE) {
+            $yesterday = time() - 86400;
+            $sql = 'SELECT id, name, avatar_icon_url, unique_requests
+                    FROM (
+                        SELECT group_id, count(group_id) as unique_requests
+                        FROM group_view_log
+                        WHERE `time` > FROM_UNIXTIME(' . $yesterday . ')
+                        GROUP BY group_id
+                        ORDER BY unique_requests DESC
+                        LIMIT 10
+                    ) top
+                    INNER JOIN `group` ON `group`.id = group_id';
+            $statement = $this->db->query($sql);
+            $top = $statement->fetchAll(PDO::FETCH_OBJ);
+            $this->memcached->add($cache_key, $top, 1800);
+        }
+        return $top;
+    }
+
     public function getUserGroups($community_id)
     {
         $cache_key = 'user_groups_' . $community_id;
@@ -195,12 +218,12 @@ class Groups_Model extends Model
     {
         try {
             $valve_group_info = $this->steam->communityapi->getGroupInfoByName("Valve");
-            // TODO: Find a better way to access other models
-            require_once 'users.php';
+            require_once PATH_TO_MODELS . 'users.php';
             $users_model = new Users_Model();
+            $i = 1;
             foreach ($valve_group_info->members->steamID64 as $valve_employee_id) {
                 $users_model->setTag((string)$valve_employee_id, 'Valve Employee');
-                echo 'Updated user #' . $valve_employee_id . '<br />';
+                echo $i++ . '. Updated user #' . $valve_employee_id . '<br />';
             }
         } catch (Exception $e) {
             echo 'Error!';

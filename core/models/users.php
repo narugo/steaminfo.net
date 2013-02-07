@@ -106,7 +106,6 @@ class Users_Model extends Model
             $this->memcached->add($cache_key, $top, 1800);
         }
         return $top;
-
     }
 
     public function setTag($community_id, $tag)

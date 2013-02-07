@@ -2,7 +2,7 @@
     <h1>Users</h1>
 </div>
 
-<form class="form-inline input-append">
+<form class="search form-inline input-append">
     <input id="query" class="span2" type="text" autocomplete="off" autofocus="true"
            placeholder="Vanity URL, Steam ID, or Community ID">
     <button id="search-submit" class="btn btn-primary" type="button">Search</button>
@@ -27,26 +27,28 @@
     <div id="profile-summary" style="display: none"></div>
 </div>
 
-<br/>
-<strong>Most popular users today:</strong>
-<ol>
-    <?php foreach ($this->top as $user) {
-        echo '<li>';
-        echo '<img src="' . $user->avatar_url . '"/>';
-        echo '<a href="/users/' . $user->community_id . '">';
-        if (empty($user->nickname)) {
-            echo $user->community_id;
-        } else {
-            echo $user->nickname;
+<?php if (!empty($this->top)) : ?>
+    <br/>
+    <strong>Most popular users today:</strong>
+    <ol id="top-10">
+        <?php foreach ($this->top as $user) {
+            echo '<li>';
+            echo '<img src="' . $user->avatar_url . '"/>';
+            echo '<a href="/users/' . $user->community_id . '">';
+            if (empty($user->nickname)) {
+                echo $user->community_id;
+            } else {
+                echo $user->nickname;
+            }
+            echo '</a>';
+            if (!empty($user->tag)) {
+                echo ' <span class="label label-important">' . $user->tag . '</span>';
+            }
+            echo '</li>';
         }
-        echo '</a>';
-        if (!empty($user->tag)) {
-            echo ' <span class="label label-important">' . $user->tag . '</span>';
-        }
-        echo '</li>';
-    }
-    ?>
-</ol>
+        ?>
+    </ol>
+<?php endif; ?>
 
 <script type="text/javascript">
     $(document).ready(function () {
