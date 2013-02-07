@@ -11,29 +11,25 @@ class Groups_Model extends Model
     public function search($query)
     {
         $query_type = $this->steam->tools->groups->getTypeOfId($query);
-        switch ($query_type) {
-            case ID_TYPE_COMMUNITY:
-                try {
-                    $info = $this->steam->communityapi->getGroupInfoById($query);
-                    self::updateGroupInfo($info);
-                    $result = self::getGroupInfo($info->groupID64);
-                } catch (SteamAPIUnavailableException $e) {
-                    $result = array(); // TODO: Return error message
-                }
-                break;
-            case ID_TYPE_VANITY:
-                // TODO: Search in DB for other groups (maybe name has been requested, not Vanity URL)
-                try {
-                    $info = $this->steam->communityapi->getGroupInfoByName($query);
-                    self::updateGroupInfo($info);
-                    $result = self::getGroupInfo($info->groupID64);
-                } catch (SteamAPIUnavailableException $e) {
-                    $result = array(); // TODO: Return error message
-                }
-                break;
-            default:
-                // TODO: Search in DB for users with that (query) nickname
-                $result = array();
+        try {
+            switch ($query_type) {
+                case GROUP_ID_TYPE_STEAM:
+                    $response = $this->steam->communityapi->getGroupInfoById($query);
+                    self::updateGroupInfo($response);
+                    $result = self::getGroup($response->groupID64, TRUE);
+                    break;
+                case GROUP_ID_TYPE_VANITY:
+                    // TODO: Search in DB for other groups (maybe name has been requested, not Vanity URL)
+                    $response = $this->steam->communityapi->getGroupInfoByName($query);
+                    self::updateGroupInfo($response);
+                    $result = self::getGroup($response->groupID64, TRUE);
+                    break;
+                default:
+                    // TODO: Search in DB for users with that (query) nickname
+                    $result = array();
+            }
+        } catch (SteamAPIUnavailableException $e) {
+            $result = array(); // TODO: Return error message
         }
         return $result;
     }
@@ -96,12 +92,15 @@ class Groups_Model extends Model
         }
     }
 
-    public function getGroup($name)
+    public function getGroup($id, $no_update = FALSE)
     {
-        $cache_key = 'group_' . $name;
+        $cache_key = 'group_' . $id;
         $group = $this->memcached->get($cache_key);
         if ($group === FALSE) {
-            $id = self::updateGroupInfo($name);
+            if (!$no_update) {
+                $group = $this->steam->communityapi->getGroupInfoById($id);
+                self::updateGroupInfo($group);
+            }
 
             $statement = $this->db->prepare('
                 SELECT id,
@@ -122,10 +121,8 @@ class Groups_Model extends Model
         return $group;
     }
 
-    public
-    function updateGroupInfo($group_id)
+    public function updateGroupInfo($group)
     {
-        $group = $this->steam->communityapi->getGroupInfoById($group_id);
         $sql = "INSERT INTO `group` (
                  id,
                  avatar_icon_url,

@@ -15,14 +15,14 @@ class Users_Model extends Model
     {
         $query_type = $this->steam->tools->users->getTypeOfId($query);
         switch ($query_type) {
-            case ID_TYPE_COMMUNITY:
+            case USER_ID_TYPE_COMMUNITY:
                 $result = self::getProfileSummary($query);
                 break;
-            case ID_TYPE_STEAM:
+            case USER_ID_TYPE_STEAM:
                 $community_id = $this->steam->tools->users->steamIdToCommunityId($query);
                 $result = self::getProfileSummary($community_id);
                 break;
-            case ID_TYPE_VANITY:
+            case USER_ID_TYPE_VANITY:
                 $response = $this->steam->ISteamUser->ResolveVanityURL($query);
                 $result = self::getProfileSummary($response->response->steamid);
                 break;

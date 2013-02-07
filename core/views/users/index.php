@@ -2,11 +2,11 @@
     <h1>Users</h1>
 </div>
 
-<div id="search" class="input-append">
+<form class="form-inline input-append">
     <input id="query" class="span2" type="text" autocomplete="off" autofocus="true"
            placeholder="Vanity URL, Steam ID, or Community ID">
     <button id="search-submit" class="btn btn-primary" type="button">Search</button>
-</div>
+</form>
 
 <div id="help">
     <h4>Examples</h4>
@@ -27,7 +27,7 @@
     <div id="profile-summary" style="display: none"></div>
 </div>
 
-<br />
+<br/>
 <strong>Most popular users today:</strong>
 <ol>
     <?php foreach ($this->top as $user) {
