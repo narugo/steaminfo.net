@@ -61,7 +61,7 @@ $profile = $this->profile;
 
         $primary_group_id = $profile->getPrimaryGroupId();
         if (!empty($primary_group_id))
-            echo '<p>Primary group ID: ' . $primary_group_id . '</p>';
+            echo '<p>Primary group: <a href="/groups/' . $primary_group_id . '/">' . $primary_group_id . '</a></p>';
 
         /*
          * Bans info

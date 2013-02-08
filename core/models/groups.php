@@ -183,7 +183,6 @@ class Groups_Model extends Model
             ":name" => $group->groupDetails->groupName,
             ":summary" => $group->groupDetails->summary,
             ":url" => $group->groupDetails->groupURL));
-        return $group->groupID64;
 
         // TODO: Update group members in database
         /*

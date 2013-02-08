@@ -6,4 +6,10 @@
     </h1>
 </div>
 
-<img src="<?php echo $app->logo_url; ?>"/>
+<p>
+    <img src="<?php echo $app->logo_url; ?>"/>
+</p>
+
+<p>
+    <a href="http://store.steampowered.com/app/<?php echo $app->id; ?>/">Visit store page</a>
+</p>

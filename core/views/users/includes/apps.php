@@ -20,7 +20,7 @@
             <td class="id"><?php echo $app->id; ?></td>
             <td class="logo"><img src="<?php echo $app->logo_url; ?>"/></td>
             <td class="name"><a
-                    href="http://store.steampowered.com/app/<?php echo $app->id; ?>"><?php echo $app->name; ?></a></td>
+                    href="/apps/<?php echo $app->id; ?>"><?php echo $app->name; ?></a></td>
             <td class="used-2w"><?php echo $app->used_last_2_weeks; ?></td>
             <td class="used-total"><?php echo $app->used_total; ?></td>
         </tr>

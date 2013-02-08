@@ -2,7 +2,7 @@
     <hr/>
 
     <div class="pull-left">
-        <a href="http://steampowered.com/">Powered by Steam</a>,
+        Powered by <a href="http://steampowered.com/">Steam</a>,
         created by <a href="http://tsukanov.me">me</a>.
     </div>
 
