@@ -2,8 +2,17 @@ CREATE SCHEMA steaminfo;
 
 CREATE TABLE app ( 
 	id                   BIGINT UNSIGNED NOT NULL  ,
-	logo_url             VARCHAR( 255 )  NOT NULL  ,
-	name                 VARCHAR( 64 )  NOT NULL  ,
+	header_image_url     VARCHAR( 255 )    ,
+	name                 VARCHAR( 64 )    ,
+	type                 VARCHAR( 100 )    ,
+	website              VARCHAR( 100 )    ,
+	release_date         VARCHAR( 20 )    ,
+	legal_notice         VARCHAR( 500 )    ,
+	is_win               BIT    ,
+	is_mac               BIT    ,
+	is_linux             BIT    ,
+	recommendations      INT    ,
+	detailed_description VARCHAR( 2000 )    ,
 	CONSTRAINT pk_app PRIMARY KEY ( id )
  );
 
@@ -103,6 +112,27 @@ CREATE TABLE dota_league (
 	tournament_url       VARCHAR( 200 )    ,
 	CONSTRAINT pk_dota_league PRIMARY KEY ( id )
  );
+
+CREATE TABLE genre ( 
+	id                   INT UNSIGNED NOT NULL  ,
+	description          VARCHAR( 100 )    ,
+	CONSTRAINT pk_genre PRIMARY KEY ( id )
+ ) engine=InnoDB;
+
+CREATE TABLE app_genres ( 
+	genre_id             INT UNSIGNED NOT NULL  ,
+	app_id               BIGINT UNSIGNED NOT NULL  
+ ) engine=InnoDB;
+
+CREATE INDEX idx_app_genres ON app_genres ( genre_id );
+
+CREATE INDEX idx_app_genres_0 ON app_genres ( app_id );
+
+CREATE TABLE category ( 
+	id                   INT UNSIGNED NOT NULL  ,
+	description          VARCHAR( 100 )    ,
+	CONSTRAINT pk_category PRIMARY KEY ( id )
+ ) engine=InnoDB;
 
 CREATE TABLE app_owners ( 
 	app_id               BIGINT UNSIGNED NOT NULL  ,
@@ -204,6 +234,15 @@ CREATE INDEX idx_group_members ON group_members ( group_id );
 
 CREATE INDEX idx_group_members_0 ON group_members ( user_community_id );
 
+CREATE TABLE app_categories ( 
+	app_id               BIGINT UNSIGNED NOT NULL  ,
+	category_id          INT UNSIGNED NOT NULL  
+ ) engine=InnoDB;
+
+CREATE INDEX idx_app_categories ON app_categories ( app_id );
+
+CREATE INDEX idx_app_categories_0 ON app_categories ( category_id );
+
 ALTER TABLE app_owners ADD CONSTRAINT fk_app_owners_app FOREIGN KEY ( app_id ) REFERENCES app( id ) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE app_owners ADD CONSTRAINT fk_app_owners_user FOREIGN KEY ( user_community_id ) REFERENCES user( community_id ) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -231,4 +270,12 @@ ALTER TABLE group_view_log ADD CONSTRAINT fk_group_view_log FOREIGN KEY ( group_
 ALTER TABLE user_profile_view_log ADD CONSTRAINT fk_user_profile_view_log FOREIGN KEY ( user_id ) REFERENCES user( community_id ) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE active_app_users_history ADD CONSTRAINT fk_active_app_users_history FOREIGN KEY ( app_id ) REFERENCES app( id ) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE app_genres ADD CONSTRAINT fk_app_genres FOREIGN KEY ( genre_id ) REFERENCES genre( id ) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE app_genres ADD CONSTRAINT fk_app_genres_0 FOREIGN KEY ( app_id ) REFERENCES app( id ) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE app_categories ADD CONSTRAINT fk_app_categories FOREIGN KEY ( app_id ) REFERENCES app( id ) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE app_categories ADD CONSTRAINT fk_app_categories_0 FOREIGN KEY ( category_id ) REFERENCES category( id ) ON DELETE CASCADE ON UPDATE CASCADE;
 
