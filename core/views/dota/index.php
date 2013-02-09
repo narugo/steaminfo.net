@@ -9,7 +9,9 @@
     <button id="search-submit" class="btn btn-primary" type="button">Search</button>
 </div>
 
-Try <strong><a href="/dota/match/37623177">37623177</a></strong>.
+<p>
+    Try <strong><a href="/dota/match/37623177">37623177</a></strong>.
+</p>
 
 <hr/>
 

@@ -11,26 +11,23 @@ class Dota_Model extends Model
 
     public function getMatchDetails($match_id)
     {
-        $match = self::getMatch($match_id);
-        $players = self::getPlayers($match->id);
-
-        if (!$match OR !$players) {
-            try {
+        $match_cache_key = 'dota_match_' . $match_id;
+        $match_players_key = 'dota_match_' . $match_id . '_players';
+        $match = $this->memcached->get($match_cache_key);
+        $players = $this->memcached->get($match_players_key);
+        if (($match === FALSE) OR ($players === FALSE)) {
+            $match = self::getMatchFromDB($match_id);
+            $players = self::getMatchPlayers($match_id);
+            if (!$match OR !$players) {
                 $response = $this->steam->IDOTA2Match_570->GetMatchDetails($match_id);
-            } catch (Exception $e) {
-                if ($e instanceof SteamAPIUnavailableException) {
-                    return array('status' => STATUS_API_UNAVAILABLE);
-                } else if ($e instanceof UnauthorizedException) {
-                    return array('status' => STATUS_UNAUTHORIZED);
-                }
+                self::addMatch($response);
+                $match = self::getMatchFromDB($match_id);
+                $players = self::getMatchPlayers($match_id);
             }
-            self::addMatch($response);
-            $match = self::getMatch($match_id);
-            $players = self::getPlayers($match->id);
+            $this->memcached->add($match_cache_key, $match, 3000);
+            $this->memcached->add($match_players_key, $players, 3000);
         }
-
         return array(
-            'status' => STATUS_SUCCESS,
             'match' => $match,
             'players' => $players
         );
@@ -55,7 +52,8 @@ class Dota_Model extends Model
         if (!empty($match->radiant_logo)) $match->radiant_logo = self::getTeamLogo($match->radiant_logo);
         if (!empty($match->dire_logo)) $match->dire_logo = self::getTeamLogo($match->dire_logo);
 
-        $sql = 'INSERT INTO dota_match (id, start_time, season, radiant_win, duration, tower_status_radiant,
+        $sql = 'INSERT IGNORE INTO dota_league (id) VALUES (:league_id);
+                INSERT INTO dota_match (id, start_time, season, radiant_win, duration, tower_status_radiant,
                                         tower_status_dire, barracks_status_radiant, barracks_status_dire, cluster,
                                         first_blood_time, lobby_type, human_players, league_id, positive_votes,
                                         negative_votes, game_mode,
@@ -94,10 +92,10 @@ class Dota_Model extends Model
             ":dire_team_complete" => $match->dire_team_complete));
         $statement->closeCursor();
 
-        self::addPlayers($match->players, $match->match_id);
+        self::addMatchPlayers($match->match_id, $match->players);
     }
 
-    private function addPlayers($players, $match_id)
+    private function addMatchPlayers($match_id, $players)
     {
         // Removing old records
         $sql = 'DELETE FROM dota_match_player WHERE match_id= :match_id;';
@@ -117,7 +115,7 @@ class Dota_Model extends Model
                 array_push($ids, $player->account_id);
             }
         }
-        require_once PATH_TO_MODELS .'users.php';
+        require_once PATH_TO_MODELS . 'users.php';
         $users_model = new Users_Model();
         $users_model->updateSummaries($ids);
 
@@ -164,7 +162,20 @@ class Dota_Model extends Model
         }
     }
 
-    private function getMatch($match_id)
+    private function getMatchPlayers($match_id)
+    {
+        $sql = 'SELECT dota_match_player.*, nickname, dota_hero.name AS hero_name, dota_hero.display_name AS hero_display_name
+                FROM dota_match_player
+                LEFT JOIN `user` ON `user`.community_id = dota_match_player.account_id
+                LEFT JOIN dota_hero ON dota_hero.id = dota_match_player.hero_id
+                WHERE match_id = :match_id';
+        $statement = $this->db->prepare($sql);
+        $statement->execute(array(':match_id' => $match_id));
+        if ($statement->rowCount() < 1) return FALSE;
+        return $statement->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    private function getMatchFromDB($match_id)
     {
         $statement = $this->db->prepare('SELECT * FROM dota_match WHERE id = :match_id');
         $statement->execute(array(':match_id' => $match_id));
@@ -220,19 +231,6 @@ class Dota_Model extends Model
                 ':tournament_url' => $league->tournament_url
             ));
         }
-    }
-
-    private function getPlayers($match_id)
-    {
-        $sql = 'SELECT dota_match_player.*, nickname, dota_hero.name AS hero_name, dota_hero.display_name AS hero_display_name
-                FROM dota_match_player
-                LEFT JOIN `user` ON `user`.community_id = dota_match_player.account_id
-                LEFT JOIN dota_hero ON dota_hero.id = dota_match_player.hero_id
-                WHERE match_id = :match_id';
-        $statement = $this->db->prepare($sql);
-        $statement->execute(array(':match_id' => $match_id));
-        if ($statement->rowCount() < 1) return FALSE;
-        return $statement->fetchAll(PDO::FETCH_OBJ);
     }
 
     private function getTeamLogo($logo_id)

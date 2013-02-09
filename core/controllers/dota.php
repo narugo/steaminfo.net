@@ -26,17 +26,11 @@ class Dota extends Controller
         require_once PATH_TO_MODELS . 'dota.php';
         $dota_model = new Dota_Model();
         $response = $dota_model->getMatchDetails($match_id);
-        if ($response['status'] === STATUS_SUCCESS) {
-            writeMatchViewLog($match_id);
-            $this->view->match = $response['match'];
-            $this->view->players = $response['players'];
-            $this->view->renderPage("dota/match", 'Match ' . $this->view->match->id . ' - Dota 2',
-                array(), array(CSS_DOTA));
-        } else if ($response['status'] === STATUS_UNAUTHORIZED) {
-            error(401, 'Can\'t view info about this match');
-        } else if ($response['status'] === STATUS_API_UNAVAILABLE) {
-            error(503, 'Steam API is unavailable');
-        }
+        writeMatchViewLog($match_id);
+        $this->view->match = $response['match'];
+        $this->view->players = $response['players'];
+        $this->view->renderPage("dota/match", 'Match ' . $this->view->match->id . ' - Dota 2',
+            array(), array(CSS_DOTA));
     }
 
     function updateHeroesList()
