@@ -12,6 +12,4 @@
         https://api.steampowered.com/ISteamWebAPIUtil/GetSupportedAPIList/v0001/</a>.
 </p>
 
-<div class="well well-small">
-    <?php print_r($this->api); ?>
-</div>
+<pre><?php echo json_encode($this->api, JSON_PRETTY_PRINT); ?></pre>
