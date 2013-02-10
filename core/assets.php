@@ -17,7 +17,7 @@ define('JS_TABLESORTER', '//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.
  */
 define('CSS_JQUERY_UI', '//ajax.aspnetcdn.com/ajax/jquery.ui/1.9.2/themes/redmond/jquery-ui.css');
 define('CSS_BOOTSTRAP', '//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css');
-define('CSS_FONT_AWESOME', '//netdna.bootstrapcdn.com/font-awesome/3.0/css/font-awesome.css');
+define('CSS_FONT_AWESOME', '//netdna.bootstrapcdn.com/font-awesome/3.0.2/css/font-awesome.css');
 define('CSS_MAIN', PATH_TO_CSS . 'screen.css');
 define('CSS_INDEX', PATH_TO_CSS . 'index.css');
 define('CSS_USERS', PATH_TO_CSS . 'users.css');

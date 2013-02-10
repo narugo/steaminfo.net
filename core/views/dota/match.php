@@ -107,7 +107,7 @@ Game mode: <?php echo $match->game_mode; ?>
         echo '<img class="team-icon" src="/assets/img/dota/pip_radiant.png"/>';
     }
     if (!empty($match->radiant_name)) {
-        echo $match->radiant_name . ' (The Radiant)';
+        echo '<a href="/dota/teams/' . $match->radiant_team_id . '/">' . $match->radiant_name . '</a> (The Radiant)';
     } else {
         echo 'The Radiant';
     }
@@ -136,7 +136,7 @@ Game mode: <?php echo $match->game_mode; ?>
         echo '<img class="team-icon" src="/assets/img/dota/pip_dire.png"/>';
     }
     if (!empty($match->dire_name)) {
-        echo $match->dire_name . ' (The Dire)';
+        echo '<a href="/dota/teams/' . $match->dire_team_id . '/">' . $match->dire_name . '</a> (The Dire)';
     } else {
         echo 'The Dire';
     }
