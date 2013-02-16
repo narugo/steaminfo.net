@@ -1,12 +1,16 @@
 @import "base";
 
 body {
-  font-family: tahoma, arial, helvetica, sans-serif;
+  font-family: 'Roboto Condensed', sans-serif;
   color: $text-main;
   font-size: $font-size-default;
   line-height: 20px;
   padding-top: 60px;
   padding-bottom: 60px;
+}
+
+.ui-widget, input, button, select, textarea {
+  font-family: 'Roboto Condensed', sans-serif;
 }
 
 .navbar {
