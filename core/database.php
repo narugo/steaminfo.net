@@ -5,7 +5,8 @@ class Database extends PDO
 
     function __construct()
     {
-        parent::__construct(DB_TYPE . ':host=' . DB_HOST . ';dbname=' . DB_NAME, DB_USERNAME, DB_PASSWORD);
+        parent::__construct(DB_TYPE . ':host=' . DB_HOST . ';dbname=' . DB_NAME,
+            DB_USERNAME, DB_PASSWORD);
     }
 
 }
