@@ -21,7 +21,7 @@ class Model
         $this->memcached = new Memcached();
         $this->memcached->addServer(MEMCACHED_SERVER, MEMCACHED_PORT);
 
-        $this->steam = new Locomotive();
+        $this->steam = new Locomotive(STEAM_API_KEY);
     }
 
 }

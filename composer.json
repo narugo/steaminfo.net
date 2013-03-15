@@ -1,0 +1,8 @@
+{
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.4.0",
+        "fp/lightopenid": "dev-master",
+        "tsukanov/steam-locomotive": "dev-master"
+    }
+}

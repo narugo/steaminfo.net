@@ -37,6 +37,7 @@
         echo '<ol>';
         foreach ($this->league as $league) {
             echo '<li>';
+            echo '(#' . $league->id . ') ';
             if (!empty($league->tournament_url)) {
                 echo '<a href="' . $league->tournament_url . '">' . $league->name . '</a>';
             } else {
