@@ -34,13 +34,4 @@ class Groups extends Controller
         echo json_encode($result);
     }
 
-    function valve()
-    {
-        echo "Updating tags of Valve employees...<br />";
-        require_once PATH_TO_MODELS . 'groups.php';
-        $groups_model = new Groups_Model();
-        $groups_model->updateValveEmployeeTags();
-        echo "Done!";
-    }
-
 }

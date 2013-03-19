@@ -67,13 +67,13 @@ $profile = $this->profile;
          * Bans info
          */
         echo '<p>';
-        if (!$profile->is_vac_banned) {
+        if ($profile->is_vac_banned) {
             echo '<span class="label label-important">VAC banned</span>';
         } else {
             echo '<span class="label label-success">Not VAC banned</span>';
         }
         echo '&nbsp;';
-        if (!$profile->is_community_banned) {
+        if ($profile->is_community_banned) {
             echo '<span class="label label-important">Account is limited</span>';
         } else {
             echo '<span class="label label-success">Account is not limited</span>';
