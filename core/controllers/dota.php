@@ -38,7 +38,7 @@ class Dota extends Controller
         require_once PATH_TO_MODELS . 'dota.php';
         $dota_model = new Dota_Model();
         $this->view->league = $dota_model->getLeagueListing();
-        $this->view->renderPage("dota/leagues", 'Matches - Dota 2', array(), array(CSS_DOTA));
+        $this->view->renderPage("dota/leagues", 'Leagues - Dota 2', array(), array(CSS_DOTA));
     }
 
     function teams($params)
