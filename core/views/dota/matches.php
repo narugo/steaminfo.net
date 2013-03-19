@@ -1,5 +1,7 @@
 <div class="page-header">
-    <h1>Dota 2</h1>
+    <h1>Dota 2
+        <small>Matches</small>
+    </h1>
 </div>
 
 <div id="search" class="input-append">
@@ -10,10 +12,8 @@
 </div>
 
 <p>
-    Try <strong><a href="/dota/match/37623177">37623177</a></strong>.
+    Try <strong><a href="/dota/matches/37623177">37623177</a></strong>.
 </p>
-
-<hr/>
 
 <?php if (!empty($this->live_matches)) : ?>
     <strong>Live league matches:</strong>
@@ -30,30 +30,10 @@
     </div>
 <?php endif; ?>
 
-<?php if (!empty($this->league)) : ?>
-    <strong>Leagues:</strong>
-    <div class="well well-small">
-        <?php
-        echo '<ol>';
-        foreach ($this->league as $league) {
-            echo '<li>';
-            echo '(#' . $league->id . ') ';
-            if (!empty($league->tournament_url)) {
-                echo '<a href="' . $league->tournament_url . '">' . $league->name . '</a>';
-            } else {
-                echo $league->name;
-            }
-            echo '</li>';
-        }
-        echo '</ol>';
-        ?>
-    </div>
-<?php endif; ?>
-
 <script type="text/javascript">
     $(document).ready(function () {
         $('#search-submit').click(function () {
-            window.location = ("/dota/match/" + $('#query').val());
+            window.location = ("/dota/matches/" + $('#query').val());
         });
     });
 </script>

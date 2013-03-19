@@ -33,7 +33,7 @@ class Dota_Model extends Model
             $players = self::getMatchPlayers($match_id);
             if (!$match OR !$players) {
                 $response = $this->steam->IDOTA2Match_570->GetMatchDetails($match_id);
-                self::addMatch($response);
+                self::addMatch($response->result);
                 $match = self::getMatchFromDB($match_id);
                 $players = self::getMatchPlayers($match_id);
             }

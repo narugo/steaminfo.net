@@ -21,8 +21,8 @@
             <td class="logo"><img src="<?php echo $app->logo_url; ?>"/></td>
             <td class="name"><a
                     href="/apps/<?php echo $app->id; ?>"><?php echo $app->name; ?></a></td>
-            <td class="used-2w"><?php echo $app->used_last_2_weeks; ?></td>
-            <td class="used-total"><?php echo $app->used_total; ?></td>
+            <td class="used-2w"><?php echo round($app->used_last_2_weeks / 60, 1); ?></td>
+            <td class="used-total"><?php echo round($app->used_total / 60, 1); ?></td>
         </tr>
     <?php endforeach; ?>
     </tbody>

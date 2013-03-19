@@ -34,116 +34,6 @@ class Groups_Model extends Model
         return $result;
     }
 
-    public function getSearchSuggestions($input)
-    {
-        $cache_key = 'groups_suggestions_for_' . $input;
-        $suggestions = $this->memcached->get($cache_key);
-        if ($suggestions === FALSE) {
-            // TODO: Find a way to get better suggestions
-            $statement = $this->db->prepare('
-                SELECT *
-                FROM `group`
-                WHERE SOUNDEX(`name`) = SOUNDEX(:input)
-                LIMIT 0, 5
-            ');
-            $statement->execute(array(":input" => $this->db->quote($input)));
-            $suggestions = $statement->fetchAll();
-            $this->memcached->add($cache_key, $suggestions, 3600);
-        }
-        return $suggestions;
-    }
-
-    public function getTop10()
-    {
-        $cache_key = 'top_10_groups';
-        $top = $this->memcached->get($cache_key);
-        if ($top === FALSE) {
-            $yesterday = time() - 86400;
-            $sql = 'SELECT id, name, avatar_icon_url, unique_requests
-                    FROM (
-                        SELECT group_id, count(group_id) as unique_requests
-                        FROM group_view_log
-                        WHERE `time` > FROM_UNIXTIME(' . $yesterday . ')
-                        GROUP BY group_id
-                        ORDER BY unique_requests DESC
-                        LIMIT 10
-                    ) top
-                    INNER JOIN `group` ON `group`.id = group_id';
-            $statement = $this->db->query($sql);
-            $top = $statement->fetchAll(PDO::FETCH_OBJ);
-            $this->memcached->add($cache_key, $top, 1800);
-        }
-        return $top;
-    }
-
-    public function getUserGroups($community_id)
-    {
-        $cache_key = 'user_groups_' . $community_id;
-        $groups = $this->memcached->get($cache_key);
-        if ($groups === FALSE) {
-            $response = $this->steam->ISteamUser->GetUserGroupList($community_id);
-            self::addGroupMember($response->response->groups, $community_id);
-
-            $statement = $this->db->prepare('SELECT `group`.*
-                FROM group_members
-                INNER JOIN `group` ON group_members.group_id = `group`.id
-                WHERE user_community_id = :id');
-            $statement->execute(array(':id' => $community_id));
-            $groups = $statement->fetchAll(PDO::FETCH_OBJ);
-            $this->memcached->add($cache_key, $groups, 1600);
-        }
-        return $groups;
-    }
-
-    public function addGroupMember($groups, $community_id)
-    {
-        // Removing old records
-        $sql = 'DELETE FROM group_members WHERE user_community_id= :user_id;';
-        $statement = $this->db->prepare($sql);
-        $statement->execute(array(":user_id" => $community_id));
-        $statement->closeCursor();
-
-        $sql = 'INSERT IGNORE INTO `group` (id) VALUES (:gid);
-            INSERT INTO group_members (user_community_id, group_id) VALUES (:user_id, :gid)';
-        $statement = $this->db->prepare($sql);
-        foreach ($groups as $group) {
-            $statement->execute(array(
-                ':user_id' => $community_id,
-                ':gid' => ($group->gid + 103582791429521408)
-            ));
-            $statement->closeCursor();
-        }
-    }
-
-    public function getGroup($id, $no_update = FALSE)
-    {
-        $cache_key = 'group_' . $id;
-        $group = $this->memcached->get($cache_key);
-        if ($group === FALSE) {
-            if (!$no_update) {
-                $group = $this->steam->communityapi->getGroupInfoById($id);
-                self::updateGroupInfo($group);
-            }
-
-            $statement = $this->db->prepare('
-                SELECT id,
-                 avatar_icon_url,
-                 avatar_medium_url,
-                 avatar_full_url,
-                 headline,
-                 `name`,
-                 summary,
-                 url
-                FROM `group`
-                WHERE id = :id
-             ');
-            $statement->execute(array(':id' => $id));
-            $group = new Group($statement->fetchObject());
-            $this->memcached->add($cache_key, $group);
-        }
-        return $group;
-    }
-
     public function updateGroupInfo($group)
     {
         $sql = "INSERT INTO `group` (
@@ -204,6 +94,117 @@ class Groups_Model extends Model
                         ":user_community_id" => $profile->steamID64));
                     $statement->closeCursor();
                 }*/
+    }
+
+    public function getGroup($id, $no_update = FALSE)
+    {
+        $cache_key = 'group_' . $id;
+        $group = $this->memcached->get($cache_key);
+        if ($group === FALSE) {
+            if (!$no_update) {
+                $group = $this->steam->communityapi->getGroupInfoById($id);
+                self::updateGroupInfo($group);
+            }
+
+            $statement = $this->db->prepare('
+                SELECT id,
+                 avatar_icon_url,
+                 avatar_medium_url,
+                 avatar_full_url,
+                 headline,
+                 `name`,
+                 summary,
+                 url
+                FROM `group`
+                WHERE id = :id
+             ');
+            $statement->execute(array(':id' => $id));
+            $group = new Group($statement->fetchObject());
+            $this->memcached->add($cache_key, $group);
+        }
+        return $group;
+    }
+
+    public function getSearchSuggestions($input)
+    {
+        $cache_key = 'groups_suggestions_for_' . $input;
+        $suggestions = $this->memcached->get($cache_key);
+        if ($suggestions === FALSE) {
+            // TODO: Find a way to get better suggestions
+            $statement = $this->db->prepare('
+                SELECT *
+                FROM `group`
+                WHERE SOUNDEX(`name`) = SOUNDEX(:input)
+                LIMIT 0, 5
+            ');
+            $statement->execute(array(":input" => $this->db->quote($input)));
+            $suggestions = $statement->fetchAll();
+            $this->memcached->add($cache_key, $suggestions, 3600);
+        }
+        return $suggestions;
+    }
+
+    public function getTop10()
+    {
+        $cache_key = 'top_10_groups';
+        $top = $this->memcached->get($cache_key);
+        if ($top === FALSE) {
+            $yesterday = time() - 86400;
+            $sql = 'SELECT id, name, avatar_icon_url, unique_requests
+                    FROM (
+                        SELECT group_id, count(group_id) as unique_requests
+                        FROM group_view_log
+                        WHERE `time` > FROM_UNIXTIME(' . $yesterday . ')
+                        GROUP BY group_id
+                        ORDER BY unique_requests DESC
+                        LIMIT 10
+                    ) top
+                    INNER JOIN `group` ON `group`.id = group_id';
+            $statement = $this->db->query($sql);
+            $top = $statement->fetchAll(PDO::FETCH_OBJ);
+            $this->memcached->add($cache_key, $top, 1800);
+        }
+        return $top;
+    }
+
+    public function getUserGroups($community_id)
+    {
+        $cache_key = 'user_groups_' . $community_id;
+        $groups = $this->memcached->get($cache_key);
+        if ($groups === FALSE) {
+            $response = $this->steam->ISteamUser->GetUserGroupList($community_id);
+            if (empty($response->response->groups)) return;
+            self::addGroupMember($response->response->groups, $community_id);
+
+            $statement = $this->db->prepare('SELECT `group`.*
+                FROM group_members
+                INNER JOIN `group` ON group_members.group_id = `group`.id
+                WHERE user_community_id = :id');
+            $statement->execute(array(':id' => $community_id));
+            $groups = $statement->fetchAll(PDO::FETCH_OBJ);
+            $this->memcached->add($cache_key, $groups, 1600);
+        }
+        return $groups;
+    }
+
+    public function addGroupMember($groups, $community_id)
+    {
+        // Removing old records
+        $sql = 'DELETE FROM group_members WHERE user_community_id= :user_id;';
+        $statement = $this->db->prepare($sql);
+        $statement->execute(array(":user_id" => $community_id));
+        $statement->closeCursor();
+
+        $sql = 'INSERT IGNORE INTO `group` (id) VALUES (:gid);
+            INSERT INTO group_members (user_community_id, group_id) VALUES (:user_id, :gid)';
+        $statement = $this->db->prepare($sql);
+        foreach ($groups as $group) {
+            $statement->execute(array(
+                ':user_id' => $community_id,
+                ':gid' => ($group->gid + 103582791429521408)
+            ));
+            $statement->closeCursor();
+        }
     }
 
     public

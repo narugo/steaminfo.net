@@ -33,25 +33,6 @@ class Users_Model extends Model
         return $result;
     }
 
-    public function getSearchSuggestions($input)
-    {
-        $cache_key = 'users_suggestions_for_' . $input;
-        $suggestions = $this->memcached->get($cache_key);
-        if ($suggestions === FALSE) {
-            // TODO: Find a way to get better suggestions
-            $statement = $this->db->prepare('
-                SELECT community_id, nickname, avatar_url, tag
-                FROM user
-                WHERE SOUNDEX(nickname) = SOUNDEX(:input)
-                LIMIT 0, 5
-            ');
-            $statement->execute(array(":input" => $this->db->quote($input)));
-            $suggestions = $statement->fetchAll();
-            $this->memcached->add($cache_key, $suggestions, 3600);
-        }
-        return $suggestions;
-    }
-
     public function getProfileSummary($community_id)
     {
         $cache_key = 'profile_summary_of_' . $community_id;
@@ -66,56 +47,6 @@ class Users_Model extends Model
             $this->memcached->add($cache_key, $profile, 3600);
         }
         return $profile;
-    }
-
-    public function getFriends($community_id)
-    {
-        $cache_key = 'friends_of_' . $community_id;
-        $friends = $this->memcached->get($cache_key);
-        if ($friends === FALSE) {
-            self::updateFriendsList($community_id);
-
-            $statement = $this->db->prepare('SELECT community_id, nickname, avatar_url, tag, since FROM friends
-                INNER JOIN `user` ON friends.user_community_id2 = `user`.community_id
-                WHERE user_community_id1 = :id');
-            $statement->execute(array(':id' => $community_id));
-            $friends = $statement->fetchAll(PDO::FETCH_OBJ);
-            $this->memcached->add($cache_key, $friends, 3600);
-        }
-        return $friends;
-    }
-
-    public function getTop10()
-    {
-        $cache_key = 'top_10_users';
-        $top = $this->memcached->get($cache_key);
-        if ($top === FALSE) {
-            $yesterday = time() - 86400;
-            $sql = 'SELECT community_id, nickname, tag, avatar_url, unique_requests
-                    FROM (
-                        SELECT user_id, count(user_id) as unique_requests
-                        FROM user_profile_view_log
-                        WHERE `time` > FROM_UNIXTIME(' . $yesterday . ')
-                        GROUP BY user_id
-                        ORDER BY unique_requests DESC
-                        LIMIT 10
-                    ) top
-                    INNER JOIN `user` ON `user`.community_id = user_id';
-            $statement = $this->db->query($sql);
-            $top = $statement->fetchAll(PDO::FETCH_OBJ);
-            $this->memcached->add($cache_key, $top, 1800);
-        }
-        return $top;
-    }
-
-    public function setTag($community_id, $tag)
-    {
-        // TODO: Validate ID
-        // TODO: Modify function so it can get multiple IDs
-        $sql = "INSERT INTO `user` (community_id, tag) VALUES (:id, :tag)
-                ON DUPLICATE KEY UPDATE community_id = :id, tag = :tag";
-        $statement = $this->db->prepare($sql);
-        return $statement->execute(array(':id' => $community_id, ':tag' => $tag));
     }
 
     public function updateSummaries($community_ids)
@@ -217,10 +148,47 @@ class Users_Model extends Model
         }
     }
 
+    public function getSearchSuggestions($input)
+    {
+        $cache_key = 'users_suggestions_for_' . $input;
+        $suggestions = $this->memcached->get($cache_key);
+        if ($suggestions === FALSE) {
+            // TODO: Find a way to get better suggestions
+            $statement = $this->db->prepare('
+                SELECT community_id, nickname, avatar_url, tag
+                FROM user
+                WHERE SOUNDEX(nickname) = SOUNDEX(:input)
+                LIMIT 0, 5
+            ');
+            $statement->execute(array(":input" => $this->db->quote($input)));
+            $suggestions = $statement->fetchAll();
+            $this->memcached->add($cache_key, $suggestions, 3600);
+        }
+        return $suggestions;
+    }
+
+    public function getFriends($community_id)
+    {
+        $cache_key = 'friends_of_' . $community_id;
+        $friends = $this->memcached->get($cache_key);
+        if ($friends === FALSE) {
+            self::updateFriendsList($community_id);
+            $statement = $this->db->prepare('SELECT community_id, nickname, avatar_url, tag, since FROM friends
+                INNER JOIN `user` ON friends.user_community_id2 = `user`.community_id
+                WHERE user_community_id1 = :id');
+            $statement->execute(array(':id' => $community_id));
+            $friends = $statement->fetchAll(PDO::FETCH_OBJ);
+            $this->memcached->add($cache_key, $friends, 3600);
+        }
+        return $friends;
+    }
+
     private function updateFriendsList($community_id)
     {
         $response = $this->steam->ISteamUser->GetFriendList($community_id);
         $friends_list = $response->friendslist->friends;
+
+        if (empty($friends_list)) return;
 
         // Removing old friends
         $remove_old = 'DELETE FROM friends WHERE user_community_id1 = :user_id;';
@@ -246,15 +214,46 @@ class Users_Model extends Model
         $this->db->query($insert_profiles);
     }
 
+    public function getTop10()
+    {
+        $cache_key = 'top_10_users';
+        $top = $this->memcached->get($cache_key);
+        if ($top === FALSE) {
+            $yesterday = time() - 86400;
+            $sql = 'SELECT community_id, nickname, tag, avatar_url, unique_requests
+                    FROM (
+                        SELECT user_id, count(user_id) as unique_requests
+                        FROM user_profile_view_log
+                        WHERE `time` > FROM_UNIXTIME(' . $yesterday . ')
+                        GROUP BY user_id
+                        ORDER BY unique_requests DESC
+                        LIMIT 10
+                    ) top
+                    INNER JOIN `user` ON `user`.community_id = user_id';
+            $statement = $this->db->query($sql);
+            $top = $statement->fetchAll(PDO::FETCH_OBJ);
+            $this->memcached->add($cache_key, $top, 1800);
+        }
+        return $top;
+    }
+
+    public function setTag($community_id, $tag)
+    {
+        // TODO: Validate ID
+        // TODO: Modify function so it can get multiple IDs
+        $sql = "INSERT INTO `user` (community_id, tag) VALUES (:id, :tag)
+                ON DUPLICATE KEY UPDATE community_id = :id, tag = :tag";
+        $statement = $this->db->prepare($sql);
+        return $statement->execute(array(':id' => $community_id, ':tag' => $tag));
+    }
+
 }
 
 class User
 {
 
     public $community_id;
-
     public $nickname;
-
     public $avatar_url;
     public $tag;
     public $creation_time;
@@ -276,7 +275,6 @@ class User
     public $location_city_id;
     public $location_country_code;
     public $location_state_code;
-
     public $primary_group_id;
     public $last_updated;
 
@@ -315,7 +313,7 @@ class User
 
     public function getSteamId()
     {
-        $steam = new Locomotive();
+        $steam = new Locomotive(STEAM_API_KEY);
         return $steam->tools->users->communityIdToSteamId($this->community_id);
     }
 

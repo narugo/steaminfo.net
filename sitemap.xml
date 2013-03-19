@@ -14,9 +14,6 @@
         <loc>http://steaminfo.net/groups/</loc>
     </url>
     <url>
-        <loc>http://steaminfo.net/dota/</loc>
-    </url>
-    <url>
         <loc>http://steaminfo.net/stats/</loc>
     </url>
     <url>
@@ -27,5 +24,12 @@
     </url>
     <url>
         <loc>http://steaminfo.net/about/</loc>
+    </url>
+
+    <url>
+        <loc>http://steaminfo.net/dota/matches/</loc>
+    </url>
+    <url>
+        <loc>http://steaminfo.net/dota/leagues/</loc>
     </url>
 </urlset>

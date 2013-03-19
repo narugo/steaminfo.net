@@ -67,30 +67,17 @@ $profile = $this->profile;
          * Bans info
          */
         echo '<p>';
-        // VAC ban
-        switch ($profile->isVacBanned()) {
-            case '0':
-                echo '<span class="label label-success">Not VAC banned</span>';
-                break;
-            case '1':
-                echo '<span class="label label-important">VAC banned</span>';
-                break;
-            default:
-                echo '<span class="label">VAC ban state is unknown</span>';
+        if (!$profile->is_vac_banned) {
+            echo '<span class="label label-important">VAC banned</span>';
+        } else {
+            echo '<span class="label label-success">Not VAC banned</span>';
         }
-        // Account limitations
         echo '&nbsp;';
-        switch ($profile->isCommunityBanned()) {
-            case '0':
-                echo '<span class="label label-success">Account is not limited</span>';
-                break;
-            case '1':
-                echo '<span class="label label-important">Account is limited</span>';
-                break;
-            default:
-                echo '<span class="label">Community ban state is unknown</span>';
+        if (!$profile->is_community_banned) {
+            echo '<span class="label label-important">Account is limited</span>';
+        } else {
+            echo '<span class="label label-success">Account is not limited</span>';
         }
-        // Trade ban
         echo '<br /><b>Trade ban state:</b> ';
         switch ($profile->getEconomyBanState()) {
             case 'none':
@@ -160,6 +147,6 @@ $profile = $this->profile;
 
     $(document).ready(function () {
         // Activating first tab
-            $('#navigation a:first').tab('show');
+        $('#navigation a:first').tab('show');
     });
 </script>

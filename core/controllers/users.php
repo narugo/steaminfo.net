@@ -35,7 +35,7 @@ class Users extends Controller
                 array(CSS_FONT_AWESOME, CSS_USERS),
                 TRUE);
         } else {
-            echo 'No apps!';
+            echo 'No apps or profile is private.';
         }
     }
 
@@ -50,7 +50,7 @@ class Users extends Controller
                 array(CSS_FONT_AWESOME, CSS_USERS),
                 TRUE);
         } else {
-            echo 'No friends!';
+            echo 'No friends or profile is private.';
         }
     }
 
@@ -59,10 +59,14 @@ class Users extends Controller
         require_once PATH_TO_MODELS . 'groups.php';
         $groups_model = new Groups_Model();
         $this->view->groups = $groups_model->getUserGroups($params[0]);
-        $this->view->renderPage('users/includes/groups', 'Groups - Users',
-            array(JS_TABLESORTER),
-            array(CSS_FONT_AWESOME, CSS_USERS),
-            TRUE);
+        if (!empty($this->view->groups)) {
+            $this->view->renderPage('users/includes/groups', 'Groups - Users',
+                array(JS_TABLESORTER),
+                array(CSS_FONT_AWESOME, CSS_USERS),
+                TRUE);
+        } else {
+            echo 'No groups or profile is private.';
+        }
     }
 
     function search()
