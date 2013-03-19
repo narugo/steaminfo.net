@@ -354,7 +354,7 @@ class Dota_Model extends Model
 
     public function getLeagueListing()
     {
-        $cache_key = 'dota_leagues';
+        $cache_key = 'dota_league_listing';
         $leagues = $this->memcached->get($cache_key);
         if ($leagues === FALSE) {
             self::updateLeagues();
@@ -375,7 +375,7 @@ class Dota_Model extends Model
                                                                  `name` = :name,
                                                                  description = :description,
                                                                  tournament_url = :tournament_url');
-        foreach ($response->leagues as $league) {
+        foreach ($response->result->leagues as $league) {
             if (!empty($league->tournament_url)) {
                 $parsed_url = parse_url($league->tournament_url);
                 if (empty($parsed_url['scheme'])) $league->tournament_url = "http://$league->tournament_url";
