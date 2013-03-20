@@ -94,6 +94,42 @@ CREATE TABLE group_members (
 
 -- DOTA
 
+CREATE TABLE dota_team (
+  id                               INT NOT NULL PRIMARY KEY,
+  name                             VARCHAR(100),
+  tag                              VARCHAR(100),
+  creation_time                    VARCHAR(100),
+  rating                           VARCHAR(100),
+  logo                             VARCHAR(100),
+  logo_sponsor                     VARCHAR(100),
+  country_code                     VARCHAR(100),
+  url                              VARCHAR(256),
+  games_played_with_current_roster INT,
+  player_0                         BIGINT REFERENCES steam_user (community_id)
+  MATCH FULL
+  ON DELETE CASCADE
+  ON UPDATE CASCADE,
+  player_1                         BIGINT REFERENCES steam_user (community_id)
+  MATCH FULL
+  ON DELETE CASCADE
+  ON UPDATE CASCADE,
+  player_2                         BIGINT REFERENCES steam_user (community_id)
+  MATCH FULL
+  ON DELETE CASCADE
+  ON UPDATE CASCADE,
+  player_3                         BIGINT REFERENCES steam_user (community_id)
+  MATCH FULL
+  ON DELETE CASCADE
+  ON UPDATE CASCADE,
+  player_4                         BIGINT REFERENCES steam_user (community_id)
+  MATCH FULL
+  ON DELETE CASCADE
+  ON UPDATE CASCADE,
+  admin_account                    BIGINT REFERENCES steam_user (community_id)
+  MATCH FULL
+  ON DELETE CASCADE
+  ON UPDATE CASCADE);
+
 CREATE TABLE dota_match (
   id                      INT NOT NULL PRIMARY KEY,
   start_time              INT,
@@ -108,11 +144,19 @@ CREATE TABLE dota_match (
   positive_votes          INT,
   negative_votes          INT,
   game_mode               INT,
+  radiant_team_id         INT REFERENCES dota_team (id)
+  MATCH FULL
+  ON DELETE CASCADE
+  ON UPDATE CASCADE,
   radiant_name            VARCHAR(100),
   radiant_logo            VARCHAR(100),
   radiant_team_complete   BOOLEAN,
   tower_status_radiant    INT,
   barracks_status_radiant INT,
+  dire_team_id            INT REFERENCES dota_team (id)
+  MATCH FULL
+  ON DELETE CASCADE
+  ON UPDATE CASCADE,
   dire_name               VARCHAR(100),
   dire_logo               VARCHAR(100),
   dire_team_complete      BOOLEAN,

@@ -1,5 +1,7 @@
 <?php
 
+define('DOTA_APP_ID', 570);
+
 class Dota_Model extends Model
 {
 
@@ -10,8 +12,8 @@ class Dota_Model extends Model
 
     public function updateHeroes()
     {
-        $heroes = $this->steam->IEconDOTA2_570->GetHeroes();
-        foreach ($heroes as $hero) {
+        $response = $this->steam->IEconDOTA2_570->GetHeroes();
+        foreach ($response->result->heroes as $hero) {
             $this->db->upsert(
                 'dota_hero',
                 array("id" => $hero->id),
@@ -97,22 +99,23 @@ class Dota_Model extends Model
             $statement->closeCursor();
         }
 
-        // TODO: Fix (adding existing leagues)
-        $sql = 'INSERT INTO dota_league (id) VALUES (:league_id);
-                INSERT INTO dota_match (id, start_time, season, radiant_win, duration, tower_status_radiant,
+        // TODO: Fix (adding existing league)
+        $this->db->query("INSERT INTO dota_league (id) VALUES ($match->leagueid)");
+
+        $sql = 'INSERT INTO dota_match (id, start_time, season, radiant_win, duration, tower_status_radiant,
                                         tower_status_dire, barracks_status_radiant, barracks_status_dire, cluster,
                                         first_blood_time, lobby_type, human_players, league_id, positive_votes,
-                                        negative_votes, game_mode, radiant_team_id, dire_team_id)
+                                        negative_votes, game_mode, radiant_team_id, dire_team_id, radiant_team_complete, dire_team_complete)
                 VALUES (:id, :start_time, :season, :radiant_win, :duration, :tower_status_radiant,
                         :tower_status_dire, :barracks_status_radiant, :barracks_status_dire, :cluster,
                         :first_blood_time, :lobby_type, :human_players, :league_id, :positive_votes,
-                        :negative_votes, :game_mode, :radiant_team_id, :dire_team_id);';
+                        :negative_votes, :game_mode, :radiant_team_id, :dire_team_id, :radiant_team_complete, :dire_team_complete);';
         $statement = $this->db->prepare($sql);
         $statement->execute(array(
             ":id" => $match->match_id,
             ":start_time" => $match->starttime,
             ":season" => $match->season,
-            ":radiant_win" => $match->radiant_win,
+            ":radiant_win" => $match->radiant_win ? 'TRUE' : 'FALSE',
             ":duration" => $match->duration,
             ":tower_status_radiant" => $match->tower_status_radiant,
             ":tower_status_dire" => $match->tower_status_dire,
@@ -127,32 +130,19 @@ class Dota_Model extends Model
             ":negative_votes" => $match->negative_votes,
             ":game_mode" => $match->game_mode,
             ":radiant_team_id" => $match->radiant_team_id,
-            ":dire_team_id" => $match->dire_team_id));
+            ":dire_team_id" => $match->dire_team_id,
+            ":radiant_team_complete" => $match->radiant_team_complete ? 'TRUE' : 'FALSE',
+            ":dire_team_complete" => $match->dire_team_complete ? 'TRUE' : 'FALSE',
+        ));
         $statement->closeCursor();
 
         self::addMatchPlayers($match->match_id, $match->players);
     }
 
-    private function getTeamLogo($logo_id)
-    {
-        $response = $this->steam->ISteamRemoteStorage->GetUGCFileDetails($logo_id, 570);
-        $path = PATH_TO_ASSETS . 'img/dota/' . $response->data->filename . '.png';
-        $fp = fopen($path, 'w');
-        $ch = curl_init($response->data->url);
-        curl_setopt($ch, CURLOPT_FILE, $fp);
-        curl_exec($ch);
-        curl_close($ch);
-        fclose($fp);
-        return $response->data->filename . '.png';
-    }
-
     private function addMatchPlayers($match_id, $players)
     {
         // Removing old records
-        $sql = 'DELETE FROM dota_match_player WHERE match_id = :match_id;';
-        $statement = $this->db->prepare($sql);
-        $statement->execute(array(":match_id" => $match_id));
-        $statement->closeCursor();
+        $this->db->query("DELETE FROM dota_match_player WHERE match_id = $match_id");
 
         $ids = array();
         foreach ($players as $player) {
@@ -179,7 +169,7 @@ class Dota_Model extends Model
                         :item_0, :item_1, :item_2, :item_3, :item_4, :item_5,
                         :kills, :deaths, :assists, :leaver_status, :gold, :last_hits, :denies,
                         :gold_per_min, :xp_per_min, :gold_spent, :hero_damage, :tower_damage,
-                        :hero_healing, :LEVEL);';
+                        :hero_healing, :level);';
         $statement = $this->db->prepare($sql);
         foreach ($players as $player) {
             $statement->execute(array(
@@ -290,6 +280,20 @@ class Dota_Model extends Model
         $temp = floor($id / 2);
         $steam_id = '0:' . $odd_id . ':' . $temp;
         return $this->steam->tools->users->steamIdToCommunityId($steam_id);
+    }
+
+    private function getTeamLogo($logo_id)
+    {
+        $response = $this->steam->ISteamRemoteStorage->GetUGCFileDetails($logo_id, DOTA_APP_ID);
+        if (empty($response->data->filename) OR empty($response->data->url)) return FALSE;
+        $path = PATH_TO_ASSETS . 'img/dota/' . $response->data->filename . '.png';
+        $fp = fopen($path, 'w');
+        $ch = curl_init($response->data->url);
+        curl_setopt($ch, CURLOPT_FILE, $fp);
+        curl_exec($ch);
+        curl_close($ch);
+        fclose($fp);
+        return $response->data->filename . '.png';
     }
 
     private function getTeam($team_id)
