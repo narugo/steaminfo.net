@@ -79,7 +79,7 @@ class Apps_Model extends Model
 
     public function getOwnedApps($community_id)
     {
-        $cache_key = 'apps_owned_by_1' . $community_id;
+        $cache_key = 'apps_owned_by_' . $community_id;
         $apps = $this->memcached->get($cache_key);
         if ($apps === FALSE) {
             self::updateOwnedApps($community_id);

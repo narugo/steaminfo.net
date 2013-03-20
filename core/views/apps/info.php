@@ -25,17 +25,19 @@
     </div>
 
     <p>
-        <strong>App ID:</strong> <?php echo $app->id; ?>
-        <br/><strong>Release date:</strong> <?php echo $app->release_date; ?>
-        <br/><strong>Recommendations:</strong> <?php echo $app->recommendations; ?>
+        <?php if (!empty($app->id)) echo "<strong>App ID:</strong> $app->id"; ?>
+        <?php if (!empty($app->release_date)) echo "<br/><strong>Release date:</strong> $app->release_date"; ?>
+        <?php if (!empty($app->recommendations)) echo "<br/><strong>Recommendations:</strong> $app->recommendations"; ?>
     </p>
 
     <p>
         <a href="http://store.steampowered.com/app/<?php echo $app->id; ?>/">Visit store page</a>
-        <br/><a rel="nofollow" href="<?php echo $app->website; ?>">Visit website</a>
+        <?php if (!empty($app->website)) echo "<br/><a rel=\"nofollow\" href=\"$app->website\">Visit website</a>"; ?>
     </p>
 
-    <div id="description" class="well well-small"><?php echo $app->detailed_description; ?></div>
+    <?php if (!empty($app->detailed_description)) : ?>
+        <div id="description" class="well well-small"><?php echo $app->detailed_description; ?></div>
+    <?php endif; ?>
 
     <?php if (!empty($app->legal_notice)) : ?>
         <p class="muted">
