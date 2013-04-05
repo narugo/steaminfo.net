@@ -21,8 +21,9 @@ class Users extends Controller
         require_once PATH_TO_MODELS . 'users.php';
         $users_model = new Users_Model();
         $this->view->profile = $users_model->getProfileSummary($params[0]);
-        writeUserViewLog($this->view->profile->getCommunityId());
-        $this->view->renderPage('users/profile', $this->view->profile->getNickname(),
+        if (empty($this->view->profile)) error(404, "Profile not found");
+        writeUserViewLog($this->view->profile->community_id);
+        $this->view->renderPage('users/profile', $this->view->profile->nickname,
             array(JS_TABLESORTER),
             array(CSS_FONT_AWESOME, CSS_USERS));
     }

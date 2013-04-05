@@ -7,7 +7,7 @@ CREATE TABLE steam_user (
   avatar_url             VARCHAR(255),
   current_game_id        INT,
   current_game_name      VARCHAR(64),
-  current_game_server_ip INET,
+  current_game_server_ip VARCHAR(21),
   is_vac_banned          BOOLEAN,
   last_login_time        INT,
   location_city_id       CHAR(16),

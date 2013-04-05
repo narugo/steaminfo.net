@@ -33,7 +33,7 @@ class Apps_Model extends Model
 
     public function updateAppsInfo($appids)
     {
-        $apps = $this->steam->tools->apps->getAppDetails($appids);
+        $apps = $this->steam->tools->app->getAppDetails($appids);
         foreach ($appids as $app_id) {
             $current_app = $apps->{$app_id};
             if ($current_app->success) {
