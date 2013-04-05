@@ -66,32 +66,6 @@ CREATE TABLE app_owners (
 );
 
 
--- GROUPS
-
-CREATE TABLE steam_group (
-  id                BIGINT NOT NULL PRIMARY KEY,
-  name              VARCHAR(64),
-  headline          VARCHAR(45),
-  summary           TEXT,
-  url               VARCHAR(255),
-  avatar_icon_url   VARCHAR(255),
-  avatar_medium_url VARCHAR(255),
-  avatar_full_url   VARCHAR(255),
-  last_updated      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE group_members (
-  group_id          BIGINT NOT NULL REFERENCES steam_group (id)
-  MATCH FULL
-  ON DELETE CASCADE
-  ON UPDATE CASCADE,
-  user_community_id BIGINT NOT NULL REFERENCES steam_user (community_id)
-  MATCH FULL
-  ON DELETE CASCADE
-  ON UPDATE CASCADE
-);
-
-
 -- DOTA
 
 CREATE TABLE dota_team (

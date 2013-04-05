@@ -27,14 +27,6 @@ class Index extends Controller
             array_push($result, $user_suggestion);
         }
 
-        require_once PATH_TO_MODELS . 'groups.php';
-        $groups_model = new Groups_Model();
-        $groups_suggestions = $groups_model->getSearchSuggestions($query);
-        foreach ($groups_suggestions as $group_suggestion) {
-            $group_suggestion["type"] = 'group';
-            array_push($result, $group_suggestion);
-        }
-
         require_once PATH_TO_MODELS . 'apps.php';
         $apps_model = new Apps_Model();
         $apps_suggestions = $apps_model->getSearchSuggestions($query);

@@ -145,13 +145,11 @@ class Users_Model extends Model
         $statement->closeCursor();
 
         // Adding unknown users
-        // TODO: Fix (adding existing users)
-        $insert_users = 'INSERT INTO steam_user (community_id) VALUES ';
         foreach ($friends_list as $friend) {
-            $insert_users = $insert_users . "($friend->steamid),";
+            $sql = 'INSERT INTO steam_user (community_id) SELECT ' . $friend->steamid
+                . 'WHERE NOT EXISTS (SELECT 1 FROM steam_user WHERE community_id=' . $friend->steamid . ')';
+            $this->db->query($sql);
         }
-        $insert_users = substr($insert_users, 0, -1);
-        $this->db->query($insert_users);
 
         // Adding new friends
         $insert_profiles = 'INSERT INTO friends (user_community_id1, user_community_id2, since) VALUES ';
@@ -264,7 +262,7 @@ class User
     public function getSteamId()
     {
         $steam = new Locomotive(STEAM_API_KEY);
-        return $steam->tools->users->communityIdToSteamId($this->community_id);
+        return $steam->tools->user->communityIdToSteamId($this->community_id);
     }
 
     public function getStatus()

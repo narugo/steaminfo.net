@@ -8,20 +8,23 @@ class Users extends Controller
         parent::__construct();
     }
 
-    function index($params = NULL)
+    function index()
     {
         require_once PATH_TO_MODELS . 'users.php';
         $users_model = new Users_Model();
-        if (empty($params)) {
-            $this->view->top = $users_model->getTop10();
-            $this->view->renderPage('users/index', 'Users', array(), array(CSS_FONT_AWESOME, CSS_USERS));
-        } else {
-            $this->view->profile = $users_model->getProfileSummary($params[0]);
-            writeUserViewLog($this->view->profile->getCommunityId());
-            $this->view->renderPage('users/profile', $this->view->profile->getNickname(),
-                array(JS_TABLESORTER),
-                array(CSS_FONT_AWESOME, CSS_USERS));
-        }
+        $this->view->top = $users_model->getTop10();
+        $this->view->renderPage('users/index', 'Users', array(), array(CSS_FONT_AWESOME, CSS_USERS));
+    }
+
+    function profile($params)
+    {
+        require_once PATH_TO_MODELS . 'users.php';
+        $users_model = new Users_Model();
+        $this->view->profile = $users_model->getProfileSummary($params[0]);
+        writeUserViewLog($this->view->profile->getCommunityId());
+        $this->view->renderPage('users/profile', $this->view->profile->getNickname(),
+            array(JS_TABLESORTER),
+            array(CSS_FONT_AWESOME, CSS_USERS));
     }
 
     function apps($params)
@@ -51,21 +54,6 @@ class Users extends Controller
                 TRUE);
         } else {
             echo 'No friends or profile is private.';
-        }
-    }
-
-    function groups($params)
-    {
-        require_once PATH_TO_MODELS . 'groups.php';
-        $groups_model = new Groups_Model();
-        $this->view->groups = $groups_model->getUserGroups($params[0]);
-        if (!empty($this->view->groups)) {
-            $this->view->renderPage('users/includes/groups', 'Groups - Users',
-                array(JS_TABLESORTER),
-                array(CSS_FONT_AWESOME, CSS_USERS),
-                TRUE);
-        } else {
-            echo 'No groups or profile is private.';
         }
     }
 

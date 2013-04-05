@@ -34,7 +34,7 @@
         <?php foreach ($this->top as $user) {
             echo '<li>';
             echo '<img src="' . $user->avatar_url . '"/>';
-            echo '<a href="/users/' . $user->community_id . '">';
+            echo '<a href="/users/profile/' . $user->community_id . '">';
             if (empty($user->nickname)) {
                 echo $user->community_id;
             } else {
@@ -110,7 +110,7 @@
                     }
                     jQuery('<br>').appendTo('#profile-summary');
                     jQuery('<a/>', {
-                        href: '/users/' + data['community_id'],
+                        href: '/users/profile/' + data['community_id'],
                         id: 'more-link'
                     }).appendTo('#profile-summary');
                     $('#more-link').append('View more info about this user...').show();

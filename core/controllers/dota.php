@@ -43,13 +43,17 @@ class Dota extends Controller
 
     function teams($params)
     {
-        $team_id = $params[0];
-        if (!is_numeric($team_id)) error(400, 'Team ID is incorrect');
-        require_once PATH_TO_MODELS . 'dota.php';
-        $dota_model = new Dota_Model();
-        $this->view->team = $dota_model->getTeamDetails($team_id);
-        $this->view->renderPage("dota/team", $this->view->team->tag . ' - Teams - Dota 2',
-            array(), array(CSS_DOTA));
+        if (!empty($params)) {
+            $team_id = $params[0];
+            if (!is_numeric($team_id)) error(400, 'Team ID is incorrect');
+            require_once PATH_TO_MODELS . 'dota.php';
+            $dota_model = new Dota_Model();
+            $this->view->team = $dota_model->getTeamDetails($team_id);
+            $this->view->renderPage("dota/team", $this->view->team->tag . ' - Teams - Dota 2',
+                array(), array(CSS_DOTA));
+        } else {
+            error(404);
+        }
     }
 
     function updateHeroesList()

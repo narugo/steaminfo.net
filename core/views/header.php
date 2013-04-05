@@ -27,7 +27,6 @@
                 </form>
                 <li><a href="/users/">Users</a></li>
                 <li><a href="/apps/">Apps</a></li>
-                <li><a href="/groups/">Groups</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dota<b class="caret"></b></a>
                     <ul class="dropdown-menu">

@@ -9,15 +9,14 @@ $profile = $this->profile;
 </div>
 
 <ul id="navigation" class="nav nav-tabs">
-    <li><a href="#info-tab" data-toggle="tab">Info</a></li>
+    <li><a href="#summary-tab" data-toggle="tab">Summary</a></li>
     <li><a href="#apps-tab" data-toggle="tab">Apps</a></li>
-    <li><a href="#groups-tab" data-toggle="tab">Groups</a></li>
     <li><a href="#friends-tab" data-toggle="tab">Friends</a></li>
 </ul>
 
 <div class="tab-content">
 
-    <div class="tab-pane" id="info-tab">
+    <div class="tab-pane" id="summary-tab">
         <?php
         $real_name = $profile->getRealName();
         if (!empty($real_name))
@@ -61,7 +60,7 @@ $profile = $this->profile;
 
         $primary_group_id = $profile->getPrimaryGroupId();
         if (!empty($primary_group_id))
-            echo '<p>Primary group: <a href="/groups/' . $primary_group_id . '/">' . $primary_group_id . '</a></p>';
+            echo '<p>Primary group: ' . $primary_group_id . '</p>';
 
         /*
          * Bans info
@@ -110,17 +109,11 @@ $profile = $this->profile;
         Getting list of friends. Please wait.
     </div>
 
-    <div class="tab-pane" id="groups-tab">
-        <i class="icon-spinner icon-spin"></i>
-        Getting list of groups. Please wait.
-    </div>
-
 </div>
 
 <script type="text/javascript">
     var appsTabLoaded = false;
     var friendsTabLoaded = false;
-    var groupsTabLoaded = false;
 
     $('a[data-toggle="tab"]').on('shown', function (e) {
         switch (e.target.hash) {
@@ -134,12 +127,6 @@ $profile = $this->profile;
                 if (!friendsTabLoaded) {
                     friendsTabLoaded = true;
                     $("#friends-tab").load("/users/friends/<?php echo $profile->getCommunityId(); ?>");
-                }
-                break;
-            case "#groups-tab":
-                if (!groupsTabLoaded) {
-                    groupsTabLoaded = true;
-                    $("#groups-tab").load("/users/groups/<?php echo $profile->getCommunityId(); ?>");
                 }
                 break;
         }
