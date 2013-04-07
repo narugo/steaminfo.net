@@ -11,6 +11,7 @@ class Auth extends Controller
 
     function index()
     {
+        if ($_SERVER['REQUEST_METHOD'] != 'GET') error(405);
         if (!empty($_SESSION['id'])) {
             header('Location: ' . WEBSITE_URL . 'control/');
         } else {

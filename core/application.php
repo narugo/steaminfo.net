@@ -45,7 +45,7 @@ class Application
 
                 // Checking if method has been requested
                 if (isset($path[1])) {
-                    if (is_callable(array($controller, $path[1]))) {
+                    if (is_callable(array($controller, $path[1])) AND $path[1] != '__construct') {
                         $method = $path[1];
                         // Removing controller and method names
                         $params = array_splice($path, 2);

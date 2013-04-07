@@ -10,6 +10,7 @@ class Users extends Controller
 
     function index()
     {
+        if ($_SERVER['REQUEST_METHOD'] != 'GET') error(405);
         require_once PATH_TO_MODELS . 'users.php';
         $users_model = new Users_Model();
         $this->view->top = $users_model->getTop10();
@@ -18,6 +19,7 @@ class Users extends Controller
 
     function profile($params)
     {
+        if ($_SERVER['REQUEST_METHOD'] != 'GET') error(405);
         require_once PATH_TO_MODELS . 'users.php';
         $users_model = new Users_Model();
         $this->view->profile = $users_model->getProfileSummary($params[0]);
@@ -30,6 +32,7 @@ class Users extends Controller
 
     function apps($params)
     {
+        if ($_SERVER['REQUEST_METHOD'] != 'GET') error(405);
         require_once PATH_TO_MODELS . 'apps.php';
         $apps_model = new Apps_Model();
         $this->view->apps = $apps_model->getOwnedApps($params[0]);
@@ -45,6 +48,7 @@ class Users extends Controller
 
     function friends($params)
     {
+        if ($_SERVER['REQUEST_METHOD'] != 'GET') error(405);
         require_once PATH_TO_MODELS . 'users.php';
         $users_model = new Users_Model();
         $this->view->friends = $users_model->getFriends($params[0]);
@@ -60,6 +64,7 @@ class Users extends Controller
 
     function search()
     {
+        if ($_SERVER['REQUEST_METHOD'] != 'GET') error(405);
         require_once PATH_TO_MODELS . 'users.php';
         $users_model = new Users_Model();
         $result = $users_model->search(trim($_GET['q']));
@@ -69,6 +74,7 @@ class Users extends Controller
 
     function searchSuggest()
     {
+        if ($_SERVER['REQUEST_METHOD'] != 'GET') error(405);
         require_once PATH_TO_MODELS . 'users.php';
         $users_model = new Users_Model();
         $result = $users_model->getSearchSuggestions(trim($_GET['q']));

@@ -10,11 +10,14 @@ class Index extends Controller
 
     public function index()
     {
+        if ($_SERVER['REQUEST_METHOD'] != 'GET') error(405);
         $this->view->renderPage("index/index", NULL, array(), array(CSS_INDEX));
     }
 
     function searchSuggest()
     {
+        if ($_SERVER['REQUEST_METHOD'] != 'GET') error(405);
+
         $query = $_GET['query'];
 
         $result = array();

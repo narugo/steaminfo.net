@@ -10,6 +10,7 @@ class Apps extends Controller
 
     function index($params = NULL)
     {
+        if ($_SERVER['REQUEST_METHOD'] != 'GET') error(405);
         if (empty($params)) {
             $this->view->renderPage("apps/index", 'Apps',
                 array(), array(CSS_FONT_AWESOME, CSS_APPS));
@@ -29,6 +30,7 @@ class Apps extends Controller
 
     function search()
     {
+        if ($_SERVER['REQUEST_METHOD'] != 'GET') error(405);
         require_once PATH_TO_MODELS . 'apps.php';
         $apps_model = new Apps_Model();
         $result = $apps_model->search(trim($_GET['q']));

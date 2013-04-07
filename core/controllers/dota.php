@@ -16,6 +16,7 @@ class Dota extends Controller
 
     function matches($params)
     {
+        if ($_SERVER['REQUEST_METHOD'] != 'GET') error(405);
         require_once PATH_TO_MODELS . 'dota.php';
         $dota_model = new Dota_Model();
 
@@ -35,6 +36,7 @@ class Dota extends Controller
 
     function leagues()
     {
+        if ($_SERVER['REQUEST_METHOD'] != 'GET') error(405);
         require_once PATH_TO_MODELS . 'dota.php';
         $dota_model = new Dota_Model();
         $this->view->league = $dota_model->getLeagueListing();
@@ -43,6 +45,7 @@ class Dota extends Controller
 
     function teams($params)
     {
+        if ($_SERVER['REQUEST_METHOD'] != 'GET') error(405);
         if (!empty($params)) {
             $team_id = $params[0];
             if (!is_numeric($team_id)) error(400, 'Team ID is incorrect');
@@ -58,6 +61,7 @@ class Dota extends Controller
 
     function updateHeroesList()
     {
+        if ($_SERVER['REQUEST_METHOD'] != 'GET') error(405);
         require_once PATH_TO_MODELS . 'dota.php';
         $dota_model = new Dota_Model();
         $dota_model->updateHeroes();

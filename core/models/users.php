@@ -13,13 +13,13 @@ class Users_Model extends Model
 
     public function search($query)
     {
-        $query_type = $this->steam->tools->users->getTypeOfId($query);
+        $query_type = $this->steam->tools->user->getTypeOfId($query);
         switch ($query_type) {
             case USER_ID_TYPE_COMMUNITY:
                 $result = self::getProfileSummary($query);
                 break;
             case USER_ID_TYPE_STEAM:
-                $community_id = $this->steam->tools->users->steamIdToCommunityId($query);
+                $community_id = $this->steam->tools->user->steamIdToCommunityId($query);
                 $result = self::getProfileSummary($community_id);
                 break;
             case USER_ID_TYPE_VANITY:

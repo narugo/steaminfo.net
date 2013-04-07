@@ -197,14 +197,6 @@ CREATE TABLE error_log (
   time           TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-
-CREATE TABLE group_view_log (
-  group_id       BIGINT       NOT NULL  PRIMARY KEY,
-  remote_address VARCHAR(255) NOT NULL DEFAULT '',
-  time           TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-
 CREATE TABLE user_profile_view_log (
   user_id        BIGINT       NOT NULL,
   remote_address VARCHAR(255) NOT NULL DEFAULT '',

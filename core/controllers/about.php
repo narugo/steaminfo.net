@@ -10,6 +10,7 @@ class About extends Controller
 
     public function index()
     {
+        if ($_SERVER['REQUEST_METHOD'] != 'GET') error(405);
         $this->view->renderPage('about/index', 'About', array(), array());
     }
 

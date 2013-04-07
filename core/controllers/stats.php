@@ -10,6 +10,7 @@ class Stats extends Controller
 
     public function index()
     {
+        if ($_SERVER['REQUEST_METHOD'] != 'GET') error(405);
         $this->view->renderPage('stats/index', 'Stats', array(), array());
     }
 

@@ -17,17 +17,6 @@ class View
         }
     }
 
-    public function renderErrorPage($error_id, $page_title, $js = array(), $css = array())
-    {
-        define('PATH_TO_ERROR_VIEWS', PATH_TO_VIEWS . 'errors/');
-        $view_path = PATH_TO_ERROR_VIEWS . $error_id . '.php';
-        if (file_exists($view_path)) {
-            self::includeView($view_path, $page_title);
-        } else {
-            writeErrorLog('Error view not found: "' . $view_path . '"');
-        }
-    }
-
     private function includeView($view_path, $page_title = NULL, $no_header_footer = TRUE, $js = array(), $css = array())
     {
         if (empty($page_title)) {
@@ -38,6 +27,20 @@ class View
         if (!$no_header_footer) require PATH_TO_VIEWS . 'header.php';
         require $view_path;
         if (!$no_header_footer) require PATH_TO_VIEWS . 'footer.php';
+    }
+
+    public function renderErrorPage($error_id, $page_title = NULL, $message = '')
+    {
+        define('PATH_TO_ERROR_VIEWS', PATH_TO_VIEWS . 'errors/');
+        $view_path = PATH_TO_ERROR_VIEWS . $error_id . '.php';
+        if (file_exists($view_path)) {
+            if (empty($page_title)) {
+                $page_title = $error_id;
+            }
+            self::includeView($view_path, $page_title, true);
+        } else {
+            writeErrorLog('Error view not found: "' . $view_path . '"');
+        }
     }
 
 }

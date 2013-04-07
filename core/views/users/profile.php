@@ -77,7 +77,7 @@ $profile = $this->profile;
         echo '<br /><strong>Community ID:</strong> ' . $profile->community_id . '</p>';
 
         if (!empty($profile->creation_time)) {
-            echo '<p>Steam user since ' . $profile->creation_time . '</p>';
+            echo '<p>Steam user since ' . date(DATE_RFC850, $profile->creation_time) . '</p>';
         }
 
         if (!empty($profile->location_country_code)) {
