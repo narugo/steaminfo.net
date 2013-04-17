@@ -33,7 +33,7 @@ function printPlayer($player)
     if (empty($player->account_id)) {
         echo "<em>Private</em>";
     } else {
-        echo '<a href="/users/' . $player->account_id . '">';
+        echo '<a href="/users/profile/' . $player->account_id . '">';
         if (empty($player->nickname)) {
             echo $player->account_id;
         } else {
