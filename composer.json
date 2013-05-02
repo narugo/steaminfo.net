@@ -3,6 +3,8 @@
     "require": {
         "php": ">=5.4.0",
         "fp/lightopenid": "dev-master",
-        "tsukanov/steam-locomotive": "dev-master"
+        "tsukanov/steam-locomotive": "dev-master",
+        "cakephp/monolog": "1.4.1",
+        "doctrine/orm": "2.3.*"
     }
 }
