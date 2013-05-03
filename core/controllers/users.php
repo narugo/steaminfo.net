@@ -69,7 +69,19 @@ class Users extends Controller
         $users_model = new Users_Model();
         $result = $users_model->search(trim($_GET['q']));
         header('Content-type: application/json');
-        echo json_encode($result);
+        $response = null;
+        if (is_a($result, 'SteamInfo\Models\Entities\User')) {
+            $response = array(
+                'id' => $result->getId(),
+                'nickname' => $result->getNickname(),
+                'avatar_url' => $result->getAvatarUrl(),
+                'tag' => $result->getTag(),
+                'status' => $result->getStatus(),
+                'current_app_id'=>$result->getCurrentAppId(),
+                'current_app_name'=>$result->getCurrentAppName()
+            );
+        }
+        echo json_encode($response);
     }
 
     function searchSuggest()

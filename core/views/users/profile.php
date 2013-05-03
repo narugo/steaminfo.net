@@ -29,40 +29,15 @@ $profile = $this->user;
          * Status
          */
         echo '<p>';
-        echo '<strong>';
-        switch ($profile->getStatus()) {
-            case '1':
-                echo 'Online';
-                break;
-            case '2':
-                echo 'Busy';
-                break;
-            case '3':
-                echo 'Away';
-                break;
-            case '4':
-                echo 'Snooze';
-                break;
-            case '5':
-                echo 'Looking to trade';
-                break;
-            case '6':
-                echo 'Looking to play';
-                break;
-            case '0':
-            default:
-                echo 'Offline';
-                break;
-        }
-        echo '</strong>';
+        echo '<strong>' . $profile->getStatus() . '</strong>';
         if (!is_null($profile->getCurrentAppId())) {
             $app_page = '/apps/' . $profile->getCurrentAppId();
-            if (!empty($profile->current_app_name)) {
+            if (!is_null($profile->getCurrentAppName())) {
                 echo '<strong>, in <a href="' . $app_page . '">' . $profile->getCurrentAppName() . '</a></strong>';
             } else {
                 echo '<strong>, in app #<a href="' . $app_page . '">' . $profile->getCurrentAppId() . '</a></strong>';
             }
-            if (!empty($profile->current_server_ip)) {
+            if (!is_null($profile->getCurrentServerIp())) {
                 $connection_url = 'steam://connect/' . $profile->getCurrentServerIp();
                 echo '<br />Server: <a href="' . $connection_url . '">' . $profile->getCurrentServerIp() . '</a>';
             }

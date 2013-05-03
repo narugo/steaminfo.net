@@ -17,51 +17,23 @@ class Users_Model extends Model
         $query_type = $this->steam->tools->user->getTypeOfId($query);
         switch ($query_type) {
             case USER_ID_TYPE_COMMUNITY:
-                $result = self::getProfileSummary($query);
+                $result = self::getUser($query);
                 break;
             case USER_ID_TYPE_STEAM:
                 $community_id = $this->steam->tools->user->steamIdToCommunityId($query);
-                $result = self::getProfileSummary($community_id);
+                var_dump($community_id);
+                $result = self::getUser($community_id);
                 break;
             case USER_ID_TYPE_VANITY:
                 $response = $this->steam->ISteamUser->ResolveVanityURL($query);
-                $result = self::getProfileSummary($response->response->steamid);
+                $community_id = $response->response->steamid;
+                $result = self::getUser($community_id);
                 break;
             default:
-                // TODO: Search in DB for users with that (query) nickname
+                // TODO: Search in DB
                 $result = array();
         }
         return $result;
-    }
-
-    public function updateSummaries($community_ids)
-    {
-        $summaries = array();
-        foreach (array_chunk($community_ids, 100) as $chunk) {
-            $result = $this->steam->ISteamUser->GetPlayerSummaries($chunk);
-            $summaries = array_merge($summaries, $result->response->players);
-        }
-        foreach ($summaries as $summary) {
-            $this->db->upsert(
-                'steam_user',
-                array('community_id' => $summary->steamid),
-                array(
-                    "nickname" => $summary->personaname,
-                    "avatar_url" => $summary->avatar,
-                    "creation_time" => $summary->timecreated,
-                    "real_name" => $summary->realname,
-                    "location_country_code" => $summary->loccountrycode,
-                    "location_state_code" => $summary->locstatecode,
-                    "location_city_id" => $summary->loccityid,
-                    "last_login_time" => $summary->lastlogoff,
-                    "status" => $summary->personastate,
-                    "current_game_server_ip" => $summary->gameserverip,
-                    "current_game_name" => $summary->gameextrainfo,
-                    "current_game_id" => $summary->gameid,
-                    "primary_group_id" => $summary->primaryclanid
-                )
-            );
-        }
     }
 
     public function getUser($id)
@@ -74,7 +46,10 @@ class Users_Model extends Model
             if (empty($user)) $user = new User();
 
             // Updating profile
+            var_dump($id);
             $response_profile = $this->steam->ISteamUser->GetPlayerSummaries(array($id));
+            // TODO: Improve error handling
+            if (empty($response_profile->response->players[0])) return false;
             $profile = $response_profile->response->players[0];
             $user->setId($profile->steamid);
             $user->setNickname($profile->personaname);
@@ -113,6 +88,36 @@ class Users_Model extends Model
             $this->memcached->add($cache_key, $user, 3600);
         }
         return $user;
+    }
+
+    public function updateSummaries($community_ids)
+    {
+        $summaries = array();
+        foreach (array_chunk($community_ids, 100) as $chunk) {
+            $result = $this->steam->ISteamUser->GetPlayerSummaries($chunk);
+            $summaries = array_merge($summaries, $result->response->players);
+        }
+        foreach ($summaries as $summary) {
+            $this->db->upsert(
+                'steam_user',
+                array('community_id' => $summary->steamid),
+                array(
+                    "nickname" => $summary->personaname,
+                    "avatar_url" => $summary->avatar,
+                    "creation_time" => $summary->timecreated,
+                    "real_name" => $summary->realname,
+                    "location_country_code" => $summary->loccountrycode,
+                    "location_state_code" => $summary->locstatecode,
+                    "location_city_id" => $summary->loccityid,
+                    "last_login_time" => $summary->lastlogoff,
+                    "status" => $summary->personastate,
+                    "current_game_server_ip" => $summary->gameserverip,
+                    "current_game_name" => $summary->gameextrainfo,
+                    "current_game_id" => $summary->gameid,
+                    "primary_group_id" => $summary->primaryclanid
+                )
+            );
+        }
     }
 
     public function getSearchSuggestions($input)

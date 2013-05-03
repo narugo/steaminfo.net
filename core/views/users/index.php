@@ -36,7 +36,7 @@
             echo '<img src="' . $user->avatar_url . '"/>';
             echo '<a href="/users/profile/' . $user->community_id . '">';
             if (empty($user->nickname)) {
-                echo $user->community_id;
+                echo $user->id;
             } else {
                 echo $user->nickname;
             }
@@ -81,36 +81,13 @@
                         $('#badge').append(data['tag']).show();
                     }
                     jQuery('<br>').appendTo('#profile-summary');
-                    switch (data['status']) {
-                        case '1':
-                            $('#profile-summary').append('Online');
-                            break;
-                        case '2':
-                            $('#profile-summary').append('Busy');
-                            break;
-                        case '3':
-                            $('#profile-summary').append('Away');
-                            break;
-                        case '4':
-                            $('#profile-summary').append('Snooze');
-                            break;
-                        case '5':
-                            $('#profile-summary').append('Looking to trade');
-                            break;
-                        case '6':
-                            $('#profile-summary').append('Looking to play');
-                            break;
-                        case '0':
-                        default:
-                            $('#profile-summary').append('Offline');
-                            break;
-                    }
-                    if (data['current_game_id'] != null) {
-                        $('#profile-summary').append(', in ' + data['current_game_name']).show();
+                    $('#profile-summary').append(data['status']);
+                    if (data['current_app_id'] != null) {
+                        $('#profile-summary').append(', in ' + data['current_app_name']).show();
                     }
                     jQuery('<br>').appendTo('#profile-summary');
                     jQuery('<a/>', {
-                        href: '/users/profile/' + data['community_id'],
+                        href: '/users/profile/' + data['id'],
                         id: 'more-link'
                     }).appendTo('#profile-summary');
                     $('#more-link').append('View more info about this user...').show();
