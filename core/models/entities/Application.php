@@ -32,6 +32,25 @@ class Application
     /** @Column(type="time", nullable=TRUE) */
     protected $is_win;
 
+    /*
+     * Users
+     */
+    /**
+     * @OneToMany(targetEntity="AppOwner", mappedBy="application")
+     * @var AppOwner[]
+     **/
+    protected $users = null;
+
+    public function addUsers($users)
+    {
+        $this->users[] = $users;
+    }
+
+    public function getUsers()
+    {
+        return $this->users;
+    }
+
     public function getDescription()
     {
         return $this->description;

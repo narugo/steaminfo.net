@@ -32,25 +32,25 @@ class DotaTeam
     /**
      * @Id
      * @ManyToOne(targetEntity="User")
-     * @JoinColumn(name="player1", referencedColumnName="id")
+     * @JoinColumn(name="player_1", referencedColumnName="id")
      */
     protected $player_1;
     /**
      * @Id
      * @ManyToOne(targetEntity="User")
-     * @JoinColumn(name="player2", referencedColumnName="id")
+     * @JoinColumn(name="player_2", referencedColumnName="id")
      */
     protected $player_2;
     /**
      * @Id
      * @ManyToOne(targetEntity="User")
-     * @JoinColumn(name="player3", referencedColumnName="id")
+     * @JoinColumn(name="player_3", referencedColumnName="id")
      */
     protected $player_3;
     /**
      * @Id
      * @ManyToOne(targetEntity="User")
-     * @JoinColumn(name="player4", referencedColumnName="id")
+     * @JoinColumn(name="player_4", referencedColumnName="id")
      */
     protected $player_4;
     /**

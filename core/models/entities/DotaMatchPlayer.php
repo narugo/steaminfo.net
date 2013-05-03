@@ -2,21 +2,24 @@
 /** @Entity */
 class DotaMatchPlayer
 {
+
     /**
      * @Id
-     * @ManyToOne(targetEntity="User")
-     * @JoinColumn(name="user_id", referencedColumnName="id")
+     * @ManyToOne(targetEntity="User", inversedBy="dota_matches")
+     * @var User
      */
     protected $player;
+
     /**
      * @Id
-     * @ManyToOne(targetEntity="DotaMatch")
-     * @JoinColumn(name="match_id", referencedColumnName="id")
+     * @ManyToOne(targetEntity="DotaMatch", inversedBy="players")
+     * @var DotaMatch
      */
     protected $match;
     /**
-     * @ManyToOne(targetEntity="DotaHero")
-     * @JoinColumn(name="hero_id", referencedColumnName="id")
+     * @Id
+     * @ManyToOne(targetEntity="DotaHero", inversedBy="players")
+     * @var DotaHero
      */
     protected $hero;
     /** @Column(type="smallint") */

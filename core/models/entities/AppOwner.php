@@ -4,14 +4,15 @@ class AppOwner
 {
     /**
      * @Id
-     * @ManyToOne(targetEntity="Application")
-     * @JoinColumn(name="application_id", referencedColumnName="id")
+     * @ManyToOne(targetEntity="Application", inversedBy="users")
+     * @var Application
      */
     protected $application;
+
     /**
      * @Id
-     * @ManyToOne(targetEntity="User")
-     * @JoinColumn(name="user_id", referencedColumnName="id")
+     * @ManyToOne(targetEntity="User", inversedBy="applications")
+     * @var User
      */
     protected $user;
 

@@ -68,6 +68,34 @@ class User
      */
     private $users_friends;
 
+    /*
+     * Applications
+     */
+    /**
+     * @OneToMany(targetEntity="AppOwner", mappedBy="user")
+     * @var AppOwner[]
+     **/
+    protected $applications = null;
+
+    /*
+     * Dota
+     */
+    /**
+     * @OneToMany(targetEntity="DotaMatchPlayer", mappedBy="player")
+     * @var DotaMatchPlayer[]
+     **/
+    protected $dota_matches = null;
+
+    public function addDotaMatches($dota_matches)
+    {
+        $this->dota_matches[] = $dota_matches;
+    }
+
+    public function getDotaMatches()
+    {
+        return $this->dota_matches;
+    }
+
     public function __construct()
     {
         $this->friends_with_user = new \Doctrine\Common\Collections\ArrayCollection();

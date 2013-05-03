@@ -10,6 +10,22 @@ class DotaHero
     /** @Column(type="string", nullable=TRUE) */
     protected $display_name;
 
+
+    /**
+     * @OneToMany(targetEntity="DotaMatchPlayer", mappedBy="hero")
+     * @var DotaMatchPlayer[]
+     **/
+    protected $players = null;
+
+    public function addPlayers($players)
+    {
+        $this->players[] = $players;
+    }
+
+    public function getPlayers()
+    {
+        return $this->players;
+    }
     public function getDisplayName()
     {
         return $this->display_name;

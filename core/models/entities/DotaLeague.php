@@ -12,6 +12,22 @@ class DotaLeague
     /** @Column(type="string", nullable=TRUE) */
     protected $tournament_url;
 
+    /**
+     * @OneToMany(targetEntity="DotaMatch", mappedBy="league")
+     * @var DotaMatch[]
+     **/
+    protected $matches = null;
+
+    public function addMatch($matches)
+    {
+        $this->matches[] = $matches;
+    }
+
+    public function getMatches()
+    {
+        return $this->matches;
+    }
+
     public function getDescription()
     {
         return $this->description;
