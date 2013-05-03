@@ -1,4 +1,5 @@
 <?php
+use SteamInfo\Models\Entities\User;
 
 /**
  * Database interface
@@ -33,26 +34,6 @@ class Users_Model extends Model
         return $result;
     }
 
-    public function getProfileSummary($community_id)
-    {
-        $cache_key = 'profile_summary_of_' . $community_id;
-        $profile = $this->memcached->get($cache_key);
-        if ($profile === FALSE) {
-            self::updateSummaries(array($community_id));
-            // Updating bans info
-            self::updateBanStatuses(array($community_id));
-            $sql = 'SELECT steam_user.*, app.name AS current_app_name
-                    FROM steam_user
-                    LEFT OUTER JOIN app ON steam_user.current_game_id = app.id
-                    WHERE community_id = :id';
-            $statement = $this->db->prepare($sql);
-            $statement->execute(array(':id' => $community_id));
-            $profile = $statement->fetchObject();
-            $this->memcached->add($cache_key, $profile, 3600);
-        }
-        return $profile;
-    }
-
     public function updateSummaries($community_ids)
     {
         $summaries = array();
@@ -83,20 +64,55 @@ class Users_Model extends Model
         }
     }
 
-    private function updateBanStatuses($ids)
+    public function getUser($id)
     {
-        $response = $this->steam->ISteamUser->GetPlayerBans($ids);
-        foreach ($response->players as $bans) {
-            $this->db->upsert(
-                'steam_user',
-                array("community_id" => $bans->SteamId),
-                array(
-                    "is_community_banned" => $bans->CommunityBanned ? 'TRUE' : 'FALSE',
-                    "is_vac_banned" => $bans->VACBanned ? 'TRUE' : 'FALSE',
-                    "economy_ban_state" => $bans->EconomyBan
-                )
-            );
+        $cache_key = 'user_' . $id;
+        $user = $this->memcached->get($cache_key);
+        if ($user === FALSE) {
+            $userRepository = $this->entityManager->getRepository('SteamInfo\Models\Entities\User');
+            $user = $userRepository->find($id);
+            if (empty($user)) $user = new User();
+
+            // Updating profile
+            $response_profile = $this->steam->ISteamUser->GetPlayerSummaries(array($id));
+            $profile = $response_profile->response->players[0];
+            $user->setId($profile->steamid);
+            $user->setNickname($profile->personaname);
+            $user->setAvatarUrl($profile->avatar);
+            if (isset($profile->timecreated)) {
+                $creation_time = date_create();
+                date_timestamp_set($creation_time, $profile->timecreated);
+                $user->setCreationTime($creation_time);
+            }
+            if (isset($profile->realname)) $user->setRealName($profile->realname);
+            if (isset($profile->loccountrycode)) $user->setLocationCountryCode($profile->loccountrycode);
+            if (isset($profile->locstatecode)) $user->setLocationStateCode($profile->locstatecode);
+            if (isset($profile->loccityid)) $user->setLocationCityId($profile->loccityid);
+            if (isset($profile->lastlogoff)) {
+                $last_login = date_create();
+                date_timestamp_set($last_login, $profile->lastlogoff);
+                $user->setLastLoginTime($last_login);
+                $user->setStatus($profile->personastate);
+            }
+            if (isset($profile->gameserverip)) $user->setCurrentServerIp($profile->gameserverip);
+            if (isset($profile->gameextrainfo)) $user->setCurrentAppName($profile->gameextrainfo);
+            if (isset($profile->gameid)) $user->setCurrentAppId($profile->gameid);
+            if (isset($profile->primaryclanid)) $user->setPrimaryGroupId($profile->primaryclanid);
+
+            // Updating bans
+            $response_bans = $this->steam->ISteamUser->GetPlayerBans(array($id));
+            $bans = $response_bans->players[0];
+            $user->setCommunityBanState($bans->CommunityBanned);
+            $user->setVacBanState($bans->VACBanned);
+            $user->setEconomyBanState($bans->EconomyBan);
+
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
+
+            // Saving in cache
+            $this->memcached->add($cache_key, $user, 3600);
         }
+        return $user;
     }
 
     public function getSearchSuggestions($input)

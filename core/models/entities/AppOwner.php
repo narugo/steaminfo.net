@@ -1,5 +1,9 @@
 <?php
-/** @Entity */
+namespace SteamInfo\Models\Entities;
+/**
+ * @Entity
+ * @Table(name="app_owner")
+ */
 class AppOwner
 {
     /**

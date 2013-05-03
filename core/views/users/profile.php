@@ -1,10 +1,11 @@
 <?php
-$profile = $this->profile;
+/** @var SteamInfo\Models\Entities\User $profile */
+$profile = $this->user;
 ?>
 <div class="page-header">
     <h1>Users
-        <small><?php echo $profile->nickname; ?></small>
-        <img class="avatar" src="<?php echo $profile->avatar_url; ?>"/>
+        <small><?php echo $profile->getNickname(); ?></small>
+        <img class="avatar" src="<?php echo $profile->getAvatarUrl(); ?>"/>
     </h1>
 </div>
 
@@ -18,18 +19,18 @@ $profile = $this->profile;
 
     <div class="tab-pane" id="summary-tab">
         <?php
-        if (!empty($profile->real_name))
-            echo '<h3 id="real-name">' . $profile->real_name . '</h3>';
+        if (!is_null($profile->getRealName()))
+            echo '<h3 id="real-name">' . $profile->getRealName() . '</h3>';
 
-        if (!empty($profile->tag))
-            echo '<p><span class="label label-important">' . $profile->tag . '</span></p>';
+        if (!is_null($profile->getTag()))
+            echo '<p><span class="label label-important">' . $profile->getTag() . '</span></p>';
 
         /**
          * Status
          */
         echo '<p>';
         echo '<strong>';
-        switch ($profile->status) {
+        switch ($profile->getStatus()) {
             case '1':
                 echo 'Online';
                 break;
@@ -54,61 +55,61 @@ $profile = $this->profile;
                 break;
         }
         echo '</strong>';
-        if (isset($profile->current_game_id)) {
-            $app_page = '/apps/' . $profile->current_game_id;
+        if (!is_null($profile->getCurrentAppId())) {
+            $app_page = '/apps/' . $profile->getCurrentAppId();
             if (!empty($profile->current_app_name)) {
-                echo '<strong>, in <a href="' . $app_page . '">' . $profile->current_app_name . '</a></strong>';
+                echo '<strong>, in <a href="' . $app_page . '">' . $profile->getCurrentAppName() . '</a></strong>';
             } else {
-                echo '<strong>, in app #<a href="' . $app_page . '">' . $profile->current_game_id . '</a></strong>';
+                echo '<strong>, in app #<a href="' . $app_page . '">' . $profile->getCurrentAppId() . '</a></strong>';
             }
             if (!empty($profile->current_server_ip)) {
-                $connection_url = 'steam://connect/' . $profile->current_server_ip;
-                echo '<br />Server: <a href="' . $connection_url . '">' . $profile->current_server_ip . '</a>';
+                $connection_url = 'steam://connect/' . $profile->getCurrentServerIp();
+                echo '<br />Server: <a href="' . $connection_url . '">' . $profile->getCurrentServerIp() . '</a>';
             }
         }
-        if (!empty($profile->last_login_time)) {
-            echo '<br />Last log in: ' . date(DATE_RFC850, $profile->last_login_time);
+        if (!is_null($profile->getLastLoginTime())) {
+            echo '<br />Last log in: ' . $profile->getLastLoginTime()->format(DATE_RFC850);
         }
         echo '</p>';
 
         $steam = new Locomotive(STEAM_API_KEY);
-        $steam_id = $steam->tools->user->communityIdToSteamId($profile->community_id);
+        $steam_id = $steam->tools->user->communityIdToSteamId($profile->getId());
         echo '<p><strong>Steam ID:</strong> ' . $steam_id;
-        echo '<br /><strong>Community ID:</strong> ' . $profile->community_id . '</p>';
+        echo '<br /><strong>Community ID:</strong> ' . $profile->getId() . '</p>';
 
-        if (!empty($profile->creation_time)) {
-            echo '<p>Steam user since ' . date(DATE_RFC850, $profile->creation_time) . '</p>';
+        if (!is_null($profile->getCreationTime())) {
+            echo '<p>Steam user since ' . $profile->getCreationTime()->format(DATE_RFC850) . '</p>';
         }
 
-        if (!empty($profile->location_country_code)) {
-            echo '<p>Location: <img src="/assets/img/flags/' . strtoupper($profile->location_country_code) . '.png" /> ';
-            echo $profile->location_country_code;
-            if (isset($this->location_state_code)) echo ', ' . $profile->location_state_code;
-            if (isset($this->location_city_id)) echo ', ' . $profile->location_city_id;
+        if (!is_null($profile->getLocationCountryCode())) {
+            echo '<p>Location: <img src="/assets/img/flags/' . strtoupper($profile->getLocationCountryCode()) . '.png" /> ';
+            echo $profile->getLocationCountryCode();
+            if (isset($this->location_state_code)) echo ', ' . $profile->getLocationStateCode();
+            if (isset($this->location_city_id)) echo ', ' . $profile->getLocationCityId();
             echo '</p>';
         }
 
-        if (!empty($profile->primary_group_id)) {
-            echo '<p>Primary group: ' . $profile->primary_group_id . '</p>';
+        if (!is_null($profile->getPrimaryGroupId())) {
+            echo '<p>Primary group: ' . $profile->getPrimaryGroupId() . '</p>';
         }
 
         /*
          * Bans info
          */
         echo '<p>';
-        if ($profile->is_vac_banned) {
+        if ($profile->getIsVacBanned()) {
             echo '<span class="label label-important">VAC banned</span>';
         } else {
             echo '<span class="label label-success">Not VAC banned</span>';
         }
         echo '&nbsp;';
-        if ($profile->is_community_banned) {
+        if ($profile->getIsCommunityBanned()) {
             echo '<span class="label label-important">Account is limited</span>';
         } else {
             echo '<span class="label label-success">Account is not limited</span>';
         }
         echo '<br /><b>Trade ban state:</b> ';
-        switch ($profile->economy_ban_state) {
+        switch ($profile->getEconomyBanState()) {
             case 'none':
                 echo '<span class="label label-success">None</span>';
                 break;
@@ -119,13 +120,13 @@ $profile = $this->profile;
                 echo '<span class="label label-warning">Probation</span>';
                 break;
             default:
-                echo '<span class="label">Unknown (' . $profile->economy_ban_state . ')</span>';
+                echo '<span class="label">Unknown (' . $profile->getEconomyBanState() . ')</span>';
         }
         echo '</p>';
 
         ?>
 
-        <a href="http://steamcommunity.com/profiles/<?php echo $profile->community_id; ?>">
+        <a href="http://steamcommunity.com/profiles/<?php echo $profile->getId(); ?>">
             View profile on Steam Community website
         </a>
     </div>
@@ -151,13 +152,13 @@ $profile = $this->profile;
             case "#apps-tab":
                 if (!appsTabLoaded) {
                     appsTabLoaded = true;
-                    $("#apps-tab").load("/users/apps/<?php echo $profile->community_id; ?>");
+                    $("#apps-tab").load("/users/apps/<?php echo $profile->getId(); ?>");
                 }
                 break;
             case "#friends-tab":
                 if (!friendsTabLoaded) {
                     friendsTabLoaded = true;
-                    $("#friends-tab").load("/users/friends/<?php echo $profile->community_id; ?>");
+                    $("#friends-tab").load("/users/friends/<?php echo $profile->getId(); ?>");
                 }
                 break;
         }

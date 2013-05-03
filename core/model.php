@@ -4,16 +4,11 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Setup;
 
 define('PATH_TO_MODELS', CORE_DIR . 'models/');
-define('PATH_TO_METADATA', PATH_TO_MODELS . 'entities/');
+define('PATH_TO_ENTITIES', PATH_TO_MODELS . 'entities/');
 
-/**
- * Statuses
- */
-define('STATUS_OUTDATED', 'outdated');
-define('STATUS_SUCCESS', 'success');
-define('STATUS_UNAUTHORIZED', 'unauthorized');
-define('STATUS_API_UNAVAILABLE', 'private');
-define('STATUS_UNKNOWN', 'unknown');
+foreach (glob(PATH_TO_ENTITIES . '*.php') as $entity) {
+    require $entity;
+}
 
 class Model
 {
@@ -21,14 +16,17 @@ class Model
     function __construct()
     {
         $isDevMode = true;
-        $config = Setup::createAnnotationMetadataConfiguration(array(PATH_TO_METADATA), $isDevMode);
+        $config = Setup::createAnnotationMetadataConfiguration(array(PATH_TO_ENTITIES), $isDevMode);
         $connection = array(
             'driver' => DB_DRIVER,
-            'user' => DB_USERNAME,
-            'password' => DB_PASSWORD,
+            'user' => 'test',
+            'password' => 'test',
             'dbname' => DB_NAME . '_test',
         );
         $this->entityManager = EntityManager::create($connection, $config);
+        $this->helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
+            'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($this->entityManager)
+        ));
 
         $this->db = new Database();
 

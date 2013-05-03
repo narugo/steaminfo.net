@@ -1,5 +1,9 @@
 <?php
-/** @Entity */
+namespace SteamInfo\Models\Entities;
+/**
+ * @Entity
+ * @Table(name="dota_match_player")
+ */
 class DotaMatchPlayer
 {
 

@@ -22,10 +22,10 @@ class Users extends Controller
         if ($_SERVER['REQUEST_METHOD'] != 'GET') error(405);
         require_once PATH_TO_MODELS . 'users.php';
         $users_model = new Users_Model();
-        $this->view->profile = $users_model->getProfileSummary($params[0]);
-        if (empty($this->view->profile)) error(404, "Profile not found");
-        writeUserViewLog($this->view->profile->community_id);
-        $this->view->renderPage('users/profile', $this->view->profile->nickname,
+        $this->view->user = $users_model->getUser($params[0]);
+        if (empty($this->view->user)) error(404, "Profile not found");
+        writeUserViewLog($this->view->user->getId());
+        $this->view->renderPage('users/profile', $this->view->user->getNickname(),
             array(JS_TABLESORTER),
             array(CSS_FONT_AWESOME, CSS_USERS));
     }
