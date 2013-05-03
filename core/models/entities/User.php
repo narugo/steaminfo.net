@@ -5,7 +5,7 @@ class User
 
     /** @Id @Column(type="bigint") */
     protected $id;
-    /** @Column(type="time") */
+    /** @Column(type="datetime") */
     protected $creation_time;
     /** @Column(type="string") */
     protected $nickname;
@@ -21,7 +21,7 @@ class User
      */
     /** @Column(type="smallint") */
     protected $status;
-    /** @Column(type="time") */
+    /** @Column(type="datetime") */
     protected $last_login_time;
     /** @Column(type="integer", nullable=TRUE) */
     protected $current_game_id;
@@ -33,9 +33,9 @@ class User
     /*
      * Bans
      */
-    /** @Column(type="string", nullable=TRUE) */
+    /** @Column(type="boolean", nullable=TRUE) */
     protected $is_vac_banned;
-    /** @Column(type="string", nullable=TRUE) */
+    /** @Column(type="boolean", nullable=TRUE) */
     protected $is_community_banned;
     /** @Column(type="string", nullable=TRUE) */
     protected $economy_ban_state;
@@ -74,6 +74,66 @@ class User
         $this->users_friends = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
+    public function getAvatarUrl()
+    {
+        return $this->avatar_url;
+    }
+
+    public function setAvatarUrl($avatar_url)
+    {
+        $this->avatar_url = $avatar_url;
+    }
+
+    public function getCreationTime()
+    {
+        return $this->creation_time;
+    }
+
+    public function setCreationTime($creation_time)
+    {
+        $this->creation_time = $creation_time;
+    }
+
+    public function getCurrentGameId()
+    {
+        return $this->current_game_id;
+    }
+
+    public function setCurrentGameId($current_game_id)
+    {
+        $this->current_game_id = $current_game_id;
+    }
+
+    public function getCurrentGameName()
+    {
+        return $this->current_game_name;
+    }
+
+    public function setCurrentGameName($current_game_name)
+    {
+        $this->current_game_name = $current_game_name;
+    }
+
+    public function getCurrentGameServerIp()
+    {
+        return $this->current_game_server_ip;
+    }
+
+    public function setCurrentGameServerIp($current_game_server_ip)
+    {
+        $this->current_game_server_ip = $current_game_server_ip;
+    }
+
+    public function getEconomyBanState()
+    {
+        return $this->economy_ban_state;
+    }
+
+    public function setEconomyBanState($economy_ban_state)
+    {
+        $this->economy_ban_state = $economy_ban_state;
+    }
+
     public function getId()
     {
         return $this->id;
@@ -81,165 +141,117 @@ class User
 
     public function setId($id)
     {
-        return $this->id = $id;
+        $this->id = $id;
     }
 
-    public function getAvatarUrl()
-    {
-        return $this->avatar_url;
-    }
-
-    protected function getCommunityId()
-    {
-        return $this->community_id;
-    }
-
-    protected function getSteamId()
-    {
-        $steam = new Locomotive(STEAM_API_KEY);
-        return $steam->tools->users->communityIdToSteamId($this->community_id);
-    }
-
-    protected function getStatus()
-    {
-        switch ($this->status) {
-            case '1':
-                return 'Online';
-            case '2':
-                return 'Busy';
-            case '3':
-                return 'Away';
-            case '4':
-                return 'Snooze';
-            case '5':
-                return 'Looking to trade';
-            case '6':
-                return 'Looking to play';
-            case '0':
-            default:
-                return 'Offline';
-        }
-    }
-
-    protected function getCurrentGameId()
-    {
-        return $this->current_game_id;
-    }
-
-    protected function isInGame()
-    {
-        if (isset($this->current_game_id)) return TRUE;
-        else return FALSE;
-    }
-
-    protected function getCurrentAppStorePageURL()
-    {
-        if (isset($this->current_game_id)) {
-            return 'http://store.steampowered.com/app/' . $this->current_game_id;
-        }
-        return NULL;
-    }
-
-    protected function getCurrentAppName()
-    {
-        return $this->current_game_name;
-    }
-
-    /**
-     * @return null|string Returns connection URL if current server IP is set, NULL otherwise.
-     */
-    protected function getConnectionUrl()
-    {
-        if (isset($this->current_game_server_ip)) {
-            return 'steam://connect/' . $this->current_game_server_ip;
-        }
-        return NULL;
-    }
-
-    protected function getCurrentGameServerIp()
-    {
-        return $this->current_game_server_ip;
-    }
-
-    protected function isCommunityBanned()
+    public function getIsCommunityBanned()
     {
         return $this->is_community_banned;
     }
 
-    protected function isVacBanned()
+    public function setIsCommunityBanned($is_community_banned)
+    {
+        $this->is_community_banned = $is_community_banned;
+    }
+
+    public function getIsVacBanned()
     {
         return $this->is_vac_banned;
     }
 
-    protected function getEconomyBanState()
+    public function setIsVacBanned($is_vac_banned)
     {
-        return $this->economy_ban_state;
+        $this->is_vac_banned = $is_vac_banned;
     }
 
-    protected function getLastLoginTime($raw = FALSE)
+    public function getLastLoginTime()
     {
-        if ($raw) return $this->last_login_time;
-        else return date(DATE_RFC850, $this->last_login_time);
+        return $this->last_login_time;
     }
 
-    protected function getLastUpdateTime()
+    public function setLastLoginTime($last_login_time)
     {
-        return $this->last_updated;
+        $this->last_login_time = $last_login_time;
     }
 
-    /**
-     * @return null|string
-     */
-    protected function getLocation()
+    public function getLocationCityId()
     {
-        $result = NULL;
-        if (isset($this->location_country_code)) {
-            $result = $this->location_country_code;
-            if (isset($this->location_state_code))
-                $result .= ', ' . $this->location_state_code;
-            if (isset($this->location_city_id))
-                $result .= ', ' . $this->location_city_id;
-        }
-        return $result;
+        return $this->location_city_id;
     }
 
-    protected function getLocationCountryCode()
+    public function setLocationCityId($location_city_id)
     {
-        if (isset($this->location_country_code))
-            return strtoupper($this->location_country_code);
+        $this->location_city_id = $location_city_id;
+    }
+
+    public function getLocationCountryCode()
+    {
         return $this->location_country_code;
     }
 
-    protected function getNickname()
+    public function setLocationCountryCode($location_country_code)
     {
-        return (string)$this->nickname;
+        $this->location_country_code = $location_country_code;
     }
 
-    protected function getPrimaryGroupId()
+    public function getLocationStateCode()
+    {
+        return $this->location_state_code;
+    }
+
+    public function setLocationStateCode($location_state_code)
+    {
+        $this->location_state_code = $location_state_code;
+    }
+
+    public function getNickname()
+    {
+        return $this->nickname;
+    }
+
+    public function setNickname($nickname)
+    {
+        $this->nickname = $nickname;
+    }
+
+    public function getPrimaryGroupId()
     {
         return $this->primary_group_id;
     }
 
-    protected function getRealName()
+    public function setPrimaryGroupId($primary_group_id)
+    {
+        $this->primary_group_id = $primary_group_id;
+    }
+
+    public function getRealName()
     {
         return $this->real_name;
     }
 
-    protected function getTag()
+    public function setRealName($real_name)
+    {
+        $this->real_name = $real_name;
+    }
+
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    public function setStatus($status)
+    {
+        $this->status = $status;
+    }
+
+    public function getTag()
     {
         return $this->tag;
     }
 
-    protected function getBadgesHTML()
+    public function setTag($tag)
     {
-        $steam = new Locomotive();
-        return $steam->tools->users->getBadges($this->community_id);
+        $this->tag = $tag;
     }
 
-    protected function getCreationTime()
-    {
-        if (isset($this->creation_time))
-            return date(DATE_RFC850, $this->creation_time);
-        return NULL;
-    }
 }
