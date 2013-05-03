@@ -27,7 +27,7 @@ class User
     protected $status;
     /** @Column(type="datetime", nullable=TRUE) */
     protected $last_login_time;
-    /** @Column(type="integer", nullable=TRUE) */
+    /** @Column(type="bigint", nullable=TRUE) */
     protected $current_app_id;
     /** @Column(type="string", nullable=TRUE) */
     protected $current_app_name;
@@ -69,24 +69,6 @@ class User
      * @var DotaMatchPlayer[]
      **/
     protected $dota_matches = null;
-    /**
-     * @ManyToMany(targetEntity="User", mappedBy="users_friends")
-     */
-    private $friends_with_user;
-    /**
-     * @ManyToMany(targetEntity="User", inversedBy="friends_with_user")
-     * @JoinTable(name="friends",
-     *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@JoinColumn(name="friend_user_id", referencedColumnName="id")}
-     *      )
-     */
-    private $users_friends;
-
-    public function __construct()
-    {
-        $this->friends_with_user = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->users_friends = new \Doctrine\Common\Collections\ArrayCollection();
-    }
 
     /**
      * @param $dota_matches

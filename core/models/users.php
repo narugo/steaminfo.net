@@ -1,4 +1,5 @@
 <?php
+use SteamInfo\Models\Entities\Friends;
 use SteamInfo\Models\Entities\User;
 
 /**
@@ -41,16 +42,41 @@ class Users_Model extends Model
         $cache_key = 'user_' . $id;
         $user = $this->memcached->get($cache_key);
         if ($user === FALSE) {
-            $userRepository = $this->entityManager->getRepository('SteamInfo\Models\Entities\User');
+            $result = self::getUsersFromSteam(array($id));
+            $user = $result[0];
+            $this->memcached->add($cache_key, $user, 3600);
+        }
+        return $user;
+    }
+
+    /**
+     * @param $ids
+     * @param bool $updateBans
+     * @return User[]
+     */
+    private function getUsersFromSteam($ids, $updateBans = true)
+    {
+        self::updateSummaries($ids);
+        if ($updateBans) self::updateBans($ids);
+
+        $result = array();
+        $userRepository = $this->entityManager->getRepository('SteamInfo\Models\Entities\User');
+        foreach ($ids as $id) {
             $user = $userRepository->find($id);
+            if (!empty($user)) array_push($result, $user);
+        }
+        return $result;
+    }
+
+    private function updateSummaries($ids)
+    {
+        $userRepository = $this->entityManager->getRepository('SteamInfo\Models\Entities\User');
+
+        $profiles = $this->steam->ISteamUser->GetPlayerSummaries($ids);
+        foreach ($profiles->response->players as $profile) {
+            $user = $userRepository->find($profile->steamid);
             if (empty($user)) $user = new User();
 
-            // Updating profile
-            var_dump($id);
-            $response_profile = $this->steam->ISteamUser->GetPlayerSummaries(array($id));
-            // TODO: Improve error handling
-            if (empty($response_profile->response->players[0])) return false;
-            $profile = $response_profile->response->players[0];
             $user->setId($profile->steamid);
             $user->setNickname($profile->personaname);
             $user->setAvatarUrl($profile->avatar);
@@ -71,26 +97,78 @@ class Users_Model extends Model
             }
             if (isset($profile->gameserverip)) $user->setCurrentServerIp($profile->gameserverip);
             if (isset($profile->gameextrainfo)) $user->setCurrentAppName($profile->gameextrainfo);
-            if (isset($profile->gameid)) $user->setCurrentAppId($profile->gameid);
+            if (isset($profile->gameid))
+                if (!($profile->gameid > 9223372036854775807)) // Max BIGINT
+                    $user->setCurrentAppId($profile->gameid);
             if (isset($profile->primaryclanid)) $user->setPrimaryGroupId($profile->primaryclanid);
 
-            // Updating bans
-            $response_bans = $this->steam->ISteamUser->GetPlayerBans(array($id));
-            $bans = $response_bans->players[0];
-            $user->setCommunityBanState($bans->CommunityBanned);
-            $user->setVacBanState($bans->VACBanned);
-            $user->setEconomyBanState($bans->EconomyBan);
-
             $this->entityManager->persist($user);
-            $this->entityManager->flush();
-
-            // Saving in cache
-            $this->memcached->add($cache_key, $user, 3600);
         }
-        return $user;
+        $this->entityManager->flush();
     }
 
-    public function updateSummaries($community_ids)
+    private function updateBans($ids)
+    {
+        $userRepository = $this->entityManager->getRepository('SteamInfo\Models\Entities\User');
+
+        $bans = $this->steam->ISteamUser->GetPlayerBans($ids);
+        foreach ($bans->players as $bans_user) {
+            $user = $userRepository->find($bans_user->SteamId);
+            if (empty($user)) continue;
+
+            $user->setCommunityBanState($bans_user->CommunityBanned);
+            $user->setVacBanState($bans_user->VACBanned);
+            $user->setEconomyBanState($bans_user->EconomyBan);
+
+            $this->entityManager->persist($user);
+        }
+        $this->entityManager->flush();
+    }
+
+    public function getFriends($user_id)
+    {
+        $cache_key = 'friends_of_' . $user_id;
+        $friends = $this->memcached->get($cache_key);
+        if ($friends === FALSE) {
+            // Removing old friends
+            $friendsRepository = $this->entityManager->getRepository('SteamInfo\Models\Entities\Friends');
+            $old_friends = $friendsRepository->findBy(array('user' => $user_id));
+            foreach ($old_friends as $old_friend) {
+                $this->entityManager->remove($old_friend);
+            }
+            $this->entityManager->flush();
+
+            $response = $this->steam->ISteamUser->GetFriendList($user_id);
+            $ids = array();
+            foreach ($response->friendslist->friends as $friend) {
+                array_push($ids, $friend->steamid);
+            }
+
+            $friend_profiles = self::getUsersFromSteam($ids, false);
+            $user = self::getUser($user_id);
+
+            $friends = array();
+            foreach ($friend_profiles as $friend) {
+                $current_friends = new Friends();
+                $current_friends->setUser($user);
+                $current_friends->setFriend($friend);
+                $key = array_search($friend->getId(), $ids);
+                $friends_since_timestamp = $response->friendslist->friends[$key]->friend_since;
+                if (!empty($friends_since_timestamp)) {
+                    $friends_since = date_create();
+                    date_timestamp_set($friends_since, $friends_since_timestamp);
+                    $current_friends->setSince($friends_since);
+                }
+                $this->entityManager->flush();
+                array_push($friends, $current_friends);
+            }
+
+            $this->memcached->add($cache_key, $friends, 3600);
+        }
+        return $friends;
+    }
+
+    public function updateSummariesOLD($community_ids)
     {
         $summaries = array();
         foreach (array_chunk($community_ids, 100) as $chunk) {
@@ -136,56 +214,6 @@ class Users_Model extends Model
             $this->memcached->add($cache_key, $suggestions, 3600);
         }
         return $suggestions;
-    }
-
-    public function getFriends($community_id)
-    {
-        $cache_key = 'friends_of_' . $community_id;
-        $friends = $this->memcached->get($cache_key);
-        if ($friends === FALSE) {
-            self::updateFriendsList($community_id);
-            $statement = $this->db->prepare('SELECT community_id, nickname, avatar_url, tag, since FROM friends
-                INNER JOIN steam_user ON friends.user_community_id2 = steam_user.community_id
-                WHERE user_community_id1 = :id');
-            $statement->execute(array(':id' => $community_id));
-            $friends = $statement->fetchAll(PDO::FETCH_OBJ);
-            $this->memcached->add($cache_key, $friends, 3600);
-        }
-        return $friends;
-    }
-
-    private function updateFriendsList($community_id)
-    {
-        $response = $this->steam->ISteamUser->GetFriendList($community_id);
-        $friends_list = $response->friendslist->friends;
-
-        if (empty($friends_list)) return;
-
-        $this->db->beginTransaction();
-
-        // Removing old friends
-        $remove_old = 'DELETE FROM friends WHERE user_community_id1 = :user_id;';
-        $statement = $this->db->prepare($remove_old);
-        $statement->execute(array(":user_id" => $community_id));
-        $statement->closeCursor();
-
-        // Adding unknown users
-        foreach ($friends_list as $friend) {
-            $sql = 'INSERT INTO steam_user (community_id) SELECT ' . $friend->steamid
-                . 'WHERE NOT EXISTS (SELECT 1 FROM steam_user WHERE community_id=' . $friend->steamid . ')';
-            $this->db->query($sql);
-        }
-
-        // Adding new friends
-        $insert_profiles = 'INSERT INTO friends (user_community_id1, user_community_id2, since) VALUES ';
-        foreach ($friends_list as $friend) {
-            if (empty($friend->friend_since)) $friend->friend_since = "NULL";
-            $insert_profiles = $insert_profiles . "($community_id, $friend->steamid, $friend->friend_since),";
-        }
-        $insert_profiles = substr($insert_profiles, 0, -1) . ";";
-        $this->db->query($insert_profiles);
-
-        $this->db->commit();
     }
 
     public function getTop10()

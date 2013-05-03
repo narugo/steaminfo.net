@@ -16,32 +16,33 @@
     <tbody>
     <?php
     $index = 1; // Friend index
-    date_default_timezone_set('UTC');
-    foreach ($this->friends as $friend) :
+    /** @var SteamInfo\Models\Entities\Friends[] $friends */
+    $friends = $this->friends;
+    foreach ($friends as $friend) :
         ?>
         <tr>
             <td class="id"><?php echo $index; ?></td>
             <td class="avatar">
                 <img src="<?php
-                if (empty($friend->avatar_url)) echo "/assets/img/no_avatar.png";
-                else echo $friend->avatar_url;
+                if (is_null($friend->getFriend()->getAvatarUrl())) echo "/assets/img/no_avatar.png";
+                else echo $friend->getFriend()->getAvatarUrl();
                 ?>"/>
             </td>
             <td class="name">
-                <a href="/users/profile/<?php echo $friend->community_id; ?>">
+                <a href="/users/profile/<?php echo $friend->getFriend()->getId(); ?>">
                     <?php
-                    if (empty($friend->nickname)) echo $friend->community_id;
-                    else echo $friend->nickname;
+                    if (is_null($friend->getFriend()->getNickname())) echo $friend->getFriend()->getId();
+                    else echo $friend->getFriend()->getNickname();
                     ?>
                 </a>
-                <?php if (!empty($friend->tag)) : ?>
-                    <span class="label label-important"><?php echo $friend->tag; ?></span>
+                <?php if (!is_null($friend->getFriend()->getTag())) : ?>
+                    <span class="label label-important"><?php echo $friend->getFriend()->getTag(); ?></span>
                 <?php endif; ?>
             </td>
             <td class="since">
                 <?php
-                if ($friend->since == '0') echo 'Unknown';
-                else echo date(DATE_RFC850, $friend->since);
+                if (is_null($friend->getSince())) echo 'Unknown';
+                else echo $friend->getSince()->format(DATE_RFC850);
                 ?>
             </td>
         </tr>

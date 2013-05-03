@@ -158,7 +158,7 @@ class Dota_Model extends Model
         }
         require_once PATH_TO_MODELS . 'users.php';
         $users_model = new Users_Model();
-        $users_model->updateSummaries($ids);
+        $users_model->updateSummariesOLD($ids);
 
         $sql = 'INSERT INTO dota_match_player (account_id, match_id, player_slot, hero_id,
                                                item_0, item_1, item_2, item_3, item_4, item_5,
@@ -246,7 +246,7 @@ class Dota_Model extends Model
 
         require_once PATH_TO_MODELS . 'users.php';
         $users_model = new Users_Model();
-        $users_model->updateSummaries(array_unique($ids));
+        $users_model->updateSummariesOLD(array_unique($ids));
 
         foreach ($teams as $team) {
             $team->logo = self::getTeamLogo($team->logo);
