@@ -1,4 +1,6 @@
 <?php
+use SteamInfo\Models\Entities\Application;
+use SteamInfo\Models\Entities\AppOwner;
 use SteamInfo\Models\Entities\Friends;
 use SteamInfo\Models\Entities\User;
 
@@ -159,13 +161,66 @@ class Users_Model extends Model
                     date_timestamp_set($friends_since, $friends_since_timestamp);
                     $current_friends->setSince($friends_since);
                 }
-                $this->entityManager->flush();
+
+                // TODO: Fix
+                //$this->entityManager->persist($current_friends);
+                //$this->entityManager->flush();
+
                 array_push($friends, $current_friends);
             }
 
             $this->memcached->add($cache_key, $friends, 3600);
         }
         return $friends;
+    }
+
+    public function getOwnedApps($user_id)
+    {
+        $cache_key = 'apps_owned_by_' . $user_id;
+        $apps = $this->memcached->get($cache_key);
+        if ($apps === FALSE) {
+            // Removing old applications
+            $appOwnerRepository = $this->entityManager->getRepository('SteamInfo\Models\Entities\AppOwner');
+            $old_apps = $appOwnerRepository->findBy(array('user' => $user_id));
+            foreach ($old_apps as $old_friend) {
+                $this->entityManager->remove($old_friend);
+            }
+            $this->entityManager->flush();
+
+            $response = $this->steam->IPlayerService->GetOwnedGames($user_id, true, true);
+
+            $user = self::getUser($user_id);
+            $apps = array();
+
+            $applicationsRepository = $this->entityManager->getRepository('SteamInfo\Models\Entities\Application');
+            foreach ($response->response->games as $app) {
+                $application = $applicationsRepository->find($app->appid);
+                if (empty($application)) $application = new Application();
+                $application->setId($app->appid);
+                $application->setName($app->name);
+                if (!empty($app->img_icon_url)) $application->setIcon($app->img_icon_url);
+                if (!empty($app->img_logo_url)) $application->setLogo($app->img_logo_url);
+                if (!empty($app->has_community_visible_stats)) $application->setHasCommunityVisibleStats($app->has_community_visible_stats);
+
+                $this->entityManager->persist($application);
+                $this->entityManager->flush();
+
+                $current_app_owner = new AppOwner();
+                $current_app_owner->setUser($user);
+                $current_app_owner->setApplication($application);
+                if (isset($app->playtime_forever)) $current_app_owner->setUsedTotal($app->playtime_forever);
+                if (isset($app->playtime_2weeks)) $current_app_owner->setUsedInLast2Weeks($app->playtime_2weeks);
+
+                // TODO: Fix
+                //$this->entityManager->persist($current_app_owner);
+                //$this->entityManager->flush();
+
+                array_push($apps, $current_app_owner);
+            }
+
+            $this->memcached->add($cache_key, $apps, 3600);
+        }
+        return $apps;
     }
 
     public function updateSummariesOLD($community_ids)

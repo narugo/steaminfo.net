@@ -33,9 +33,9 @@ class Users extends Controller
     function apps($params)
     {
         if ($_SERVER['REQUEST_METHOD'] != 'GET') error(405);
-        require_once PATH_TO_MODELS . 'apps.php';
-        $apps_model = new Apps_Model();
-        $this->view->apps = $apps_model->getOwnedApps($params[0]);
+        require_once PATH_TO_MODELS . 'users.php';
+        $users_model = new Users_Model();
+        $this->view->apps = $users_model->getOwnedApps($params[0]);
         if (!empty($this->view->apps)) {
             $this->view->renderPage('users/includes/apps', 'Apps - Users',
                 array(JS_TABLESORTER),
@@ -77,8 +77,8 @@ class Users extends Controller
                 'avatar_url' => $result->getAvatarUrl(),
                 'tag' => $result->getTag(),
                 'status' => $result->getStatus(),
-                'current_app_id'=>$result->getCurrentAppId(),
-                'current_app_name'=>$result->getCurrentAppName()
+                'current_app_id' => $result->getCurrentAppId(),
+                'current_app_name' => $result->getCurrentAppName()
             );
         }
         echo json_encode($response);

@@ -14,13 +14,16 @@
     </tr>
     </thead>
     <tbody>
-    <?php foreach ($this->apps as $app) : ?>
+    <?php
+    /** @var \SteamInfo\Models\Entities\AppOwner[] $apps */
+    $apps = $this->apps;
+    foreach ($this->apps as $app) :
+        ?>
         <tr>
-            <td class="id"><?php echo $app->id; ?></td>
-            <td class="name"><a
-                    href="/apps/<?php echo $app->id; ?>"><?php echo $app->name; ?></a></td>
-            <td class="used-2w"><?php echo round($app->used_last_2_weeks / 60, 1); ?></td>
-            <td class="used-total"><?php echo round($app->used_total / 60, 1); ?></td>
+            <td class="id"><?php echo $app->getApplication()->getId(); ?></td>
+            <td class="name"><a href="/apps/<?php echo $app->getApplication()->getId(); ?>"><?php echo $app->getApplication()->getName(); ?></a></td>
+            <td class="used-2w"><?php echo round($app->getUsedInLast2Weeks() / 60, 1); ?></td>
+            <td class="used-total"><?php echo round($app->getUsedTotal() / 60, 1); ?></td>
         </tr>
     <?php endforeach; ?>
     </tbody>

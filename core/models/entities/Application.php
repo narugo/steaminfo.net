@@ -12,7 +12,9 @@ class Application
     /** @Column(type="string", nullable=TRUE) */
     protected $name;
     /** @Column(type="string", nullable=TRUE) */
-    protected $header_image_url;
+    protected $logo;
+    /** @Column(type="string", nullable=TRUE) */
+    protected $icon;
     /** @Column(type="text", nullable=TRUE) */
     protected $description;
     /** @Column(type="string", nullable=TRUE) */
@@ -25,6 +27,8 @@ class Application
     protected $legal_notice;
     /** @Column(type="integer", nullable=TRUE) */
     protected $recommendations;
+    /** @Column(type="boolean", nullable=TRUE) */
+    protected $has_community_visible_stats;
 
     /*
      * Platforms
@@ -65,14 +69,14 @@ class Application
         $this->description = $description;
     }
 
-    public function getHeaderImageUrl()
+    public function getLogo()
     {
-        return $this->header_image_url;
+        return $this->logo;
     }
 
-    public function setHeaderImageUrl($header_image_url)
+    public function setLogo($header_image_url)
     {
-        $this->header_image_url = $header_image_url;
+        $this->logo = $header_image_url;
     }
 
     public function getId()
@@ -93,6 +97,26 @@ class Application
     public function setIsLinux($is_linux)
     {
         $this->is_linux = $is_linux;
+    }
+
+    public function getHasCommunityVisibleStats()
+    {
+        return $this->has_community_visible_stats;
+    }
+
+    public function setHasCommunityVisibleStats($has_community_visible_stats)
+    {
+        $this->has_community_visible_stats = $has_community_visible_stats;
+    }
+
+    public function getIcon()
+    {
+        return $this->icon;
+    }
+
+    public function setIcon($icon)
+    {
+        $this->icon = $icon;
     }
 
     public function getIsMac()
