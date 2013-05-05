@@ -87,20 +87,20 @@ function getFriendsGraphJSON($friends)
         .call(force.drag);
 
     node.append("rect")
-        .attr("x", -18)
-        .attr("y", -18)
-        .attr("width", 36)
-        .attr("height", 36)
+        .attr("x", -15)
+        .attr("y", -15)
+        .attr("width", 30)
+        .attr("height", 30)
         .style("fill", function(d) { return color(d.group); });
 
     node.append("image")
         .attr("xlink:href", function (d) {
             return d.picture;
         })
-        .attr("x", -15)
-        .attr("y", -15)
-        .attr("width", 30)
-        .attr("height", 30);
+        .attr("x", -12)
+        .attr("y", -12)
+        .attr("width", 24)
+        .attr("height", 24);
 
     node.append("title")
         .text(function (d) {
