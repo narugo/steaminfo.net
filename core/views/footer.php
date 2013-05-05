@@ -1,22 +1,26 @@
-<footer>
-    <hr/>
+<?php if (!$no_header_footer) : ?>
+    <footer>
 
-    <div class="pull-left">
-        Powered by <a href="http://steampowered.com/">Steam</a>,
-        created by <a href="http://tsukanov.me">me</a>.
-    </div>
+        <hr/>
 
-    <div class="pull-right" style="font-size: 12px;">
-        <?php
-        if (empty($_SESSION['id'])) {
-            ?>
-            <a href="/auth/"><img src="/assets/img/steam_login.png"/></a>
-        <?php } else { ?>
-            <em><?php echo str_replace('http://steamcommunity.com/openid/id/', '', $_SESSION['id']); ?></em>
-            | <a href="/control/">Control</a> | <a href="/auth/logout/">Logout</a>
-        <?php } ?>
-    </div>
-</footer>
+        <div class="pull-left">
+            Powered by <a href="http://steampowered.com/">Steam</a>,
+            created by <a href="http://tsukanov.me">me</a>.
+        </div>
+
+        <div class="pull-right" style="font-size: 12px;">
+            <?php
+            if (empty($_SESSION['id'])) {
+                ?>
+                <a href="/auth/"><img src="/static/img/steam_login.png"/></a>
+            <?php } else { ?>
+                <em><?php echo str_replace('http://steamcommunity.com/openid/id/', '', $_SESSION['id']); ?></em>
+                | <a href="/control/">Control</a> | <a href="/auth/logout/">Logout</a>
+            <?php } ?>
+        </div>
+
+    </footer>
+<?php endif; ?>
 
 </div>
 </body>

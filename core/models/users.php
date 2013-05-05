@@ -188,7 +188,7 @@ class Users_Model extends Model
 
     public function getOwnedApps($user_id)
     {
-        $cache_key = 'apps_owned_by_' . $user_id;
+        $cache_key = $user_id . '_apps';
         $apps = $this->memcached->get($cache_key);
         if ($apps === FALSE) {
             self::removeOwnedApps($user_id);

@@ -13,13 +13,13 @@
     <div id="platforms">
         <?php
         if ($app->is_win) {
-            echo '<img src="/assets/img/platforms/win.png"/>';
+            echo '<img src="/static/img/platforms/win.png"/>';
         }
         if ($app->is_mac) {
-            echo '<img src="/assets/img/platforms/mac.png"/>';
+            echo '<img src="/static/img/platforms/mac.png"/>';
         }
         if ($app->is_linux) {
-            echo '<img src="/assets/img/platforms/linux.png"/>';
+            echo '<img src="/static/img/platforms/linux.png"/>';
         }
         ?>
     </div>

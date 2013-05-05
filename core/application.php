@@ -9,7 +9,7 @@ require CORE_DIR . 'error_handling.php';
 require CORE_DIR . 'controller.php';
 require CORE_DIR . 'view.php';
 require CORE_DIR . 'model.php';
-require CORE_DIR . 'assets.php'; // Assets
+require CORE_DIR . 'assets.php';
 
 /**
  * Main application class

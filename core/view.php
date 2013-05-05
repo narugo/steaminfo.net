@@ -24,9 +24,9 @@ class View
         } else {
             $page_title .= ' - Steam Info';
         }
-        if (!$no_header_footer) require PATH_TO_VIEWS . 'header.php';
+        require PATH_TO_VIEWS . 'header.php';
         require $view_path;
-        if (!$no_header_footer) require PATH_TO_VIEWS . 'footer.php';
+        require PATH_TO_VIEWS . 'footer.php';
     }
 
     public function renderErrorPage($error_id, $page_title = NULL, $message = '')

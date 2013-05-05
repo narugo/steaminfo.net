@@ -1,6 +1,3 @@
-<!DOCTYPE html>
-<html>
-<body>
 <div class="alert alert-info">
     Click on the names of columns to sort this table.
 </div>
@@ -21,7 +18,9 @@
         ?>
         <tr>
             <td class="id"><?php echo $app->getApplication()->getId(); ?></td>
-            <td class="name"><a href="/apps/<?php echo $app->getApplication()->getId(); ?>"><?php echo $app->getApplication()->getName(); ?></a></td>
+            <td class="name">
+                <a href="/apps/<?php echo $app->getApplication()->getId(); ?>"><?php echo $app->getApplication()->getName(); ?></a>
+            </td>
             <td class="used-2w"><?php echo round($app->getUsedInLast2Weeks() / 60, 1); ?></td>
             <td class="used-total"><?php echo round($app->getUsedTotal() / 60, 1); ?></td>
         </tr>
@@ -33,5 +32,3 @@
         $("#apps-table").tablesorter();
     });
 </script>
-</body>
-</html>

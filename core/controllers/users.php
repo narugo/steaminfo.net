@@ -26,7 +26,7 @@ class Users extends Controller
         if (empty($this->view->user)) error(404, "Profile not found");
         writeUserViewLog($this->view->user->getId());
         $this->view->renderPage('users/profile', $this->view->user->getNickname(),
-            array(JS_TABLESORTER),
+            array(),
             array(CSS_FONT_AWESOME, CSS_USERS));
     }
 
@@ -54,8 +54,24 @@ class Users extends Controller
         $this->view->friends = $users_model->getFriends($params[0]);
         if (!empty($this->view->friends)) {
             $this->view->renderPage('users/includes/friends', 'Friends - Users',
-                array(JS_TABLESORTER),
-                array(CSS_FONT_AWESOME, CSS_USERS),
+                array(JS_TABLESORTER,JS_D3),
+                array(CSS_FONT_AWESOME, CSS_USERS, CSS_GRAPH),
+                TRUE);
+        } else {
+            echo 'No friends or profile is private.';
+        }
+    }
+
+    function connections($params)
+    {
+        if ($_SERVER['REQUEST_METHOD'] != 'GET') error(405);
+        require_once PATH_TO_MODELS . 'users.php';
+        $users_model = new Users_Model();
+        $this->view->friends = $users_model->getFriends($params[0]);
+        if (!empty($this->view->friends)) {
+            $this->view->renderPage('users/includes/connections', 'Connections - Users',
+                array(JS_TABLESORTER,JS_D3),
+                array(CSS_FONT_AWESOME, CSS_USERS, CSS_GRAPH),
                 TRUE);
         } else {
             echo 'No friends or profile is private.';

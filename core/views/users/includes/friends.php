@@ -1,6 +1,3 @@
-<!DOCTYPE html>
-<html>
-<body>
 <div class="alert alert-info">
     Click on the names of columns to sort this table.
 </div>
@@ -15,13 +12,12 @@
     </thead>
     <tbody>
     <?php
-    $index = 1; // Friend index
     /** @var SteamInfo\Models\Entities\Friends[] $friends */
     $friends = $this->friends;
-    foreach ($friends as $friend) :
+    foreach ($friends as $index => $friend) :
         ?>
         <tr>
-            <td class="id"><?php echo $index; ?></td>
+            <td class="id"><?php echo $index + 1; ?></td>
             <td class="avatar">
                 <img src="<?php
                 if (is_null($friend->getFriend()->getAvatarUrl())) echo "/assets/img/no_avatar.png";
@@ -46,10 +42,7 @@
                 ?>
             </td>
         </tr>
-        <?php
-        $index++;
-    endforeach;
-    ?>
+    <?php endforeach; ?>
     </tbody>
 </table>
 <script type="text/javascript">
@@ -58,5 +51,3 @@
         }
     );
 </script>
-</body>
-</html>

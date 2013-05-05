@@ -13,6 +13,7 @@ $profile = $this->user;
     <li><a href="#summary-tab" data-toggle="tab">Summary</a></li>
     <li><a href="#apps-tab" data-toggle="tab">Apps</a></li>
     <li><a href="#friends-tab" data-toggle="tab">Friends</a></li>
+    <li><a href="#connections-tab" data-toggle="tab">Connections</a></li>
 </ul>
 
 <div class="tab-content">
@@ -57,7 +58,7 @@ $profile = $this->user;
         }
 
         if (!is_null($profile->getLocationCountryCode())) {
-            echo '<p>Location: <img src="/assets/img/flags/' . strtoupper($profile->getLocationCountryCode()) . '.png" /> ';
+            echo '<p>Location: <img src="/static/img/flags/' . strtoupper($profile->getLocationCountryCode()) . '.png" /> ';
             echo $profile->getLocationCountryCode();
             if (isset($this->location_state_code)) echo ', ' . $profile->getLocationStateCode();
             if (isset($this->location_city_id)) echo ', ' . $profile->getLocationCityId();
@@ -116,11 +117,17 @@ $profile = $this->user;
         Getting list of friends. Please wait.
     </div>
 
+    <div class="tab-pane" id="connections-tab">
+        <i class="icon-spinner icon-spin"></i>
+        Looking for connections. Please wait.
+    </div>
+
 </div>
 
 <script type="text/javascript">
     var appsTabLoaded = false;
     var friendsTabLoaded = false;
+    var connectionsTabLoaded = false;
 
     $('a[data-toggle="tab"]').on('shown', function (e) {
         switch (e.target.hash) {
@@ -134,6 +141,12 @@ $profile = $this->user;
                 if (!friendsTabLoaded) {
                     friendsTabLoaded = true;
                     $("#friends-tab").load("/users/friends/<?php echo $profile->getId(); ?>");
+                }
+                break;
+            case "#connections-tab":
+                if (!connectionsTabLoaded) {
+                    connectionsTabLoaded = true;
+                    $("#connections-tab").load("/users/connections/<?php echo $profile->getId(); ?>");
                 }
                 break;
         }
