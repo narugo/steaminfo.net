@@ -129,49 +129,61 @@ class Users_Model extends Model
 
     public function getFriends($user_id)
     {
-        $cache_key = 'friends_of_' . $user_id;
+        $cache_key = $user_id . '_friends';
         $friends = $this->memcached->get($cache_key);
         if ($friends === FALSE) {
-            // Removing old friends
+            self::removeOldFriends($user_id);
+
+            $response = $this->steam->ISteamUser->GetFriendList($user_id);
+            $friend_ids = array();
+            foreach ($response->friendslist->friends as $friend) {
+                array_push($friend_ids, $friend->steamid);
+            }
+
+            $userRepository = $this->entityManager->getRepository('SteamInfo\Models\Entities\User');
+            $user = $userRepository->find($user_id);
+
+            $friend_profiles = self::getUsersFromSteam($friend_ids, false);
+            $friends = array();
+
             $friendsRepository = $this->entityManager->getRepository('SteamInfo\Models\Entities\Friends');
-            $old_friends = $friendsRepository->findBy(array('user' => $user_id));
-            foreach ($old_friends as $old_friend) {
-                $this->entityManager->remove($old_friend);
+            foreach ($friend_profiles as $friend) {
+                $current_friend = $friendsRepository->findOneBy(array(
+                    'user' => $user->getId(),
+                    'friend' => $friend->getId()
+                ));
+                if (empty($current_friend)) {
+                    $current_friend = new Friends();
+                    $current_friend->setUser($user);
+                    $current_friend->setFriend($friend);
+                    $key = array_search($friend->getId(), $friend_ids);
+                    $friends_since_timestamp = $response->friendslist->friends[$key]->friend_since;
+                    if (!empty($friends_since_timestamp)) {
+                        $friends_since = date_create();
+                        date_timestamp_set($friends_since, $friends_since_timestamp);
+                        $current_friend->setSince($friends_since);
+                    }
+                    $this->entityManager->persist($current_friend);
+                }
+
+                array_push($friends, $current_friend);
             }
             $this->entityManager->flush();
 
-            $response = $this->steam->ISteamUser->GetFriendList($user_id);
-            $ids = array();
-            foreach ($response->friendslist->friends as $friend) {
-                array_push($ids, $friend->steamid);
-            }
-
-            $friend_profiles = self::getUsersFromSteam($ids, false);
-            $user = self::getUser($user_id);
-
-            $friends = array();
-            foreach ($friend_profiles as $friend) {
-                $current_friends = new Friends();
-                $current_friends->setUser($user);
-                $current_friends->setFriend($friend);
-                $key = array_search($friend->getId(), $ids);
-                $friends_since_timestamp = $response->friendslist->friends[$key]->friend_since;
-                if (!empty($friends_since_timestamp)) {
-                    $friends_since = date_create();
-                    date_timestamp_set($friends_since, $friends_since_timestamp);
-                    $current_friends->setSince($friends_since);
-                }
-
-                // TODO: Fix
-                //$this->entityManager->persist($current_friends);
-                //$this->entityManager->flush();
-
-                array_push($friends, $current_friends);
-            }
-
-            $this->memcached->add($cache_key, $friends, 3600);
+            // TODO: Fix (wrong data is returned from cache)
+            //$this->memcached->add($cache_key, $friends, 3600);
         }
         return $friends;
+    }
+
+    private function removeOldFriends($user_id)
+    {
+        $friendsRepository = $this->entityManager->getRepository('SteamInfo\Models\Entities\Friends');
+        $old_friends = $friendsRepository->findBy(array('user' => $user_id));
+        foreach ($old_friends as $old_friend) {
+            $this->entityManager->remove($old_friend);
+        }
+        $this->entityManager->flush();
     }
 
     public function getOwnedApps($user_id)
@@ -179,48 +191,60 @@ class Users_Model extends Model
         $cache_key = 'apps_owned_by_' . $user_id;
         $apps = $this->memcached->get($cache_key);
         if ($apps === FALSE) {
-            // Removing old applications
-            $appOwnerRepository = $this->entityManager->getRepository('SteamInfo\Models\Entities\AppOwner');
-            $old_apps = $appOwnerRepository->findBy(array('user' => $user_id));
-            foreach ($old_apps as $old_friend) {
-                $this->entityManager->remove($old_friend);
-            }
-            $this->entityManager->flush();
+            self::removeOwnedApps($user_id);
 
             $response = $this->steam->IPlayerService->GetOwnedGames($user_id, true, true);
 
-            $user = self::getUser($user_id);
+            $userRepository = $this->entityManager->getRepository('SteamInfo\Models\Entities\User');
+            $user = $userRepository->find($user_id);
+
             $apps = array();
 
             $applicationsRepository = $this->entityManager->getRepository('SteamInfo\Models\Entities\Application');
+            $appOwnerRepository = $this->entityManager->getRepository('SteamInfo\Models\Entities\AppOwner');
             foreach ($response->response->games as $app) {
                 $application = $applicationsRepository->find($app->appid);
-                if (empty($application)) $application = new Application();
-                $application->setId($app->appid);
-                $application->setName($app->name);
-                if (!empty($app->img_icon_url)) $application->setIcon($app->img_icon_url);
-                if (!empty($app->img_logo_url)) $application->setLogo($app->img_logo_url);
-                if (!empty($app->has_community_visible_stats)) $application->setHasCommunityVisibleStats($app->has_community_visible_stats);
+                if (empty($application)) {
+                    $application = new Application();
+                    $application->setId($app->appid);
+                    $application->setName($app->name);
+                    if (!empty($app->img_icon_url)) $application->setIcon($app->img_icon_url);
+                    if (!empty($app->img_logo_url)) $application->setLogo($app->img_logo_url);
+                    if (!empty($app->has_community_visible_stats)) $application->setHasCommunityVisibleStats($app->has_community_visible_stats);
 
-                $this->entityManager->persist($application);
-                $this->entityManager->flush();
+                    $this->entityManager->persist($application);
+                    $this->entityManager->flush();
+                }
 
-                $current_app_owner = new AppOwner();
+                $current_app_owner = $appOwnerRepository->findOneBy(array(
+                    'application' => $app->appid,
+                    'user' => $user->getId()
+                ));
+                if (empty($current_app_owner)) $current_app_owner = new AppOwner();
                 $current_app_owner->setUser($user);
                 $current_app_owner->setApplication($application);
                 if (isset($app->playtime_forever)) $current_app_owner->setUsedTotal($app->playtime_forever);
                 if (isset($app->playtime_2weeks)) $current_app_owner->setUsedInLast2Weeks($app->playtime_2weeks);
 
-                // TODO: Fix
-                //$this->entityManager->persist($current_app_owner);
-                //$this->entityManager->flush();
+                $this->entityManager->persist($current_app_owner);
 
                 array_push($apps, $current_app_owner);
             }
+            $this->entityManager->flush();
 
             $this->memcached->add($cache_key, $apps, 3600);
         }
         return $apps;
+    }
+
+    private function removeOwnedApps($user_id)
+    {
+        $appOwnerRepository = $this->entityManager->getRepository('SteamInfo\Models\Entities\AppOwner');
+        $old_apps = $appOwnerRepository->findBy(array('user' => $user_id));
+        foreach ($old_apps as $old_app) {
+            $this->entityManager->remove($old_app);
+        }
+        $this->entityManager->flush();
     }
 
     public function updateSummariesOLD($community_ids)
