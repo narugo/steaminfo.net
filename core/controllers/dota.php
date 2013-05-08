@@ -22,11 +22,10 @@ class Dota extends Controller
         if (isset($params[0])) {
             $match_id = $params[0];
             if (!is_numeric($match_id)) error(400, 'Match ID is incorrect');
-            $response = $dota_model->getMatchDetails($match_id);
             writeMatchViewLog($match_id);
-            $this->view->match = $response['match'];
-            $this->view->players = $response['players'];
-            $this->view->renderPage("dota/match", 'Match ' . $this->view->match->id . ' - Dota 2', array(), array(CSS_DOTA));
+            /** @var \SteamInfo\Models\Entities\DotaMatch team */
+            $this->view->match = $dota_model->getMatchDetails($match_id);
+            $this->view->renderPage("dota/match", 'Match ' . $this->view->match->getId() . ' - Dota 2', array(), array(CSS_DOTA));
         } else {
             $this->view->live_matches = $dota_model->getLiveLeagueMatches();
             $this->view->renderPage("dota/matches", 'Matches - Dota 2', array(), array(CSS_DOTA));
@@ -38,7 +37,7 @@ class Dota extends Controller
         if ($_SERVER['REQUEST_METHOD'] != 'GET') error(405);
         require_once PATH_TO_MODELS . 'dota.php';
         $dota_model = new Dota_Model();
-        $this->view->league = $dota_model->getLeagueListing();
+        $this->view->leagues = $dota_model->getLeagueListing();
         $this->view->renderPage("dota/leagues", 'Leagues - Dota 2', array(), array(CSS_DOTA));
     }
 
@@ -50,11 +49,12 @@ class Dota extends Controller
             if (!is_numeric($team_id)) error(400, 'Team ID is incorrect');
             require_once PATH_TO_MODELS . 'dota.php';
             $dota_model = new Dota_Model();
+            /** @var \SteamInfo\Models\Entities\DotaTeam team */
             $this->view->team = $dota_model->getTeamDetails($team_id);
-            $this->view->renderPage("dota/team", $this->view->team->tag . ' - Teams - Dota 2',
+            $this->view->renderPage("dota/team", $this->view->team->getName() . ' - Teams - Dota 2',
                 array(), array(CSS_DOTA));
         } else {
-            error(404);
+            $this->view->renderPage("dota/teams", 'Teams - Dota 2', array(), array(CSS_DOTA));
         }
     }
 

@@ -1,5 +1,8 @@
 <?php
 namespace SteamInfo\Models\Entities;
+
+define('DOTA_APP_ID', 570);
+
 /**
  * @Entity
  * @Table(name="dota_team")
@@ -15,18 +18,16 @@ class DotaTeam
     protected $tag;
     /** @Column(type="string") */
     protected $rating;
-    /** @Column(type="string") */
+    /** @Column(type="string", nullable=TRUE) */
     protected $logo;
-    /** @Column(type="string") */
+    /** @Column(type="string", nullable=TRUE) */
     protected $logo_sponsor;
     /** @Column(type="datetime") */
     protected $creation_time;
-    /** @Column(type="string") */
-    protected $country_code;
-    /** @Column(type="string") */
-    protected $url;
     /** @Column(type="string", nullable=TRUE) */
-    protected $display_name;
+    protected $country_code;
+    /** @Column(type="string", nullable=TRUE) */
+    protected $url;
     /** @Column(type="integer", nullable=TRUE) */
     protected $games_played_with_current_roster;
 
@@ -34,31 +35,31 @@ class DotaTeam
      * Players and admin
      */
     /**
-     * @Id
+     * @ManyToOne(targetEntity="User")
+     * @JoinColumn(name="player_0", referencedColumnName="id")
+     */
+    protected $player_0;
+    /**
      * @ManyToOne(targetEntity="User")
      * @JoinColumn(name="player_1", referencedColumnName="id")
      */
     protected $player_1;
     /**
-     * @Id
      * @ManyToOne(targetEntity="User")
      * @JoinColumn(name="player_2", referencedColumnName="id")
      */
     protected $player_2;
     /**
-     * @Id
      * @ManyToOne(targetEntity="User")
      * @JoinColumn(name="player_3", referencedColumnName="id")
      */
     protected $player_3;
     /**
-     * @Id
      * @ManyToOne(targetEntity="User")
      * @JoinColumn(name="player_4", referencedColumnName="id")
      */
     protected $player_4;
     /**
-     * @Id
      * @ManyToOne(targetEntity="User")
      * @JoinColumn(name="admin_account", referencedColumnName="id")
      */
@@ -76,7 +77,8 @@ class DotaTeam
 
     public function getCountryCode()
     {
-        return $this->country_code;
+        if (is_null($this->country_code)) return NULL;
+        return strtoupper($this->country_code);
     }
 
     public function setCountryCode($country_code)
@@ -84,6 +86,9 @@ class DotaTeam
         $this->country_code = $country_code;
     }
 
+    /**
+     * @return \DateTime
+     */
     public function getCreationTime()
     {
         return $this->creation_time;
@@ -94,14 +99,17 @@ class DotaTeam
         $this->creation_time = $creation_time;
     }
 
-    public function getDisplayName()
+    /**
+     * @return User
+     */
+    public function getPlayer0()
     {
-        return $this->display_name;
+        return $this->player_0;
     }
 
-    public function setDisplayName($display_name)
+    public function setPlayer0($player_0)
     {
-        $this->display_name = $display_name;
+        $this->player_0 = $player_0;
     }
 
     public function getGamesPlayedWithCurrentRoster()
@@ -126,7 +134,18 @@ class DotaTeam
 
     public function getLogo()
     {
-        return $this->logo;
+        if (is_null($this->logo)) return NULL;
+        $steam = new \Locomotive(STEAM_API_KEY);
+        $response = $steam->ISteamRemoteStorage->GetUGCFileDetails($this->logo, DOTA_APP_ID);
+        if (empty($response->data->filename) OR empty($response->data->url)) return NULL;
+        $path = PATH_TO_ASSETS . 'img/dota/' . $response->data->filename . '.png';
+        $fp = fopen($path, 'w');
+        $ch = curl_init($response->data->url);
+        curl_setopt($ch, CURLOPT_FILE, $fp);
+        curl_exec($ch);
+        curl_close($ch);
+        fclose($fp);
+        return $response->data->filename . '.png';
     }
 
     public function setLogo($logo)
@@ -154,6 +173,9 @@ class DotaTeam
         $this->name = $name;
     }
 
+    /**
+     * @return User
+     */
     public function getPlayer1()
     {
         return $this->player_1;
@@ -164,6 +186,9 @@ class DotaTeam
         $this->player_1 = $player_1;
     }
 
+    /**
+     * @return User
+     */
     public function getPlayer2()
     {
         return $this->player_2;
@@ -174,6 +199,9 @@ class DotaTeam
         $this->player_2 = $player_2;
     }
 
+    /**
+     * @return User
+     */
     public function getPlayer3()
     {
         return $this->player_3;
@@ -184,6 +212,9 @@ class DotaTeam
         $this->player_3 = $player_3;
     }
 
+    /**
+     * @return User
+     */
     public function getPlayer4()
     {
         return $this->player_4;
@@ -221,6 +252,9 @@ class DotaTeam
 
     public function setUrl($url)
     {
+        if (is_null(parse_url($url, PHP_URL_SCHEME))) {
+            $url = "http://" . $url;
+        }
         $this->url = $url;
     }
 

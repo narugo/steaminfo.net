@@ -4,17 +4,19 @@
     </h1>
 </div>
 
-<?php
-echo '<ol>';
-foreach ($this->league as $league) {
-    echo '<li>';
-    echo '(#' . $league->id . ') ';
-    if (!empty($league->tournament_url)) {
-        echo '<a href="' . $league->tournament_url . '">' . $league->name . '</a>';
-    } else {
-        echo $league->name;
+<ol>
+    <?php
+    /** @var \SteamInfo\Models\Entities\DotaLeague[] $leagues */
+    $leagues = $this->leagues;
+    foreach ($leagues as $league) {
+        echo '<li>';
+        echo '(#' . $league->getId() . ') ';
+        if (!is_null($league->getTournamentUrl())) {
+            echo '<a href="' . $league->getTournamentUrl() . '" rel="nofollow">' . $league->getName() . '</a>';
+        } else {
+            echo $league->getName();
+        }
+        echo '</li>';
     }
-    echo '</li>';
-}
-echo '</ol>';
-?>
+    ?>
+</ol>

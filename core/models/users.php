@@ -4,9 +4,6 @@ use SteamInfo\Models\Entities\AppOwner;
 use SteamInfo\Models\Entities\Friends;
 use SteamInfo\Models\Entities\User;
 
-/**
- * Database interface
- */
 class Users_Model extends Model
 {
 
@@ -56,7 +53,7 @@ class Users_Model extends Model
      * @param bool $updateBans
      * @return User[]
      */
-    private function getUsersFromSteam($ids, $updateBans = true)
+    public function getUsersFromSteam($ids, $updateBans = true)
     {
         self::updateSummaries($ids);
         if ($updateBans) self::updateBans($ids);
@@ -170,8 +167,7 @@ class Users_Model extends Model
             }
             $this->entityManager->flush();
 
-            // TODO: Fix (wrong data is returned from cache)
-            //$this->memcached->add($cache_key, $friends, 3600);
+            $this->memcached->add($cache_key, $friends, 3600);
         }
         return $friends;
     }

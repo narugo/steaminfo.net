@@ -9,13 +9,6 @@ class DotaMatchPlayer
 
     /**
      * @Id
-     * @ManyToOne(targetEntity="User", inversedBy="dota_matches")
-     * @var User
-     */
-    protected $player;
-
-    /**
-     * @Id
      * @ManyToOne(targetEntity="DotaMatch", inversedBy="players")
      * @var DotaMatch
      */
@@ -26,8 +19,17 @@ class DotaMatchPlayer
      * @var DotaHero
      */
     protected $hero;
-    /** @Column(type="smallint") */
+    /**
+     * @Id
+     * @Column(type="smallint")
+     */
     protected $slot;
+    /**
+     * @ManyToOne(targetEntity="User", inversedBy="dota_matches")
+     * @JoinColumn(name="user_id", referencedColumnName="id", nullable=true)
+     * @var User
+     */
+    protected $player;
 
     /*
      * Stats
@@ -64,17 +66,17 @@ class DotaMatchPlayer
     /*
      * Items
      */
-    /** @Column(type="boolean") */
+    /** @Column(type="integer") */
     protected $item_0;
-    /** @Column(type="boolean") */
+    /** @Column(type="integer") */
     protected $item_1;
-    /** @Column(type="boolean") */
+    /** @Column(type="integer") */
     protected $item_2;
-    /** @Column(type="boolean") */
+    /** @Column(type="integer") */
     protected $item_3;
-    /** @Column(type="boolean") */
+    /** @Column(type="integer") */
     protected $item_4;
-    /** @Column(type="boolean") */
+    /** @Column(type="integer") */
     protected $item_5;
 
     public function getAssists()

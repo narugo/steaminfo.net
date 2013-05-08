@@ -15,7 +15,6 @@ class DotaLeague
     protected $description;
     /** @Column(type="string", nullable=TRUE) */
     protected $tournament_url;
-
     /**
      * @OneToMany(targetEntity="DotaMatch", mappedBy="league")
      * @var DotaMatch[]
@@ -69,6 +68,9 @@ class DotaLeague
 
     public function setTournamentUrl($tournament_url)
     {
+        if (is_null(parse_url($tournament_url, PHP_URL_SCHEME))) {
+            $tournament_url = "http://" . $tournament_url;
+        }
         $this->tournament_url = $tournament_url;
     }
 

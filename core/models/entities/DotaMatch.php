@@ -31,47 +31,33 @@ class DotaMatch
     protected $negative_votes;
     /** @Column(type="integer") */
     protected $game_mode;
+    /** @Column(type="integer") */
+    protected $match_seq_num;
     /**
      * @ManyToOne(targetEntity="DotaLeague", inversedBy="matches")
+     * @JoinColumn(name="league_id", referencedColumnName="id", nullable=true)
      * @var DotaLeague
      */
     protected $league;
-
     /**
      * @OneToMany(targetEntity="DotaMatchPlayer", mappedBy="match")
      * @var DotaMatchPlayer[]
      **/
     protected $players = null;
 
-    public function addPlayers($players)
-    {
-        $this->players[] = $players;
-    }
-
-    public function getPlayers()
-    {
-        return $this->players;
-    }
-
     /*
      * Radiant
      */
     /**
-     * @Column(nullable=TRUE)
      * @ManyToOne(targetEntity="DotaTeam")
-     * @JoinColumn(name="radiant_team", referencedColumnName="id")
+     * @JoinColumn(name="radiant_team", referencedColumnName="id", nullable=true)
      * @var DotaTeam
      */
     protected $radiant_team;
-    /** @Column(type="string", nullable=TRUE) */
-    protected $radiant_name;
-    /** @Column(type="string", nullable=TRUE) */
-    protected $radiant_logo;
     /** @Column(type="boolean", nullable=TRUE) */
     protected $radiant_team_complete;
     /** @Column(type="integer", nullable=TRUE) */
     protected $radiant_tower_status;
-    // Status
     /** @Column(type="integer", nullable=TRUE) */
     protected $radiant_barracks_status;
 
@@ -79,32 +65,28 @@ class DotaMatch
      * Dire
      */
     /**
-     * @Column(nullable=TRUE)
      * @ManyToOne(targetEntity="DotaTeam")
-     * @JoinColumn(name="dire_team", referencedColumnName="id")
+     * @JoinColumn(name="dire_team", referencedColumnName="id", nullable=true)
      * @var DotaTeam
      */
     protected $dire_team;
-    /** @Column(type="string", nullable=TRUE) */
-    protected $dire_name;
-    /** @Column(type="string", nullable=TRUE) */
-    protected $dire_logo;
     /** @Column(type="boolean", nullable=TRUE) */
     protected $dire_team_complete;
     /** @Column(type="integer", nullable=TRUE) */
     protected $dire_tower_status;
-    // Status
     /** @Column(type="integer", nullable=TRUE) */
     protected $dire_barracks_status;
 
-    public function getRadiantName()
+    public function addPlayers($players)
     {
-        return $this->radiant_name;
+        $this->players[] = $players;
     }
 
-    public function setRadiantName($radiant_name)
+    // Status
+
+    public function getPlayers()
     {
-        $this->radiant_name = $radiant_name;
+        return $this->players;
     }
 
     public function getCluster()
@@ -127,34 +109,29 @@ class DotaMatch
         $this->dire_barracks_status = $dire_barracks_status;
     }
 
-    public function getDireLogo()
+    public function getMatchSeqNum()
     {
-        return $this->dire_logo;
+        return $this->match_seq_num;
     }
 
-    public function setDireLogo($dire_logo)
+    public function setMatchSeqNum($match_seq_num)
     {
-        $this->dire_logo = $dire_logo;
+        $this->match_seq_num = $match_seq_num;
     }
 
-    public function getDireName()
-    {
-        return $this->dire_name;
-    }
-
-    public function setDireName($dire_name)
-    {
-        $this->dire_name = $dire_name;
-    }
-
+    /**
+     * @return DotaTeam
+     */
     public function getDireTeam()
     {
         return $this->dire_team;
     }
 
+    /**
+     * @param DotaTeam $dire_team
+     */
     public function setDireTeam($dire_team)
     {
-        $dire_team->addPlayedMatch($this);
         $this->dire_team = $dire_team;
     }
 
@@ -243,6 +220,9 @@ class DotaMatch
         return $this->league;
     }
 
+    /**
+     * @param DotaLeague $league
+     */
     public function setLeague($league)
     {
         $league->addMatch($this);
@@ -289,24 +269,19 @@ class DotaMatch
         $this->radiant_barracks_status = $radiant_barracks_status;
     }
 
-    public function getRadiantLogo()
-    {
-        return $this->radiant_logo;
-    }
-
-    public function setRadiantLogo($radiant_logo)
-    {
-        $this->radiant_logo = $radiant_logo;
-    }
-
+    /**
+     * @return DotaTeam
+     */
     public function getRadiantTeam()
     {
         return $this->radiant_team;
     }
 
+    /**
+     * @param DotaTeam $radiant_team
+     */
     public function setRadiantTeam($radiant_team)
     {
-        $radiant_team->addPlayedMatch($this);
         $this->radiant_team = $radiant_team;
     }
 
@@ -340,6 +315,9 @@ class DotaMatch
         $this->season = $season;
     }
 
+    /**
+     * @return \DateTime
+     */
     public function getStartTime()
     {
         return $this->start_time;

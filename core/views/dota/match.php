@@ -1,6 +1,8 @@
 <?php
+
+
+/** @var \SteamInfo\Models\Entities\DotaMatch $match */
 $match = $this->match;
-$players = $this->players;
 
 $radiant_players = 0;
 $dire_players = 0;
@@ -74,25 +76,26 @@ function printTime($seconds)
     $duration_sec = $seconds - $duration_min * 60;
     echo $duration_min . ':' . $duration_sec;
 }
+
 ?>
 
 <div class="page-header">
     <h1>Dota 2
-        <small>Match #<?php echo $match->id; ?></small>
+        <small>Match #<?php echo $match->getId(); ?></small>
     </h1>
 </div>
 
-Game mode: <?php echo $match->game_mode; ?>
+Game mode: <?php echo $match->getGameMode(); ?>
 
 <p>
-    Start time: <?php echo date(DATE_RFC850, $match->start_time); ?>
-    <br/>Duration: <?php printTime($match->duration); ?>
-    <br/>Season: <?php echo $match->season; ?>
+    Start time: <?php echo $match->getStartTime()->format(DATE_RFC850); ?>
+    <br/>Duration: <?php printTime($match->getDuration()); ?>
+    <br/>Season: <?php echo $match->getSeason(); ?>
 </p>
 
 <h4 id="winner">
     <?php
-    if ($match->radiant_win)
+    if ($match->getIsRadiantWin())
         echo "Radiant victory!";
     else
         echo "Dire victory!";
@@ -101,15 +104,11 @@ Game mode: <?php echo $match->game_mode; ?>
 
 <span class="team">
     <?php
-    if (!empty($match->radiant_logo)) {
-        echo '<img class="team-logo" src="/assets/img/dota/' . $match->radiant_logo . '"/>';
+    if (!is_null($match->getRadiantTeam())) {
+        echo '<img class="team-logo" src="/static/img/dota/' . $match->getRadiantTeam()->getLogo() . '"/>';
+        echo '<a href="/dota/teams/' . $match->getRadiantTeam()->getId() . '/">' . $match->getRadiantTeam()->getName() . '</a> (The Radiant)';
     } else {
-        echo '<img class="team-icon" src="/static/img/dota/pip_radiant.png"/>';
-    }
-    if (!empty($match->radiant_name)) {
-        echo '<a href="/dota/teams/' . $match->radiant_team_id . '/">' . $match->radiant_name . '</a> (The Radiant)';
-    } else {
-        echo 'The Radiant';
+        echo '<img class="team-icon" src="/static/img/dota/pip_radiant.png"/> The Radiant';
     }
     ?>
 </span>
@@ -129,18 +128,14 @@ Game mode: <?php echo $match->game_mode; ?>
 <?php } ?>
 
 <span class="team">
-    <?php
-    if (!empty($match->dire_logo)) {
-        echo '<img class="team-logo" src="/assets/img/dota/' . $match->dire_logo . '"/>';
-    } else {
-        echo '<img class="team-icon" src="/static/img/dota/pip_dire.png"/>';
-    }
-    if (!empty($match->dire_name)) {
-        echo '<a href="/dota/teams/' . $match->dire_team_id . '/">' . $match->dire_name . '</a> (The Dire)';
-    } else {
-        echo 'The Dire';
-    }
-    ?>
+     <?php
+     if (!is_null($match->getDireTeam())) {
+         echo '<img class="team-logo" src="/static/img/dota/' . $match->getDireTeam()->getLogo() . '"/>';
+         echo '<a href="/dota/teams/' . $match->getDireTeam()->getId() . '/">' . $match->getDireTeam()->getName() . '</a> (The Dire)';
+     } else {
+         echo '<img class="team-icon" src="/static/img/dota/pip_dire.png"/> The Dire';
+     }
+     ?>
 </span>
 <?php if ($dire_players > 0) { ?>
     <table class="match-table table table-condensed table-hover">
@@ -158,24 +153,38 @@ Game mode: <?php echo $match->game_mode; ?>
 <?php } ?>
 
 <p>
-    First blood time: <?php printTime($match->first_blood_time); ?>
-    <br/>Human players: <?php echo $match->human_players; ?>
-    <br/>Lobby type: <?php echo $match->lobby_type; ?>
-    <br/>League: <?php echo $match->league_id; ?>
-    <br/>Cluster: <?php echo $match->cluster; ?>
+    First blood time: <?php printTime($match->getFirstBloodTime()); ?>
+    <br/>Human players: <?php echo $match->getHumanPlayers(); ?>
+    <br/>Lobby type: <?php echo $match->getLobbyType(); ?>
+    <?php if (!is_null($match->getLeague())) : ?>
+        <br/>League: <?php echo $match->getLeague()->getName() . ' (' . $match->getLeague()->getId() . ')'; ?>
+    <?php endif; ?>
+    <br/>Cluster: <?php echo $match->getCluster(); ?>
 </p>
 
 <p>
-    Positive votes: <?php echo $match->positive_votes; ?>
-    <br/>Negative votes: <?php echo $match->negative_votes; ?>
+    Positive votes: <?php echo $match->getPositiveVotes(); ?>
+    <br/>Negative votes: <?php echo $match->getNegativeVotes(); ?>
 </p>
 <p>
-    tower_status_radiant: <?php echo $match->tower_status_radiant; ?>
-    <br/>tower_status_dire: <?php echo $match->tower_status_dire; ?>
-    <br/>barracks_status_radiant: <?php echo $match->barracks_status_radiant; ?>
-    <br/>barracks_status_dire: <?php echo $match->barracks_status_dire; ?>
+    Radiant tower status: <?php echo $match->getRadiantTowerStatus(); ?>
+    <br/>Dire tower status: <?php echo $match->getDireTowerStatus(); ?>
+    <br/>Radiant barracks status: <?php echo $match->getRadiantBarracksStatus(); ?>
+    <br/>Dire barracks status: <?php echo $match->getDireBarracksStatus(); ?>
 </p>
 <p>
-    <br/>radiant_team_complete: <?php echo $match->radiant_team_complete; ?>
-    <br/>dire_team_complete: <?php echo $match->dire_team_complete; ?>
+    <?php if (!is_null($match->getRadiantTeamComplete())) : ?>
+        <br/>Is Radiant team complete:
+        <?php
+        if ($match->getRadiantTeamComplete()) echo "YES";
+        else echo "NO";
+        ?>
+    <?php endif; ?>
+    <?php if (!is_null($match->getDireTeamComplete())) : ?>
+        <br/>Is Dire team complete:
+        <?php
+        if ($match->getDireTeamComplete()) echo "YES";
+        else echo "NO";
+        ?>
+    <?php endif; ?>
 </p>

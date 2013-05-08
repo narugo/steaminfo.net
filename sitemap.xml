@@ -22,11 +22,13 @@
     <url>
         <loc>http://steaminfo.net/about/</loc>
     </url>
-
     <url>
         <loc>http://steaminfo.net/dota/matches/</loc>
     </url>
     <url>
         <loc>http://steaminfo.net/dota/leagues/</loc>
+    </url>
+    <url>
+        <loc>http://steaminfo.net/dota/teams/</loc>
     </url>
 </urlset>
