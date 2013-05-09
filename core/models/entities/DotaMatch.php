@@ -99,6 +99,38 @@ class DotaMatch
         $this->cluster = $cluster;
     }
 
+    public function getServerLocation()
+    {
+        switch ($this->cluster) {
+            case  111:
+                return 'US West';
+            case 121:
+            case 122:
+                return 'US East';
+            case 131:
+            case 132:
+            case 133:
+                return 'Europe West';
+            case 151:
+            case 152:
+                return 'Southeast Asia';
+            case 161:
+            case 163:
+                return 'China';
+            case 171:
+                return 'Australia';
+            case 181:
+            case 182:
+                return 'Russia';
+            case 191:
+                return 'Europe East';
+            case 200:
+                return 'South America';
+            default:
+                return 'Unknown';
+        }
+    }
+
     public function getDireBarracksStatus()
     {
         return $this->dire_barracks_status;

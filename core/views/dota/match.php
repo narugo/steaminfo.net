@@ -160,6 +160,7 @@ Game mode: <?php echo $match->getGameMode(); ?>
         <br/>League: <?php echo $match->getLeague()->getName() . ' (' . $match->getLeague()->getId() . ')'; ?>
     <?php endif; ?>
     <br/>Cluster: <?php echo $match->getCluster(); ?>
+    <br/>Region: <?php echo $match->getServerLocation(); ?>
 </p>
 
 <p>
