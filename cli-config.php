@@ -9,9 +9,9 @@ $isDevMode = true;
 $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__ . "/core/models/entities"), $isDevMode);
 $connection = array(
     'driver' => DB_DRIVER,
-    'user' => 'test',
-    'password' => 'test',
-    'dbname' => DB_NAME . '_test',
+    'user' => DB_USERNAME,
+    'password' => DB_PASSWORD,
+    'dbname' => DB_NAME,
 );
 $entityManager = EntityManager::create($connection, $config);
 

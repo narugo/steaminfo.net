@@ -22,7 +22,6 @@ class Dota extends Controller
         if (isset($params[0])) {
             $match_id = $params[0];
             if (!is_numeric($match_id)) error(400, 'Match ID is incorrect');
-            writeMatchViewLog($match_id);
             /** @var \SteamInfo\Models\Entities\DotaMatch team */
             $this->view->match = $dota_model->getMatchDetails($match_id);
             $this->view->renderPage("dota/match", 'Match ' . $this->view->match->getId() . ' - Dota 2', array(), array(CSS_DOTA));

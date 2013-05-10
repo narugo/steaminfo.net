@@ -19,16 +19,14 @@ class Model
         $config = Setup::createAnnotationMetadataConfiguration(array(PATH_TO_ENTITIES), $isDevMode);
         $connection = array(
             'driver' => DB_DRIVER,
-            'user' => 'test',
-            'password' => 'test',
-            'dbname' => DB_NAME . '_test',
+            'user' => DB_USERNAME,
+            'password' => DB_PASSWORD,
+            'dbname' => DB_NAME,
         );
         $this->entityManager = EntityManager::create($connection, $config);
         $this->helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
             'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($this->entityManager)
         ));
-
-        $this->db = new Database();
 
         $this->memcached = new Memcached();
         $this->memcached->addServer(MEMCACHED_SERVER, MEMCACHED_PORT);

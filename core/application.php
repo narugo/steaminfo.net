@@ -6,8 +6,6 @@ define('MODE_CMD', 'cmd');
 /**
  * Main modules
  */
-require CORE_DIR . 'database.php';
-require CORE_DIR . 'logging.php';
 require CORE_DIR . 'error_handling.php';
 require CORE_DIR . 'controller.php';
 require CORE_DIR . 'view.php';
