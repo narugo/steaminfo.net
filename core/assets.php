@@ -17,7 +17,7 @@ define('JS_D3', PATH_TO_JS . 'd3.v3.min.js');
  * CSS
  */
 define('CSS_FONT_ROBOTO', '//fonts.googleapis.com/css?family=Roboto+Condensed:300italic,400italic,700italic,400,300,700');
-define('CSS_FONT_AWESOME', '//netdna.bootstrapcdn.com/font-awesome/3.0.2/css/font-awesome.css');
+define('CSS_FONT_AWESOME', '//netdna.bootstrapcdn.com/font-awesome/3.1.0/css/font-awesome.min.css');
 define('CSS_JQUERY_UI', PATH_TO_CSS . 'jquery-ui.css');
 define('CSS_BOOTSTRAP', PATH_TO_CSS . 'bootstrap-combined.min.css');
 define('CSS_MAIN', PATH_TO_CSS . 'screen.css');
