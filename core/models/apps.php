@@ -1,5 +1,7 @@
 <?php
 
+use SteamInfo\Models\Entities\Application;
+
 class Apps_Model extends Model
 {
 
@@ -56,6 +58,22 @@ class Apps_Model extends Model
                 );
             }
         }
+    }
+
+    public function updateAvailableApps()
+    {
+        $response = $this->steam->ISteamApps->GetAppList();
+        $appRepository = $this->entityManager->getRepository('SteamInfo\Models\Entities\Application');
+        foreach ($response->applist->apps as $app) {
+            $current_app = $appRepository->find($app->appid);
+            if (empty($current_app)) {
+                $current_app = new Application();
+                $current_app->setId($app->appid);
+                $current_app->setName($app->name);
+                $this->entityManager->persist($current_app);
+            }
+        }
+        $this->entityManager->flush();
     }
 
     public function getSearchSuggestions($input)
