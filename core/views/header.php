@@ -37,7 +37,6 @@
                             <li><a href="/dota/teams/">Teams</a></li>
                         </ul>
                     </li>
-                    <li><a href="/stats/">Stats</a></li>
                     <li><a href="/api/">API</a></li>
                 </ul>
                 <ul class="nav pull-right">
