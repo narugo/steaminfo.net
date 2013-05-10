@@ -1,5 +1,8 @@
 <?php
 
+define('MODE_WEB', 'web');
+define('MODE_CMD', 'cmd');
+
 /**
  * Main modules
  */
@@ -13,12 +16,38 @@ require CORE_DIR . 'assets.php';
 
 /**
  * Main application class
- * Parses requested path, calls controllers and methods, passes parameters
  */
 class Application
 {
 
-    function __construct()
+    function __construct($mode, $argv = NULL)
+    {
+        switch ($mode) {
+            case MODE_CMD:
+                self::runTool($argv);
+                break;
+            case MODE_WEB:
+            default:
+                self::runWeb();
+                break;
+        }
+    }
+
+    private function runTool($argv)
+    {
+        if (count($argv) < 2) {
+            echo "No arguments!\n";
+            return FALSE;
+        }
+
+        // TODO: Add commands
+        switch ($argv[1]) {
+            default:
+                echo "Unknown argument!\n";
+        }
+    }
+
+    private function runWeb()
     {
         // Getting requested path
         $path = $_SERVER['REQUEST_URI'];
