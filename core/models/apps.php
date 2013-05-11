@@ -76,20 +76,19 @@ class Apps_Model extends Model
         $this->entityManager->flush();
     }
 
-    public function getSearchSuggestions($input)
+    public function getSearchSuggestions($input, $limit = 10)
     {
         $cache_key = 'apps_suggestions_for_' . $input;
         $suggestions = $this->memcached->get($cache_key);
         if ($suggestions === FALSE) {
-            // TODO: Find a way to get better suggestions
-            $statement = $this->db->prepare('
-                SELECT *
-                FROM app
-                WHERE SOUNDEX(name) = SOUNDEX(:input)
-                LIMIT 0, 5
-            ');
-            $statement->execute(array(":input" => $this->db->quote($input)));
-            $suggestions = $statement->fetchAll();
+            $qb = $this->entityManager->createQueryBuilder();
+            $qb->add('select', 'a')
+                ->add('from', 'SteamInfo\Models\Entities\Application a')
+                ->add('where', $qb->expr()->like('a.name', ':name'))
+                ->setMaxResults($limit);
+            $suggestions = $qb->getQuery()->execute(array(
+                'name' => '%' . $input . '%'
+            ));
             $this->memcached->add($cache_key, $suggestions, 3600);
         }
         return $suggestions;

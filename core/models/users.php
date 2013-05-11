@@ -243,49 +243,19 @@ class Users_Model extends Model
         $this->entityManager->flush();
     }
 
-    public function updateSummariesOLD($community_ids)
-    {
-        $summaries = array();
-        foreach (array_chunk($community_ids, 100) as $chunk) {
-            $result = $this->steam->ISteamUser->GetPlayerSummaries($chunk);
-            $summaries = array_merge($summaries, $result->response->players);
-        }
-        foreach ($summaries as $summary) {
-            $this->db->upsert(
-                'steam_user',
-                array('community_id' => $summary->steamid),
-                array(
-                    "nickname" => $summary->personaname,
-                    "avatar_url" => $summary->avatar,
-                    "creation_time" => $summary->timecreated,
-                    "real_name" => $summary->realname,
-                    "location_country_code" => $summary->loccountrycode,
-                    "location_state_code" => $summary->locstatecode,
-                    "location_city_id" => $summary->loccityid,
-                    "last_login_time" => $summary->lastlogoff,
-                    "status" => $summary->personastate,
-                    "current_game_server_ip" => $summary->gameserverip,
-                    "current_game_name" => $summary->gameextrainfo,
-                    "current_game_id" => $summary->gameid,
-                    "primary_group_id" => $summary->primaryclanid
-                )
-            );
-        }
-    }
-
-    public function getSearchSuggestions($input)
+    public function getSearchSuggestions($input, $limit = 10)
     {
         $cache_key = 'users_suggestions_for_' . $input;
         $suggestions = $this->memcached->get($cache_key);
         if ($suggestions === FALSE) {
-            // TODO: Find a way to get better suggestions
-            $statement = $this->db->prepare('
-                SELECT community_id, nickname, avatar_url, tag
-                FROM steam_user
-                WHERE nickname LIKE :input
-            ');
-            $statement->execute(array(":input" => $this->db->quote($input)));
-            $suggestions = $statement->fetchAll();
+            $qb = $this->entityManager->createQueryBuilder();
+            $qb->add('select', 'u')
+                ->add('from', 'SteamInfo\Models\Entities\User u')
+                ->add('where', $qb->expr()->like('u.nickname', ':nickname'))
+                ->setMaxResults($limit);
+            $suggestions = $qb->getQuery()->execute(array(
+                'nickname' => '%' . $input . '%'
+            ));
             $this->memcached->add($cache_key, $suggestions, 3600);
         }
         return $suggestions;
