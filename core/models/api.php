@@ -1,5 +1,7 @@
 <?php
 
+use SteamInfo\Models\Entities\ApiInterface;
+
 class API_Model extends Model
 {
 
@@ -8,76 +10,74 @@ class API_Model extends Model
         parent::__construct();
     }
 
-    public function getAPI()
+    public function getInterfaces()
     {
-        $cache_key = 'available_apis';
-        $apis = $this->memcached->get($cache_key);
-        if ($apis === FALSE) {
-            $apis = $this->steam->ISteamWebAPIUtil->GetSupportedAPIList();
-            $this->memcached->add($cache_key, $apis, 3000);
+        $cache_key = 'api_interfaces';
+        $interfaces = $this->memcached->get($cache_key);
+        if ($interfaces === FALSE) {
+            self::updateInterfaces();
+            $apiRepository = $this->entityManager->getRepository('SteamInfo\Models\Entities\ApiInterface');
+            $interfaces = $apiRepository->findAll();
+            $this->memcached->add($cache_key, $interfaces, 3000);
         }
-        $interfaces = array();
-        foreach ($apis->apilist->interfaces as $interface) {
-            array_push($interfaces, new Steam_API_Interface(
-                $interface->name, $interface->methods));
-        }
-        return $apis;
+        return $interfaces;
     }
 
-}
-
-class Steam_API_Interface
-{
-
-    public $name;
-    public $methods = array();
-
-    function __construct($name, $methods = array())
+    private function updateInterfaces()
     {
-        $this->name = $name;
-        foreach ($methods as $method) {
-            array_push($this->methods, new Steam_API_Method(
-                $method->name, $method->version, $method->httpmethod, $method->parameters));
+        $connection = $this->entityManager->getConnection();
+        $platform = $connection->getDatabasePlatform();
+        $connection->executeUpdate($platform->getTruncateTableSQL('api_interface', true));
+        $connection->executeUpdate($platform->getTruncateTableSQL('api_method', true));
+        $connection->executeUpdate($platform->getTruncateTableSQL('api_method_parameter', true));
+
+        $result = $this->steam->ISteamWebAPIUtil->GetSupportedAPIList();
+        foreach ($result->apilist->interfaces as $interface) {
+            $current_interface = new ApiInterface($interface->name);
+            $this->entityManager->persist($current_interface);
+            foreach ($interface->methods as $method) {
+                $current_interface->addMethods($method->name, $method->version, $method->httpmethod);
+                foreach ($method->parameters as $parameter) {
+                    // TODO: Fix
+                    /* $current_parameter = new ApiMethodParameter(
+                         $parameter->name,
+                         $current_method->getName(),
+                         $current_method->getVersion(),
+                         $current_interface->getName()
+                     );
+                     $this->entityManager->persist($current_parameter);
+                     $current_parameter->setOptional($parameter->optional);
+                     $current_parameter->setType($parameter->type);
+                     if (!empty($parameter->description)) $current_parameter->setDescription($parameter->description);  */
+                }
+            }
+            $this->entityManager->flush();
         }
+        $this->entityManager->flush();
     }
 
-}
-
-class Steam_API_Method
-{
-
-    public $name;
-    public $version;
-    public $httpmethod;
-    public $parameters = array();
-
-    function __construct($name, $version, $httpmethod, $parameters = array())
+    public function getInterface($name)
     {
-        $this->name = $name;
-        $this->version = $version;
-        $this->httpmethod = $httpmethod;
-        foreach ($parameters as $param) {
-            array_push($this->parameters, new Steam_API_Parameter(
-                $param->name, $param->type, $param->optional, $param->description));
+        $cache_key = 'api_interface_' . $name;
+        $interface = $this->memcached->get($cache_key);
+        if ($interface === FALSE) {
+            $apiRepository = $this->entityManager->getRepository('SteamInfo\Models\Entities\ApiInterface');
+            $interface = $apiRepository->find($name);
+            $this->memcached->add($cache_key, $interface, 3000);
         }
+        return $interface;
     }
 
-}
-
-class Steam_API_Parameter
-{
-
-    public $name;
-    public $type;
-    public $optional;
-    public $description;
-
-    function __construct($name, $type, $optional, $description)
+    public function getMethod($name)
     {
-        $this->name = $name;
-        $this->type = $type;
-        $this->optional = $optional;
-        $this->description = $description;
+        $cache_key = 'api_method_' . $name;
+        $interface = $this->memcached->get($cache_key);
+        if ($interface === FALSE) {
+            $apiRepository = $this->entityManager->getRepository('SteamInfo\Models\Entities\ApiMethod');
+            $interface = $apiRepository->find($name);
+            $this->memcached->add($cache_key, $interface, 3000);
+        }
+        return $interface;
     }
 
 }
