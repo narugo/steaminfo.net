@@ -2,10 +2,10 @@
     <h1>Users</h1>
 </div>
 
-<form class="search form-inline input-append">
+<form id="user-search" class="search form-inline input-append">
     <input id="query" class="span2" type="text" autocomplete="off" autofocus="true"
            placeholder="Vanity URL, Steam ID, or Community ID">
-    <button id="search-submit" class="btn btn-primary" type="button">Search</button>
+    <button class="btn btn-primary" type="button">Search</button>
 </form>
 
 <div id="help">
@@ -51,9 +51,10 @@
 <?php endif; ?>
 
 <script type="text/javascript">
+    var is_help_hidden = false;
+
     $(document).ready(function () {
-        var is_help_hidden = false;
-        $('#search-submit').click(function () {
+        $("#user-search").submit(function (e) {
             if (!is_help_hidden) {
                 $('#help').hide("fast");
                 is_help_hidden = true;

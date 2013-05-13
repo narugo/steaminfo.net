@@ -23,8 +23,8 @@
             <div class="container">
                 <a class="brand" href="/">Steam Info</a>
                 <ul class="nav">
-                    <form class="navbar-form pull-left">
-                        <input id="header-search" type="text" class="span2" autocomplete="off" autofocus="true"
+                    <form id="header-search" class="navbar-form pull-left">
+                        <input id="header-search-input" type="text" class="span2" autocomplete="off" autofocus="true"
                                placeholder="Search"/>
                     </form>
                     <li><a href="/users/">Users</a></li>
@@ -64,40 +64,41 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
-            $(function () {
-                $("#header-search").autocomplete({
-                    html: true,
-                    source: function (request, response) {
-                        $.ajax({
-                            url: "/index/searchSuggest/",
-                            dataType: "json",
-                            data: {
-                                query: request.term
-                            },
-                            success: function (data) {
-                                console.log(data);
-                                response($.map(data, function (item) {
-                                    if (item.type == "user") {
-                                        return {
-                                            label: "<img src=\"" + item.avatar_url + "\" /> " + item.name
-                                                + " <span class=\"label label-success\">" + item.type + "</span>",
-                                            value: "/users/profile/" + item.id
-                                        }
-                                    } else if (item.type == "app") {
-                                        return {
-                                            label: item.name + " <span class=\"label label-inverse\">" + item.type + "</span>",
-                                            value: "/apps/" + item.id
-                                        }
+            $("#header-search").submit(function (e) {
+                return false;
+            });
+            $("#header-search-input").autocomplete({
+                html: true,
+                source: function (request, response) {
+                    $.ajax({
+                        url: "/index/searchSuggest/",
+                        dataType: "json",
+                        data: {
+                            query: request.term
+                        },
+                        success: function (data) {
+                            console.log(data);
+                            response($.map(data, function (item) {
+                                if (item.type == "user") {
+                                    return {
+                                        label: "<img src=\"" + item.avatar_url + "\" class=\"search-user-avatar\" /> " + item.name
+                                            + " <span class=\"label label-success\">" + item.type + "</span>",
+                                        value: "/users/profile/" + item.id
                                     }
-                                }));
-                            }
-                        });
-                    },
-                    minLength: 2,
-                    select: function (event, ui) {
-                        window.location = (ui.item.value);
-                    }
-                });
+                                } else if (item.type == "app") {
+                                    return {
+                                        label: item.name + " <span class=\"label label-inverse\">" + item.type + "</span>",
+                                        value: "/apps/" + item.id
+                                    }
+                                }
+                            }));
+                        }
+                    });
+                },
+                minLength: 2,
+                select: function (event, ui) {
+                    window.location = (ui.item.value);
+                }
             });
         });
     </script>

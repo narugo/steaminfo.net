@@ -4,12 +4,10 @@
     </h1>
 </div>
 
-<div id="search" class="input-append">
-    <label>Search matches</label>
-    <input id="query" class="span2" type="text" autocomplete="off" autofocus="true"
-           placeholder="Match ID">
-    <button id="search-submit" class="btn btn-primary" type="button">Search</button>
-</div>
+<form id="match-search" class="search form-inline input-append">
+    <input id="query" class="span2" type="text" autocomplete="off" autofocus="true" placeholder="Match ID">
+    <button class="btn btn-primary" type="button">Search</button>
+</form>
 
 <p>
     Try <strong><a href="/dota/matches/37623177">37623177</a></strong>.
@@ -32,8 +30,9 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        $('#search-submit').click(function () {
+        $("#match-search").submit(function (e) {
             window.location = ("/dota/matches/" + $('#query').val());
+            return false;
         });
     });
 </script>
